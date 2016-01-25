@@ -1,15 +1,21 @@
 <?php
-namespace Cebera;
+namespace OLOG;
 
 class ConfWrapper 
 {
- 
+    static $config_arr = null;
+
+    static public function assignConfig($config_arr){
+        self::$config_arr = $config_arr;
+    }
+
     /**
      * Just proxy function to \Cebera\Conf::get()
      * @see \Cebera\Conf::get()
      */
  	static public function get(){
- 		return \Cebera\Conf::get();
+        \OLOG\Helpers::assert(self::$config_arr);
+ 		return self::$config_arr;
  	}
  
     /**
@@ -41,5 +47,3 @@ class ConfWrapper
         return $value;
     }
 }
-
-?>

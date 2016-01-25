@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera;
+namespace OLOG;
 
 class Helpers
 {
@@ -247,7 +247,7 @@ class Helpers
 
     public static function setAccessControlAllowOriginHeader()
     {
-        $allowed_hosts = \Cebera\ConfWrapper::value('access_control_allow_origin_header', '');
+        $allowed_hosts = \OLOG\ConfWrapper::value('access_control_allow_origin_header', '');
         if($allowed_hosts != '') {
             header('Access-Control-Allow-Origin: ' . $allowed_hosts);
         }

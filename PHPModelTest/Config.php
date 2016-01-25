@@ -2,7 +2,7 @@
 
 namespace PHPModelTest;
 
-class Conf
+class Config
 {
     const DB_NAME_PHPMODELTEST = 'phpmodel';
 

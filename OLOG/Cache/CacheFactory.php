@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\Cache;
+namespace OLOG\Cache;
 
 class CacheFactory {
     /**
@@ -14,7 +14,7 @@ class CacheFactory {
             return $cache_obj;
         }
 
-        $cache_obj = new \Cebera\Cache\Cache();
+        $cache_obj = new \OLOG\Cache\Cache();
         return $cache_obj;
     }
 

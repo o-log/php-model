@@ -16,7 +16,7 @@ class Factory
     public static function removeObjectFromCache($class_name, $object_id)
     {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
-        \Cebera\Cache\CacheWrapper::delete($cache_key);
+        \OLOG\Cache\CacheWrapper::delete($cache_key);
     }
 
     /**
@@ -30,7 +30,7 @@ class Factory
     {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
 
-        $cached_obj = \Cebera\Cache\CacheWrapper::get($cache_key);
+        $cached_obj = \OLOG\Cache\CacheWrapper::get($cache_key);
 
         if ($cached_obj !== false) {
             return $cached_obj;
@@ -49,11 +49,11 @@ class Factory
 
         $cache_ttl_seconds = 60;
 
-        if ($obj instanceof \Cebera\Model\InterfaceCacheTtlSeconds) {
+        if ($obj instanceof \OLOG\Model\InterfaceCacheTtlSeconds) {
             $cache_ttl_seconds = $obj->getCacheTtlSeconds();
         }
 
-        \Cebera\Cache\CacheWrapper::set($cache_key, $obj, $cache_ttl_seconds);
+        \OLOG\Cache\CacheWrapper::set($cache_key, $obj, $cache_ttl_seconds);
 
         return $obj;
     }

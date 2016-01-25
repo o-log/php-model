@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\Cache;
+namespace OLOG\Cache;
 
 class CacheWrapper
 {
@@ -17,7 +17,7 @@ class CacheWrapper
             return self::$storage_arr[$key];
         }
 
-        $value = \Cebera\Cache\Dmemcache::dmemcache_get($key);
+        $value = \OLOG\Cache\Dmemcache::dmemcache_get($key);
 
         if ($value !== false) {
             self::$storage_arr[$key] = $value;
@@ -30,7 +30,7 @@ class CacheWrapper
     {
         unset(self::$storage_arr[$key]);
 
-        $cache_obj = \Cebera\Cache\CacheFactory::getCacheObj();
+        $cache_obj = \OLOG\Cache\CacheFactory::getCacheObj();
         if (!$cache_obj->connected) {
             return false;
         }
@@ -42,7 +42,7 @@ class CacheWrapper
     {
         self::$storage_arr[$key] = $value;
 
-        return \Cebera\Cache\Dmemcache::dmemcache_set($key, $value, $expire);
+        return \OLOG\Cache\Dmemcache::dmemcache_set($key, $value, $expire);
     }
 
     static public function increment($key)
@@ -51,6 +51,6 @@ class CacheWrapper
         // поэтому удаляем неактуальное значение с тем, чтобы оно если что перечиталось из мемкеша
         unset(self::$storage_arr[$key]);
 
-        return \Cebera\Cache\Dmemcache::dmemcache_increment($key);
+        return \OLOG\Cache\Dmemcache::dmemcache_increment($key);
     }
 }

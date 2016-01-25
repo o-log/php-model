@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\Cache;
+namespace OLOG\Cache;
 
 class Dmemcache
 {
@@ -83,7 +83,7 @@ class Dmemcache
             return $memcache;
         }
 
-        $memcache_servers = \Cebera\ConfWrapper::value('memcache_servers');
+        $memcache_servers = \OLOG\ConfWrapper::value('memcache_servers');
         if (!$memcache_servers){
             return null;
         }
@@ -93,7 +93,7 @@ class Dmemcache
         foreach ($memcache_servers as $s => $c) {
             list($host, $port) = explode(':', $s);
 
-            \Cebera\Helpers::assert($memcache->addServer($host, $port));
+            \OLOG\Helpers::assert($memcache->addServer($host, $port));
             $memcache->setCompressThreshold(5000, 0.2);
         }
 

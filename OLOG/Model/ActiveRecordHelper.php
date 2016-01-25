@@ -76,7 +76,7 @@ class ActiveRecordHelper
             $last_insert_id = \OLOG\DB\DBWrapper::lastInsertId($db_id, $db_sequence_name);
             $property_obj->setValue($model_obj, $last_insert_id);
 
-            \OLOG\Logger\Logger::logObjectEvent($model_obj, 'CREATE');
+            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'CREATE');
         } else {
             $placeholders_arr = array();
 
@@ -90,7 +90,7 @@ class ActiveRecordHelper
             $query = 'update ' . $db_table_name . ' set ' . implode(',', $placeholders_arr) . ' where ' . $db_id_field_name . ' = ?';
             \OLOG\DB\DBWrapper::query($db_id, $query, $values_arr);
 
-            \OLOG\Logger\Logger::logObjectEvent($model_obj, 'UPDATE');
+            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'UPDATE');
         }
     }
 
@@ -155,7 +155,7 @@ class ActiveRecordHelper
             array($model_id_value)
         );
 
-        \OLOG\Logger\Logger::logObjectEvent($model_obj, 'DELETE');
+        //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'DELETE');
 
         return $result;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\Cache;
+namespace OLOG\Cache;
 
 class Cache
 {
@@ -41,26 +41,24 @@ class Cache
     {
         //\Cebera\Profiler\Profiler::blockStart('Cache::init');
 
-        $conf = \Cebera\Conf::get();
+        $conf = \OLOG\ConfWrapper::value('cache');
 
-        if (!array_key_exists('cache', $conf)){
+        if (!$conf){
             return;
         }
 
         // TODO: rewrite with cache wrapper
-        if (is_array($conf['cache'])) {
-            if (array_key_exists('use_memcached', $conf['cache'])) {
-                $this->useMemcached = $conf['cache']['use_memcached'];
+            if (array_key_exists('use_memcached', $conf)) {
+                $this->useMemcached = $conf['use_memcached'];
             }
-        }
 
         $servers = array();
 
         // TODO: rewrite with cache wrapper
-        if (!array_key_exists('servers', $conf['cache'])){
+        if (!array_key_exists('servers', $conf)){
             return;
         }
-        $servers = $conf['cache']['servers'];
+        $servers = $conf['servers'];
 
         $this->createCache();
 
@@ -105,14 +103,14 @@ class Cache
 
     public function get($key)
     {
-        return \Cebera\Cache\Dmemcache::dmemcache_get($key);
+        return \OLOG\Cache\Dmemcache::dmemcache_get($key);
     }
 
     public function delete($key)
     {
 
         //if (isset($_GET['use_dmemcache'])){
-            return \Cebera\Cache\Dmemcache::dmemcache_delete($key);
+            return \OLOG\Cache\Dmemcache::dmemcache_delete($key);
         //}
 
         $unique_key = $this->generateUniqueKey($key);
@@ -167,7 +165,7 @@ class Cache
         */
 
         //if (isset($_GET['use_dmemcache'])){
-            return \Cebera\Cache\Dmemcache::dmemcache_set($key, $value, $expire);
+            return \OLOG\Cache\Dmemcache::dmemcache_set($key, $value, $expire);
         //}
 
 
@@ -189,7 +187,7 @@ class Cache
 
     public function increment($key)
     {
-        return \Cebera\Cache\Dmemcache::dmemcache_increment($key);
+        return \OLOG\Cache\Dmemcache::dmemcache_increment($key);
     }
 
     /**

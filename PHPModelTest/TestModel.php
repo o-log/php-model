@@ -11,10 +11,18 @@ class TestModel implements \OLOG\Model\InterfaceFactory
     use \OLOG\Model\ActiveRecord;
     use \OLOG\Model\ProtectProperties;
 
-    const DB_ID = \Cebera\Conf::DB_NAME_GUK_FINANCE;
+    const DB_ID = \PHPModelTest\Config::DB_NAME_PHPMODELTEST;
     const DB_TABLE_NAME = 'test_model';
 
     protected $id = 0;
     protected $title = '';
+
+    public function getTitle(){
+        return $this->title;
+    }
+
+    public function setTitle($title){
+        $this->title = $title;
+    }
 
 }
