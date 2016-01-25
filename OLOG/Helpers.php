@@ -4,14 +4,6 @@ namespace Cebera;
 
 class Helpers
 {
-    static public function replaceEmptyValue($value){
-        if (empty($value)){
-            return 'пустое_значение';
-        }
-
-        return $value;
-    }
-
     static public function implode_intval($glue, $pieces)
     {
         $intval_arr = array();
@@ -226,131 +218,9 @@ class Helpers
         exit;
     }
 
-    static public function appendCdnDomain($url)
-    {
-        $cdn_domain = \Cebera\ConfWrapper::value('cdn_domain');
-
-        if (substr($url, 0, 1) !== "/") {
-            $url = "/" . $url;
-        }
-
-        return 'http://'. $cdn_domain . $url;
-    }
-
-    static function hmacsha1($key, $data)
-    {
-        $blocksize = 64;
-        $hashfunc = 'sha1';
-        if (strlen($key) > $blocksize)
-            $key = pack('H*', $hashfunc($key));
-        $key = str_pad($key, $blocksize, chr(0x00));
-        $ipad = str_repeat(chr(0x36), $blocksize);
-        $opad = str_repeat(chr(0x5c), $blocksize);
-        $hmac = pack(
-            'H*', $hashfunc(
-                ($key ^ $opad) . pack(
-                    'H*', $hashfunc(
-                        ($key ^ $ipad) . $data
-                    )
-                )
-            )
-        );
-        return bin2hex($hmac);
-    }
-
-    static function hexToBase64($str)
-    {
-        $raw = '';
-        for ($i = 0; $i < strlen($str); $i += 2) {
-            $raw .= chr(hexdec(substr($str, $i, 2)));
-        }
-        return base64_encode($raw);
-    }
-
-    /**
-     * Insert version marker into file path.
-     * @param string $file Resource (CSS or JS) file path: "sites/all/lib/_ver_/common.css"
-     * @return string
-     */
-    static public function wrapResourceFile($file)
-    {
-        $resources_version = \Cebera\ConfWrapper::value('resources_version', '');
-
-        $file = str_replace("_ver_", "_ver" . $resources_version . "_", $file);
-
-        return $file;
-    }
-
-    /**
-     * Returns shorter version of input string with taking words into consideration
-     *
-     * @param $string
-     * @param $length
-     * @param bool $word_safe
-     * @param bool $ellipsis
-     * @return string
-     */
-    public static function trimStringToLength($string, $length, $word_safe = FALSE, $ellipsis = FALSE)
-    {
-
-        if (mb_strlen($string) <= $length) {
-            return $string;
-        }
-
-        if ($ellipsis) {
-            $length -= 4;
-        }
-
-        if ($word_safe) {
-            $string = mb_substr($string, 0, $length + 1);
-            if ($last_space = mb_strrpos($string, ' ')) {
-                $string = mb_substr($string, 0, $last_space);
-            } else {
-                $string = mb_substr($string, 0, $length);
-            }
-        } else {
-            $string = mb_substr($string, 0, $length);
-        }
-
-        if ($ellipsis) {
-            $string .= ' ...';
-        }
-
-        return $string;
-    }
-
     public static function appendMessageInErrorLog($message)
     {
         error_log('Fatal error:' . $message);
-    }
-
-    /** Получает значение атрибута из тега и преобразует его в строку
-     * @param \SimpleXMLElement $xml_tag_obj - объект тега в котором находится атрибут
-     * @param $attribute_name - имя атрибута
-     * @return string - значение атрибута в виде строки
-     */
-    public static function getSimpleXMLElementAttribute(\SimpleXMLElement $xml_tag_obj, $attribute_name)
-    {
-        $xml_attributes_obj = $xml_tag_obj->attributes();
-        // Сделано по документации http://php.net/manual/ru/simplexmlelement.attributes.php
-        foreach ($xml_attributes_obj as $name => $value) {
-            /** @var \SimpleXMLElement $value */
-            if ($name == $attribute_name) {
-                return strval($value);
-            }
-        }
-        return '';
-    }
-
-    /** Получает значение вложенного тега и преобразует его в строку
-     * @param \SimpleXMLElement $xml_parent_tag_obj - объект родительского тега
-     * @param $tag_name - имя тега
-     * @return string - значение атрибута в виде строки
-     */
-    public static function getChildTagAsString(\SimpleXMLElement $xml_parent_tag_obj, $tag_name)
-    {
-        $xml_tag_obj = $xml_parent_tag_obj->$tag_name;
-        return strval($xml_tag_obj);
     }
 
     public static function doJsonResponse($response_obj)
@@ -381,21 +251,5 @@ class Helpers
         if($allowed_hosts != '') {
             header('Access-Control-Allow-Origin: ' . $allowed_hosts);
         }
-    }
-
-    public static function validateDate($date, $format = 'Y-m-d H:i:s')
-    {
-        $date_obj = \DateTime::createFromFormat($format, $date);
-        return ($date_obj && ($date_obj->format($format) == $date));
-    }
-
-    public static function encryptString($string, $key)
-    {
-        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-    }
-
-    public static function decryptString($string, $key)
-    {
-        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, base64_decode($string), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
     }
 }

@@ -1,8 +1,9 @@
 {
     "name": "o-log/php-model",
     "autoload" : {
-	"psr-0" : {
-	    "OLOG" : ""
-	}
+      "psr-0" : {
+	    "OLOG" : "",
+        "PHPModelTest" : ""
+	  }
     }
 }

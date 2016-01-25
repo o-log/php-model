@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\DB;
+namespace OLOG\DB;
 
 /**
  * Class DB

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cebera\DB;
+namespace OLOG\DB;
 
 /**
  * Class DBFactory
@@ -11,7 +11,7 @@ class DBFactory
 {
     /**
      * @param $db_id
-     * @return null|\Cebera\DB\DB
+     * @return null|\OLOG\DB\DB
      */
     static public function getDB($db_id)
     {
@@ -23,7 +23,7 @@ class DBFactory
         }
 
         // find config
-        $databases_conf_arr = \Cebera\ConfWrapper::value('db');
+        $databases_conf_arr = \OLOG\ConfWrapper::value('db');
 
         if (!is_array($databases_conf_arr)) {
             return null;
@@ -36,7 +36,7 @@ class DBFactory
         $db_conf_arr = $databases_conf_arr[$db_id];
 
         // connect
-        $pdo_arr[$db_id] = new \Cebera\DB\DB($db_conf_arr);
+        $pdo_arr[$db_id] = new \OLOG\DB\DB($db_conf_arr);
         return $pdo_arr[$db_id];
     }
 }

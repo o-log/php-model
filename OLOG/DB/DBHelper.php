@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Cebera\DB;
+namespace OLOG\DB;
 
 /**
  * Class DBHelper

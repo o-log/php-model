@@ -1,12 +1,12 @@
 <?php
 
-namespace Cebera\Factory;
+namespace OLOG\Model;
 
 /**
  * Базовая фабрика объектов - V2. Используется для объектов, у которых идентификатор не составной.
  * Умеет создавать объекты указанного класса, при необходимости загружая их из кэша.
  */
-class Factory2
+class Factory
 {
     protected static function getObjectCacheId($class_name, $object_id)
     {

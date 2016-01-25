@@ -1,11 +1,7 @@
 <?php
 
-namespace Cebera\DB;
+namespace OLOG\DB;
 
-/**
- * Class DBWrapper
- * @package DB
- */
 class DBWrapper
 {
     /**
@@ -18,7 +14,7 @@ class DBWrapper
      */
     static public function query($db_name, $query, $params_arr = array())
     {
-        $db_obj = \Cebera\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }
@@ -84,8 +80,6 @@ class DBWrapper
 
     static public function readColumn($db_name, $query, $params_arr = array())
     {
-        //\Cebera\Profiler\Profiler::blockStart('readColumn: ' . $query);
-
         $statement_obj = self::query($db_name, $query, $params_arr);
 
         $output_arr = array();
@@ -93,8 +87,6 @@ class DBWrapper
         while (($field = $statement_obj->fetch(\PDO::FETCH_COLUMN)) !== false) {
             $output_arr[] = $field;
         }
-
-        //\Cebera\Profiler\Profiler::blockEnd('readColumn: ' . $query);
 
         return $output_arr;
     }
@@ -121,7 +113,7 @@ class DBWrapper
 
     static public function lastInsertId($db_name, $db_sequence_name)
     {
-        $db_obj = \Cebera\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }
@@ -131,7 +123,7 @@ class DBWrapper
 
     static public function beginTransaction($db_name)
     {
-        $db_obj = \Cebera\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }
@@ -141,7 +133,7 @@ class DBWrapper
 
     static public function commitTransaction($db_name)
     {
-        $db_obj = \Cebera\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }
@@ -151,7 +143,7 @@ class DBWrapper
 
     static public function rollBackTransaction($db_name)
     {
-        $db_obj = \Cebera\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }
