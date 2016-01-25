@@ -4,7 +4,7 @@ namespace OLOG\Cache;
 
 class CacheFactory {
     /**
-     * @return \Cebera\Cache\Cache
+     * @return \OLOG\Cache\Cache
      */
     static public function getCacheObj()
     {

@@ -39,8 +39,6 @@ class Cache
      */
     public function init()
     {
-        //\Cebera\Profiler\Profiler::blockStart('Cache::init');
-
         $conf = \OLOG\ConfWrapper::value('cache');
 
         if (!$conf){
