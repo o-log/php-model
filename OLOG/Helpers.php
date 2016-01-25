@@ -50,26 +50,6 @@ class Helpers
         return implode('.', $obj_id_parts);
     }
 
-    static public function cacheHeaders($seconds = 0)
-    {
-        if ($seconds) {
-            header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $seconds) . ' GMT');
-            header('Cache-Control: max-age=' . $seconds . ', public');
-        } else {
-            header('Expires: ' . gmdate('D, d M Y H:i:s', date('U') - 86400) . ' GMT');
-            header('Cache-Control: no-cache');
-        }
-
-    }
-
-    static public function uri_no_getform()
-    {
-        $request_uri = array_key_exists('REQUEST_URI', $_SERVER) ? $_SERVER['REQUEST_URI'] : '';
-        $parts = explode('?', $request_uri);
-        $uri_no_getform = $parts[0];
-        return $uri_no_getform;
-    }
-
     /**
      *
      * @param int $n Count of items
@@ -85,40 +65,6 @@ class Helpers
             return $pluralForms[1];
         }
         return $pluralForms[2];
-    }
-
-
-    /**
-     * Returns array of slash separated url parts.
-     * @return array Array of url parts.
-     */
-    static public function url_args()
-    {
-        $uri_no_getform = Helpers::uri_no_getform();
-
-        // remove "/" at the beginning to avoid empty first arg and protect from uri without leading "/"
-
-        if (substr($uri_no_getform, 0, 1) == '/')
-            $uri_no_getform = substr($uri_no_getform, 1);
-
-        $args = explode('/', $uri_no_getform);
-        return $args;
-    }
-
-    /**
-     * Returns requested url part.
-     * @param int $index Index of requested url part.
-     * @param string $default Default value - returned when requested url part missed.
-     * @return string Requested url part or default value.
-     */
-    static public function url_arg($index, $default = '')
-    {
-        $args = self::url_args();
-
-        if (isset($args[$index]))
-            return $args[$index];
-
-        return $default;
     }
 
     static public function check_plain($text)
