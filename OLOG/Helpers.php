@@ -158,9 +158,26 @@ class Helpers
         exit;
     }
 
+    static public function getCurrentUrlNoGetForm(){
+      $url = $_SERVER['REQUEST_URI'];
+      $no_form = $url;
+      
+      if (strpos($url, '?')){
+	list($no_form, $form) = explode('?', $url);
+      }
+      
+      return $no_form;
+    }
+
     static public function redirect($url)
     {
         header('Location: ' . $url);
+        exit;
+    }
+
+    static public function redirectToSelfNoGetForm()
+    {
+      header('Location: ' . self::getCurrentUrlNoGetForm());
         exit;
     }
 
