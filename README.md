@@ -24,7 +24,29 @@
 Вот пример загрузки модели из БД с использованием фабричного метода:
 
     $model_obj = \PHPModelTest\TestModel::factory($model_id);
+    
+Как выглядит класс модели:
+    
+    class TestModel implements \OLOG\Model\InterfaceFactory
+    {
+        use \OLOG\Model\FactoryTrait;
+        use \OLOG\Model\ActiveRecord;
+        use \OLOG\Model\ProtectProperties;
 
+        const DB_ID = \PHPModelTest\Config::DB_NAME_PHPMODELTEST;
+        const DB_TABLE_NAME = 'test_model';
+
+        protected $id = 0;
+        protected $title = '';
+
+        public function getTitle(){
+            return $this->title;
+        }
+
+        public function setTitle($title){
+            $this->title = $title;
+        }
+    }    
 
 # Возможности
 
@@ -45,6 +67,8 @@
 - иметь поле id (реализовывать интерфейс interfaceLoad)
 
 - поля объекта должны совпадать с полями таблицы в бд (в т.ч имена)
+
+- иметь константы DB_ID и DB_TABLE_NAME
 
 ### игнорирование полей при изменении структуры таблицы БД
 
