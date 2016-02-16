@@ -1,9 +1,13 @@
 {
-    "name": "o-log/php-model",
-    "autoload" : {
-      "psr-0" : {
-	    "OLOG" : "",
-        "PHPModelTest" : ""
-	  }
+  "name": "o-log/php-model",
+  "require-dev": {
+    "phpunit/phpunit": "5.2.*"
+  },
+  "autoload" : {
+    "psr-0" : {
+      "OLOG" : "",
+      "PHPModelDemo" : "",
+      "Tests" : ""
     }
+  }
 }

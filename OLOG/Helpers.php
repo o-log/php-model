@@ -28,7 +28,9 @@ class Helpers
             }
 
             $message_str = 'Assertion failed ' . $message;
-            $message_str .= ' [' . $_SERVER['REQUEST_URI'] . ']';
+            if (array_key_exists('REQUEST_URI', $_SERVER)) {
+                $message_str .= ' [' . $_SERVER['REQUEST_URI'] . ']';
+            }
 
             throw new \Exception($message_str);
         }
