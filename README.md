@@ -35,7 +35,7 @@
     git clone https://github.com/o-log/php-model.git
     cd php-model
     composer install
-    mysql -u root -p1 < PHPModelTest/db_init.sql
+    mysql -u root -p1 < PHPModelDemo/db_init.sql
     cd public
     php5 -S localhost:8000
 
