@@ -74,6 +74,35 @@
         }
     }    
 
+# Подключение настроек
+
+Чтобы библиотека могла получить доступ к базе данных, нужно указать настройки:
+
+    \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+    
+Пример конфигурации:
+
+    class Config
+    {
+        const DB_NAME_PHPMODELDEMO = 'phpmodel';
+    
+        public static function get()
+        {
+            $conf = array();
+        
+            $conf['db'] = array(
+                self::DB_NAME_PHPMODELDEMO => array(
+                    'host' => 'localhost',
+                    'db_name' => 'phpmodel',
+                    'user' => 'root',
+                    'pass' => '1'
+                ),
+            );
+    
+            return $conf;
+        }
+    }
+
 # Возможности
 
 ## ActiveRecord
