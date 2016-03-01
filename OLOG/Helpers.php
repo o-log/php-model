@@ -15,6 +15,12 @@ class Helpers
         return implode($glue, $intval_arr);
     }
 
+    /**
+     * @deprecated Replaced with Assert::assert()
+     * @param $value
+     * @param string $message
+     * @throws \Exception
+     */
     static public function assert($value, $message = "")
     {
         if ($value == false) {
@@ -74,24 +80,40 @@ class Helpers
         return htmlspecialchars($text, ENT_QUOTES, 'UTF-8', false);
     }
 
+    /**
+     * @deprecated Moved to Exits
+     *
+     */
     static public function exit404()
     {
         header("HTTP/1.0 404 Not Found");
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     *
+     */
     static public function exit429()
     {
         header("HTTP/1.0 429 Too Many Requests");
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     *
+     */
     static public function exit408()
     {
         header("HTTP/1.0 408 Request Timeout");
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     * @param $exit_condition
+     */
     static public function exit404If($exit_condition)
     {
         if (!$exit_condition) {
@@ -102,6 +124,10 @@ class Helpers
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     * @param $exit_condition
+     */
     static public function exit403If($exit_condition)
     {
         if (!$exit_condition) {
@@ -113,12 +139,20 @@ class Helpers
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     *
+     */
     static public function exit403()
     {
         header("HTTP/1.0 403 Forbidden");
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     * @param $exit_condition
+     */
     static public function exit400If($exit_condition)
     {
         if (!$exit_condition) {
@@ -129,6 +163,11 @@ class Helpers
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     * @param $exit_condition
+     * @param string $message
+     */
     static public function exit403IfWithMessage($exit_condition, $message = '')
     {
         if (!$exit_condition) {
@@ -143,6 +182,10 @@ class Helpers
         exit();
     }
 
+    /**
+     * @deprecated Moved to Exits
+     * @param array $allowed_methods_arr
+     */
     public static function exit405($allowed_methods_arr = array())
     {
         header("HTTP/1.1 405 Method Not Allowed");
@@ -153,6 +196,10 @@ class Helpers
         exit();
     }
 
+    /**
+     * @deprecated Moved to Redirects
+     * @param $url
+     */
     static public function redirect301($url)
     {
         header("HTTP/1.0 301 Moved Permanently");
@@ -160,6 +207,10 @@ class Helpers
         exit;
     }
 
+    /**
+     * @deprecated Moved to Urls
+     * @return mixed
+     */
     static public function getCurrentUrlNoGetForm(){
       $url = $_SERVER['REQUEST_URI'];
       $no_form = $url;
@@ -171,12 +222,20 @@ class Helpers
       return $no_form;
     }
 
+    /**
+     * @deprecated Moved to Redirects
+     * @param $url
+     */
     static public function redirect($url)
     {
         header('Location: ' . $url);
         exit;
     }
 
+    /**
+     * @deprecated Moved to Redirects
+     *
+     */
     static public function redirectToSelfNoGetForm()
     {
       header('Location: ' . self::getCurrentUrlNoGetForm());
