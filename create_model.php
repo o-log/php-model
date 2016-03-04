@@ -56,7 +56,12 @@ function class_template(){
 <?php
 
 /*
- * create table TEMPLATECLASS_TABLENAME (id int not null auto_increment primary key, title varchar(250) not null default '') engine InnoDB default charset utf8;
+
+create table TEMPLATECLASS_TABLENAME (
+id int not null auto_increment primary key,
+title varchar(250) not null default '')
+engine InnoDB default charset utf8;
+
  */
 
 namespace TEMPLATECLASS_NAMESPACE;
