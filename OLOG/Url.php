@@ -14,4 +14,10 @@ class Url
 
         return $no_form;
     }
+
+    static public function getCurrentUrl(){
+        $url = $_SERVER['REQUEST_URI'];
+
+        return $url;
+    }
 }
