@@ -22,4 +22,10 @@ class Redirects
         header('Location: ' . Url::getCurrentUrlNoGetForm());
         exit;
     }
+
+    static public function redirectToSelf()
+    {
+        header('Location: ' . Url::getCurrentUrl());
+        exit;
+    }
 }
