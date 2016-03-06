@@ -63,7 +63,9 @@ class CLIExecuteSql
 
     static public function getSqlFileNameForDB($db_name){
         // TODO: open file in current project root
-        $filename = $db_name . '.sql';
+        $cwd = getcwd();
+
+        $filename = $cwd . DIRECTORY_SEPARATOR . $db_name . '.sql';
 
         return $filename;
     }
