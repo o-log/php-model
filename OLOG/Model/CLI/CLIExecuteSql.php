@@ -39,7 +39,7 @@ class CLIExecuteSql
         foreach ($sql_arr as $id => $sql) {
             if (!in_array($id, $executed_queries_ids_arr)) {
                 echo $sql . "\n";
-                echo "type 1 to execute, ENTER to skip\n";
+                echo "Type 1 to execute, ENTER to skip\n";
 
                 $command_str = trim(fgets(STDIN));
 
@@ -73,6 +73,21 @@ class CLIExecuteSql
     static public function loadSqlArrForDB($db_name){
         $filename = self::getSqlFileNameForDB($db_name);
 
+        if (!file_exists($filename)){
+            echo "Sql file for database " . $db_name . " not found\n";
+            echo "Type 1 to create, ENTER to exit\n";
+
+            $command_str = trim(fgets(STDIN));
+
+            if ($command_str == '1'){
+                // TODO: check errors
+                file_put_contents($filename, var_export([], true));
+            } else {
+                exit;
+            }
+
+        }
+
         // TODO: must open file from current project root
         $sql_file_str = file_get_contents($filename); // TODO: better errors check?
         \OLOG\Assert::assert($sql_file_str, 'missing or empty sql file');
@@ -87,7 +102,10 @@ class CLIExecuteSql
     static public function addSqlToRegistry($db_name, $sql_str){
         $sql_arr = self::loadSqlArrForDB($db_name);
 
-        $max_sql_id = max(array_keys($sql_arr));
+        $max_sql_id = 0;
+        if (!empty($sql_arr)) {
+            $max_sql_id = max(array_keys($sql_arr));
+        }
         $new_sql_id = $max_sql_id + 1;
 
         $sql_arr[$new_sql_id] = $sql_str;
