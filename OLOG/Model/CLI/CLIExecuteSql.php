@@ -15,7 +15,7 @@ class CLIExecuteSql
 
     function process_db($db_name)
     {
-        echo "Processing database " . $db_name . "\n";
+        echo "Выполнение запросов для БД " . $db_name . ":\n\n";
 
         $executed_queries_ids_arr = [];
         try {
@@ -23,12 +23,18 @@ class CLIExecuteSql
                 $db_name, 'select id from _executed_queries'
             );
         } catch (\Exception $e) {
-            echo $e->getMessage() . "\n";
-            echo "Похоже что таблица _executed_queries не создана, без этой таблицы работа невозможна. Введите 1 чтобы создать ее, ENTER для выхода.\n";
+            echo "Ошибка при загрузке списка уже выполненных запросов:\n";
+            echo $e->getMessage() . "\n\n";
+            echo "Похоже что таблица _executed_queries не создана, без этой таблицы работа невозможна. Или же не создана БД " . $db_name . "\n";
+            echo "Введите 1 чтобы создать таблицу _executed_queries, ENTER для выхода:\n";
+
             $command_str = trim(fgets(STDIN));
 
             if ($command_str == '1') {
-                \OLOG\DB\DBWrapper::query($db_name, 'create table _executed_queries (id int not null, created_at_ts int not null, sql_query text, unique key (id)) engine InnoDB default charset utf8');
+                \OLOG\DB\DBWrapper::query(
+                    $db_name,
+                    'create table _executed_queries (id int not null, created_at_ts int not null, sql_query text, unique key (id)) engine InnoDB default charset utf8'
+                );
             } else {
                 exit;
             }
@@ -38,13 +44,13 @@ class CLIExecuteSql
 
         foreach ($sql_arr as $id => $sql) {
             if (!in_array($id, $executed_queries_ids_arr)) {
+                echo "\nНовый запрос:\n";
                 echo $sql . "\n";
-                echo "Type 1 to execute, ENTER to skip\n";
+                echo "Введите 1 чтобы выполнить запрос, ENTER чтобы пропустить:\n";
 
                 $command_str = trim(fgets(STDIN));
 
                 if ($command_str == '1') {
-
                     \OLOG\DB\DBWrapper::query($db_name, $sql);
 
                     \OLOG\DB\DBWrapper::query(
@@ -52,11 +58,10 @@ class CLIExecuteSql
                         'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
                         array($id, time(), $sql)
                     );
-                    echo "query executed\n";
+                    echo "Запрос выполнен.\n";
                 } else {
-                    echo "query skipped\n";
+                    echo "Запрос пропущен.\n";
                 }
-
             }
         }
     }
@@ -74,8 +79,8 @@ class CLIExecuteSql
         $filename = self::getSqlFileNameForDB($db_name);
 
         if (!file_exists($filename)){
-            echo "Sql file for database " . $db_name . " not found\n";
-            echo "Type 1 to create, ENTER to exit\n";
+            echo "Не найден файл SQL запросов для БД " . $db_name . ": " . $filename . "\n";
+            echo "Введите 1 чтобы создать файл SQL запросов, ENTER для выхода:\n";
 
             $command_str = trim(fgets(STDIN));
 
@@ -85,12 +90,11 @@ class CLIExecuteSql
             } else {
                 exit;
             }
-
         }
 
         // TODO: must open file from current project root
         $sql_file_str = file_get_contents($filename); // TODO: better errors check?
-        \OLOG\Assert::assert($sql_file_str, 'missing or empty sql file');
+        \OLOG\Assert::assert($sql_file_str, 'Файл SQL запросов не найден или пустой.');
 
         $sql_arr = array();
         eval('$sql_arr = ' . $sql_file_str . ';');
