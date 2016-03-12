@@ -11,7 +11,7 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
     const DB_ID = \PHPModelDemo\Config::DB_NAME_PHPMODELDEMO;
     const DB_TABLE_NAME = 'demo_model';
 
-    protected $id = 0;
+    protected $id;
     protected $title = '';
 
     /**

@@ -17,11 +17,11 @@ class CLICreateModel
 
         // TODO: sanitize
         // TODO: support empty namespaces
+        // TODO: check for leading '\' and correct format
         $model_namespace = trim(fgets(STDIN));
 
         $model_namespace_for_path = str_replace('\\', '/', $model_namespace);
 
-        // TODO: select from config
         echo "Enter model DB ID:\n";
         //echo "Example: \"testdb\"\n";
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
@@ -31,8 +31,7 @@ class CLICreateModel
             echo "- " . $db_name . "\n";
         }
 
-        // TODO: sanitize
-        // TODO: support empty or multilevel namespaces
+        // TODO: check db presence in config?
         $model_db_id = trim(fgets(STDIN));
 
         //
@@ -40,6 +39,7 @@ class CLICreateModel
 
         $cwd = getcwd();
 
+        // TODO: model_namespace_for_path may have leading '/' - remove it?
         $model_filename = $cwd . DIRECTORY_SEPARATOR . $model_namespace_for_path . DIRECTORY_SEPARATOR . $model_class_name . '.php';
 
         $model_tablename = mb_strtolower($model_class_name);
@@ -50,6 +50,7 @@ class CLICreateModel
 
         $class_file = self::getClassTemplate();
 
+        // TODO: use common variable replacemnt method
         $class_file = str_replace('TEMPLATECLASS_CLASSNAME', $model_class_name, $class_file);
         $class_file = str_replace('TEMPLATECLASS_NAMESPACE', $model_namespace, $class_file);
         $class_file = str_replace('TEMPLATECLASS_TABLENAME', $model_tablename, $class_file);
@@ -63,6 +64,7 @@ class CLICreateModel
 
         $class_sql = self::getClassSQL();
 
+        // TODO: use common variable replacemnt method
         $class_sql = str_replace('TEMPLATECLASS_TABLENAME', $model_tablename, $class_sql);
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $class_sql);
@@ -72,8 +74,10 @@ class CLICreateModel
 
     static public function file_force_contents($filename, $data, $flags = 0)
     {
-        if (!is_dir(dirname($filename)))
+        if (!is_dir(dirname($filename))) {
             mkdir(dirname($filename) . '/', 0777, TRUE);
+        }
+
         return file_put_contents($filename, $data, $flags);
     }
 
