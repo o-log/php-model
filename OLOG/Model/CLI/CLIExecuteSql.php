@@ -46,27 +46,41 @@ class CLIExecuteSql
             if (!in_array($id, $executed_queries_ids_arr)) {
                 echo "\nНовый запрос:\n";
                 echo $sql . "\n";
-                echo "Введите 1 чтобы выполнить запрос, ENTER чтобы пропустить:\n";
+                echo "Введите:\n1 чтобы выполнить запрос\n2 чтобы пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\nENTER чтобы пропустить этот запрос\n";
 
                 $command_str = trim(fgets(STDIN));
 
-                if ($command_str == '1') {
-                    \OLOG\DB\DBWrapper::query($db_name, $sql);
+                switch ($command_str) {
+                    case '1':
+                        \OLOG\DB\DBWrapper::query($db_name, $sql);
 
-                    \OLOG\DB\DBWrapper::query(
-                        $db_name,
-                        'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
-                        array($id, time(), $sql)
-                    );
-                    echo "Запрос выполнен.\n";
-                } else {
-                    echo "Запрос пропущен.\n";
+                        \OLOG\DB\DBWrapper::query(
+                            $db_name,
+                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
+                            array($id, time(), $sql)
+                        );
+                        echo "Запрос выполнен.\n";
+                        break;
+
+                    case '2':
+                        \OLOG\DB\DBWrapper::query(
+                            $db_name,
+                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
+                            array($id, time(), $sql)
+                        );
+                        echo "Запрос помечен как выполненный без выполнения.\n";
+                        break;
+
+                    default:
+                        echo "Запрос пропущен.\n";
+                        break;
                 }
             }
         }
     }
 
-    static public function getSqlFileNameForDB($db_name){
+    static public function getSqlFileNameForDB($db_name)
+    {
         // TODO: open file in current project root
         $cwd = getcwd();
 
@@ -75,16 +89,17 @@ class CLIExecuteSql
         return $filename;
     }
 
-    static public function loadSqlArrForDB($db_name){
+    static public function loadSqlArrForDB($db_name)
+    {
         $filename = self::getSqlFileNameForDB($db_name);
 
-        if (!file_exists($filename)){
+        if (!file_exists($filename)) {
             echo "Не найден файл SQL запросов для БД " . $db_name . ": " . $filename . "\n";
             echo "Введите 1 чтобы создать файл SQL запросов, ENTER для выхода:\n";
 
             $command_str = trim(fgets(STDIN));
 
-            if ($command_str == '1'){
+            if ($command_str == '1') {
                 // TODO: check errors
                 file_put_contents($filename, var_export([], true));
             } else {
@@ -103,7 +118,8 @@ class CLIExecuteSql
         return $sql_arr;
     }
 
-    static public function addSqlToRegistry($db_name, $sql_str){
+    static public function addSqlToRegistry($db_name, $sql_str)
+    {
         $sql_arr = self::loadSqlArrForDB($db_name);
 
         $max_sql_id = 0;
