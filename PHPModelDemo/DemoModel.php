@@ -12,6 +12,9 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
     const DB_TABLE_NAME = 'demo_model';
 
     protected $id;
+    protected $text_nullable;
+    protected $test_varchar = "";
+    protected $test = 0;
     protected $title = '';
 
     /**
