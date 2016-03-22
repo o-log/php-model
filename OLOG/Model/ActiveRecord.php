@@ -45,7 +45,7 @@ trait ActiveRecord
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
 
         if (($this instanceof \OLOG\Model\InterfaceLoad) && ($this instanceof \OLOG\Model\InterfaceFactory)) {
-            $this::afterUpdate($this->getId());
+            $this->afterUpdate();
         }
     }
 

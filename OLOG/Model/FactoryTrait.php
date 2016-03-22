@@ -32,12 +32,11 @@ trait FactoryTrait {
     /**
      * Базовая обработка изменения.
      * Если на это событие есть подписчики - нужно переопределить обработчик в самом классе и там eventmanager::invoke, где уже подписать остальных подписчиков.
-     * сделано статиками чтобы можно было вызывать для других объектов не создавая, только по id.
      */
-    static public function afterUpdate($id)
+    public function afterUpdate()
     {
         $class_name = self::getMyGlobalizedClassName();
-        \OLOG\Model\FactoryHelper::afterUpdate($class_name, $id);
+        \OLOG\Model\FactoryHelper::afterUpdate($class_name, $this->getId()); // TODO: check interfaceLoad
     }
 
     /**
@@ -50,6 +49,6 @@ trait FactoryTrait {
     public function afterDelete()
     {
         $class_name = self::getMyGlobalizedClassName();
-        \OLOG\Model\FactoryHelper::afterDelete($class_name, $this->id);
+        \OLOG\Model\FactoryHelper::afterDelete($class_name, $this->getId()); // TODO: check interfaceLoad
     }
 }
