@@ -23,11 +23,14 @@ class DBWrapper
             return $db_obj->query($query, $params_arr);
         }
         catch(\PDOException $e) {
-            $uri = 'REQUEST_URI not set';
+            $uri = '';
+
+            // may be not present in command line scripts
             if (array_key_exists('REQUEST_URI', $_SERVER)){
-                $uri = $_SERVER['REQUEST_URI'];
+                $uri = "\r\nUrl: " . $_SERVER['REQUEST_URI'];
             }
-            throw new \PDOException("\r\nUrl: " . $uri . "\r\n".$e->getMessage());
+
+            throw new \PDOException($uri . "\r\n".$e->getMessage());
         }
     }
 

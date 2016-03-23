@@ -2,71 +2,106 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\DB\DBFactory;
+
+/**
+ * См. README
+ * Class CLIExecuteSql
+ * @package OLOG\Model\CLI
+ */
 class CLIExecuteSql
 {
+    const EXECUTED_QUERIES_TABLE_NAME = '_executed_queries';
+
     static public function executeSql()
     {
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
 
         foreach ($db_arr as $db_name => $db_config) {
+            echo "\nВыполнение запросов для БД " . $db_name . "\n";
+
             self::process_db($db_name);
         }
     }
 
-    function process_db($db_name)
+    function process_db($db_id)
     {
-        echo "Выполнение запросов для БД " . $db_name . ":\n\n";
+        // check DB connectivity
 
-        $executed_queries_ids_arr = [];
+        $db_obj = null;
         try {
-            $executed_queries_ids_arr = \OLOG\DB\DBWrapper::readColumn(
-                $db_name, 'select id from _executed_queries'
+            $db_obj = \OLOG\DB\DBFactory::getDB($db_id);
+        } catch (\Exception $e) {
+            echo $e->getMessage() . "\n\n";
+        }
+
+        if (!$db_obj) {
+            echo "Не удалось подключиться к БД " . $db_id . "\n";
+            echo "Возможные проблемы:\n";
+            echo "- неправильная конфигурация БД в коде приложения. Вот текущие параметры:\n";
+            echo var_export(DBFactory::getConfigArr($db_id)) . "\n";
+
+            echo "- недоступен указанный в конфигурации сервер БД.\n";
+            echo "- БД не создана. В этом случае надо создать ее руками.\n";
+            exit;
+        }
+
+        $executed_queries_sql_arr = [];
+        try {
+            $executed_queries_sql_arr = \OLOG\DB\DBWrapper::readColumn(
+                $db_id,
+                'select sql_query from _executed_queries'
             );
         } catch (\Exception $e) {
-            echo "Ошибка при загрузке списка уже выполненных запросов:\n";
+            echo "Ошибка при загрузке списка уже выполненных запросов из таблицы " . self::EXECUTED_QUERIES_TABLE_NAME . ":\n";
             echo $e->getMessage() . "\n\n";
-            echo "Похоже что таблица _executed_queries не создана, без этой таблицы работа невозможна. Или же не создана БД " . $db_name . "\n";
-            echo "Введите 1 чтобы создать таблицу _executed_queries, ENTER для выхода:\n";
+
+            echo "Похоже что таблица " . self::EXECUTED_QUERIES_TABLE_NAME . " не создана. Введите:\n";
+            echo "1 чтобы создать таблицу _executed_queries и продолжить работу\n"; // TODO: constants
+            echo "ENTER для выхода:\n";
 
             $command_str = trim(fgets(STDIN));
 
-            if ($command_str == '1') {
+            // TODO: switch
+            if ($command_str == '1') { // TODO: constants
                 \OLOG\DB\DBWrapper::query(
-                    $db_name,
-                    'create table _executed_queries (id int not null, created_at_ts int not null, sql_query text, unique key (id)) engine InnoDB default charset utf8'
+                    $db_id,
+                    'create table ' . self::EXECUTED_QUERIES_TABLE_NAME . ' (id int not null auto_increment primary key, created_at_ts int not null, sql_query text) engine InnoDB default charset utf8'
                 );
             } else {
                 exit;
             }
         }
 
-        $sql_arr = self::loadSqlArrForDB($db_name);
+        $sql_arr = self::loadSqlArrForDB($db_id);
 
-        foreach ($sql_arr as $id => $sql) {
-            if (!in_array($id, $executed_queries_ids_arr)) {
+        foreach ($sql_arr as $sql) {
+            if (!in_array($sql, $executed_queries_sql_arr)) {
                 echo "\nНовый запрос:\n";
                 echo $sql . "\n";
-                echo "Введите:\n1 чтобы выполнить запрос\n2 чтобы пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\nENTER чтобы пропустить этот запрос\n";
+
+                // TODO: constants
+                echo "Введите:\n1: чтобы выполнить запрос\n2: чтобы пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\nENTER чтобы пропустить этот запрос\n";
 
                 $command_str = trim(fgets(STDIN));
 
                 switch ($command_str) {
-                    case '1':
-                        \OLOG\DB\DBWrapper::query($db_name, $sql);
+                    case '1': // TODO: constants
+                        \OLOG\DB\DBWrapper::query($db_id, $sql);
 
                         \OLOG\DB\DBWrapper::query(
-                            $db_name,
-                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
-                            array($id, time(), $sql)
+                            $db_id,
+                            'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
+                            array(time(), $sql)
                         );
                         echo "Запрос выполнен.\n";
                         break;
 
-                    case '2':
+                    case '2': // TODO: constants
                         \OLOG\DB\DBWrapper::query(
-                            $db_name,
-                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?, ?)',
-                            array($id, time(), $sql)
+                            $db_id,
+                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?)',
+                            array(time(), $sql)
                         );
                         echo "Запрос помечен как выполненный без выполнения.\n";
                         break;
@@ -122,16 +157,19 @@ class CLIExecuteSql
     {
         $sql_arr = self::loadSqlArrForDB($db_name);
 
-        $max_sql_id = 0;
-        if (!empty($sql_arr)) {
-            $max_sql_id = max(array_keys($sql_arr));
+        
+        $sql_arr[] = $sql_str;
+
+        //$exported_arr = var_export($sql_arr, true);
+        // не используется var_export, потому что он сохраняет массив с индексами, а индексы могут конфликтовать при мерже если несколько разработчиков одновременно добавляют запросы
+
+        $exported_arr = "array(\n";
+        foreach ($sql_arr as $sql_str){
+            $sql_str = str_replace('\'', '\\\'', $sql_str);
+            $exported_arr .= '\'' . $sql_str . '\',' . "\n";
         }
-        $new_sql_id = $max_sql_id + 1;
+        $exported_arr .= ")\n";
 
-        $sql_arr[$new_sql_id] = $sql_str;
-
-        ksort($sql_arr);
-        $exported_arr = var_export($sql_arr, true);
 
         $filename = self::getSqlFileNameForDB($db_name);
 

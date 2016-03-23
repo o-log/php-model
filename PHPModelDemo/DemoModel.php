@@ -8,10 +8,12 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
     use \OLOG\Model\ActiveRecord;
     use \OLOG\Model\ProtectProperties;
 
-    const DB_ID = \PHPModelDemo\Config::DB_NAME_PHPMODELDEMO;
+    const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'demo_model';
 
     protected $id;
+    protected $dud = 0;
+    protected $widget_name = "empty";
     protected $text_nullable;
     protected $test_varchar = "";
     protected $test = 0;

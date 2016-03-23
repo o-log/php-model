@@ -4,24 +4,30 @@ namespace OLOG\Model\CLI;
 
 class CLIMenu
 {
+    const FUNCTION_EXECUTE_SQL = 1;
+    const FUNCTION_CREATE_MODEL = 2;
+    const FUNCTION_ADD_MODEL_FIELD = 3;
+
     static public function run(){
-        echo "Enter 1 to execute SQL\n";
-        echo "Enter 2 to create model\n";
-        echo "Enter 3 to add field to existing model\n";
+        echo "PHPModel functions:\n";
+        echo self::FUNCTION_EXECUTE_SQL . ": execute SQL from registry\n";
+        echo self::FUNCTION_CREATE_MODEL . ": create model\n";
+        echo self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
 
         $command_str = trim(fgets(STDIN));
 
         switch ($command_str){
-            case "1":
+            case self::FUNCTION_EXECUTE_SQL:
                 CLIExecuteSql::executeSql();
                 break;
 
-            case "2":
+            case self::FUNCTION_CREATE_MODEL:
                 CLICreateModel::run();
                 break;
 
-            case "3":
-                CLIAddFieldToModel::addField();
+            case self::FUNCTION_ADD_MODEL_FIELD:
+                $cli_add_field_obj = new CLIAddFieldToModel();
+                $cli_add_field_obj->addField();
                 break;
 
             default:
