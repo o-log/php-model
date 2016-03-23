@@ -197,7 +197,7 @@ class CLIAddFieldToModel
         echo "\nExtra functions:\n";
         echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
         echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
-        echo "\t" . "3: create index for key\n";
+        //echo "\t" . "3: create index for key\n";
         echo "\t" . "ENTER: exit\n"; // TODO: use constants
 
         $function_code = trim(fgets(STDIN));
