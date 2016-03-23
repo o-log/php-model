@@ -17,9 +17,13 @@
 В качестве автозагрузчика классов и менеджера зависимостей используется composer.
 
 Библиотека соответствует следующим соглашениям:
+
 http://www.php-fig.org/psr/psr-0/
+
 http://www.php-fig.org/psr/psr-1/
+
 http://www.php-fig.org/psr/psr-2/
+
 http://www.php-fig.org/psr/psr-4/
 
 # Основной функционал библиотеки php-model
