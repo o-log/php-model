@@ -9,10 +9,10 @@ class CLIMenu
     const FUNCTION_ADD_MODEL_FIELD = 3;
 
     static public function run(){
-        echo "PHPModel functions:\n";
-        echo self::FUNCTION_EXECUTE_SQL . ": execute SQL from registry\n";
-        echo self::FUNCTION_CREATE_MODEL . ": create model\n";
-        echo self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
+        echo "Choose PHPModel function:\n";
+        echo "\t" . self::FUNCTION_EXECUTE_SQL . ": execute new SQL queries from registry\n";
+        echo "\t" . self::FUNCTION_CREATE_MODEL . ": create model\n";
+        echo "\t" . self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
 
         $command_str = trim(fgets(STDIN));
 

@@ -31,9 +31,17 @@ trait FactoryTrait {
 
     /**
      * Базовая обработка изменения.
-     * Если на это событие есть подписчики - нужно переопределить обработчик в самом классе и там eventmanager::invoke, где уже подписать остальных подписчиков.
+     * Если на это событие есть подписчики - нужно переопределить обработчик в самом классе и там уже подписать остальных подписчиков.
      */
     public function afterUpdate()
+    {
+        $this->removeFromFactoryCache();
+    }
+
+    /**
+     * Сбрасывает кэш фабрики для объекта.
+     */
+    public function removeFromFactoryCache()
     {
         $class_name = self::getMyGlobalizedClassName();
         \OLOG\Model\FactoryHelper::afterUpdate($class_name, $this->getId()); // TODO: check interfaceLoad

@@ -57,8 +57,8 @@ class CLIExecuteSql
             echo $e->getMessage() . "\n\n";
 
             echo "Похоже что таблица " . self::EXECUTED_QUERIES_TABLE_NAME . " не создана. Введите:\n";
-            echo "1 чтобы создать таблицу _executed_queries и продолжить работу\n"; // TODO: constants
-            echo "ENTER для выхода:\n";
+            echo "\t1 чтобы создать таблицу _executed_queries и продолжить работу\n"; // TODO: constants
+            echo "\tENTER для выхода:\n";
 
             $command_str = trim(fgets(STDIN));
 
@@ -77,11 +77,10 @@ class CLIExecuteSql
 
         foreach ($sql_arr as $sql) {
             if (!in_array($sql, $executed_queries_sql_arr)) {
-                echo "\nНовый запрос:\n";
-                echo $sql . "\n";
+                echo "\n" . $sql . "\n";
 
                 // TODO: constants
-                echo "Введите:\n1: чтобы выполнить запрос\n2: чтобы пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\nENTER чтобы пропустить этот запрос\n";
+                echo "\n\t1: выполнить запрос\n\t2: пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\n\tENTER пропустить этот запрос\n";
 
                 $command_str = trim(fgets(STDIN));
 
@@ -100,7 +99,7 @@ class CLIExecuteSql
                     case '2': // TODO: constants
                         \OLOG\DB\DBWrapper::query(
                             $db_id,
-                            'insert into _executed_queries (id, created_at_ts, sql_query) values (?, ?)',
+                            'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
                             array(time(), $sql)
                         );
                         echo "Запрос помечен как выполненный без выполнения.\n";

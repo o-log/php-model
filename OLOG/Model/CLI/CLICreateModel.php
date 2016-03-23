@@ -6,33 +6,59 @@ class CLICreateModel
 {
     static public function run()
     {
-        echo "Еnter news model class name:\n";
-        echo "Example: \"TestModel\"\n";
+        echo "\nЕnter new model class name. Example:\n\tTestModel\n";
 
         // TODO: sanitize
         $model_class_name = trim(fgets(STDIN));
 
-        echo "Enter new model namespace:\n";
-        echo "Example: \"Test\", \"Deep\\Test\"\n";
+        // TODO: check format
+        
+        echo "\nSelect new model namespace:\n";
+        //echo "Example: \"Test\", \"Deep\\Test\"\n";
 
         // TODO: sanitize
         // TODO: support empty namespaces
         // TODO: check for leading '\' and correct format
-        $model_namespace = trim(fgets(STDIN));
+        //$model_namespace = trim(fgets(STDIN));
+        $cwd = getcwd();
+        $model_namespace_for_path = CLIFileSelector::selectFileName($cwd, false);
 
-        $model_namespace_for_path = str_replace('\\', '/', $model_namespace);
+        // убираем из начала текущую папку
+        if (strpos($model_namespace_for_path, $cwd) === 0){
+            $model_namespace_for_path = substr($model_namespace_for_path, strlen($cwd));
+        } else {
+            throw new \Exception('fail');
+        }
 
-        echo "Enter model DB ID:\n";
+        // отрезаем слэш в начале если есть
+        if (substr($model_namespace_for_path, 0, 1) == DIRECTORY_SEPARATOR){
+            $model_namespace_for_path = substr($model_namespace_for_path, strlen(DIRECTORY_SEPARATOR));
+        }
+
+        $model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', $model_namespace_for_path);
+
+        echo "\nChoose model DB index:\n";
         //echo "Example: \"testdb\"\n";
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
 
         // TODO: select db by index
-        foreach ($db_arr as $db_name => $db_conf){
-            echo "- " . $db_name . "\n";
+        $db_id_by_index = [];
+        $index = 1;
+        foreach ($db_arr as $db_id => $db_conf){
+            echo "\t" . str_pad($index, 8, '.') . $db_id . "\n";
+            $db_id_by_index[$index] = $db_id;
+            $index++;
         }
 
+        $model_db_index = trim(fgets(STDIN));
+
+        if (!array_key_exists($model_db_index, $db_id_by_index)){
+            throw new \Exception('Wrong index');
+        }
+
+        $model_db_id = $db_id_by_index[$model_db_index];
+
         // TODO: check db presence in config?
-        $model_db_id = trim(fgets(STDIN));
 
         //
         //
@@ -52,11 +78,13 @@ class CLICreateModel
 
         // TODO: use common variable replacemnt method
         $class_file = str_replace('TEMPLATECLASS_CLASSNAME', $model_class_name, $class_file);
-        $class_file = str_replace('TEMPLATECLASS_NAMESPACE', $model_namespace, $class_file);
+        $class_file = str_replace('TEMPLATECLASS_NAMESPACE', $model_namespace_for_class, $class_file);
         $class_file = str_replace('TEMPLATECLASS_TABLENAME', $model_tablename, $class_file);
         $class_file = str_replace('TEMPLATECLASS_DBID', $model_db_id, $class_file);
 
         self::file_force_contents($model_filename, $class_file);
+
+        echo "\nModel file created\n";
 
         //
         // altering database sql file
@@ -69,7 +97,9 @@ class CLICreateModel
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $class_sql);
 
-        echo "DONE\n";
+        echo "\nSQL registry updated\n";
+
+        echo "\nDONE\n";
     }
 
     static public function file_force_contents($filename, $data, $flags = 0)
@@ -87,6 +117,8 @@ class CLICreateModel
 
     static public function getClassTemplate()
     {
+        
+        // здесь поле id стоит ниже остальных, потому что добавлялка полей будет вставлять новые поля под него. т.е. поле id как бы разделяет поля и методы
         return <<<'EOT'
 <?php
 
@@ -105,8 +137,16 @@ class TEMPLATECLASS_CLASSNAME implements
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
+    protected $created_at_ts; // initialized by constructor
     protected $id;
-    protected $created_at_ts = '';
+
+    static public function getAllIdsArrByCreatedAtDesc(){
+        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+            self::DB_ID,
+            'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc'
+        );
+        return $ids_arr;
+    }
 
     public function __construct(){
         $this->created_at_ts = time();

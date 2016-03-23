@@ -2,7 +2,7 @@
 
 namespace PHPModelDemo;
 
-class ModelDemoNode implements
+class DemoNode implements
     \OLOG\Model\InterfaceFactory,
     \OLOG\Model\InterfaceLoad,
     \OLOG\Model\InterfaceSave,
@@ -24,6 +24,21 @@ class ModelDemoNode implements
         $this->created_at_ts = time();
     }
 
+    /**
+     * overrides factoryTrait method
+     */
+    public function afterUpdate()
+    {
+        $term_to_node_ids_arr = DemoTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
+        foreach ($term_to_node_ids_arr as $term_to_node_id){
+            $term_to_node_obj = DemoTermToNode::factory($term_to_node_id);
+            $term_to_node_obj->setCreatedAtTs($this->getCreatedAtTs());
+            $term_to_node_obj->save();
+        }
+        
+        $this->removeFromFactoryCache();
+    }
+    
     /**
      * @return int
      */
