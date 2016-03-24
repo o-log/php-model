@@ -199,7 +199,9 @@ class CLIAddFieldToModel
             echo "\nClass file: " . $this->model_file_path . "\n";
         }
 
-        $this->field_name = $this->askFieldName();
+        if (!$this->field_name) {
+            $this->field_name = $this->askFieldName();
+        }
 
         Assert::assert($this->model_file_path);
         Assert::assert($this->field_name);
