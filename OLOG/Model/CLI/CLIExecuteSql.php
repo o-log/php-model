@@ -17,10 +17,10 @@ class CLIExecuteSql
     {
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
 
-        foreach ($db_arr as $db_name => $db_config) {
-            echo "\nВыполнение запросов для БД " . $db_name . "\n";
+        foreach ($db_arr as $db_id => $db_config) {
+            echo "\nDatabase ID in application config: " . $db_id . "\n";
 
-            self::process_db($db_name);
+            self::process_db($db_id);
         }
     }
 
@@ -36,13 +36,13 @@ class CLIExecuteSql
         }
 
         if (!$db_obj) {
-            echo "Не удалось подключиться к БД " . $db_id . "\n";
-            echo "Возможные проблемы:\n";
-            echo "- неправильная конфигурация БД в коде приложения. Вот текущие параметры:\n";
+            echo "Cant connect to database " . $db_id . "\n";
+            echo "Probable problems:\n";
+            echo "- misconfiguration. App config for database:\n";
             echo var_export(DBFactory::getConfigArr($db_id)) . "\n";
 
-            echo "- недоступен указанный в конфигурации сервер БД.\n";
-            echo "- БД не создана. В этом случае надо создать ее руками.\n";
+            echo "- database server not accessible\n";
+            echo "- database not created. It must be created manually.\n";
             exit;
         }
 
@@ -53,12 +53,12 @@ class CLIExecuteSql
                 'select sql_query from _executed_queries'
             );
         } catch (\Exception $e) {
-            echo "Ошибка при загрузке списка уже выполненных запросов из таблицы " . self::EXECUTED_QUERIES_TABLE_NAME . ":\n";
+            echo "Can not load the executed queries list from " . self::EXECUTED_QUERIES_TABLE_NAME . " table:\n";
             echo $e->getMessage() . "\n\n";
 
-            echo "Похоже что таблица " . self::EXECUTED_QUERIES_TABLE_NAME . " не создана. Введите:\n";
-            echo "\t1 чтобы создать таблицу _executed_queries и продолжить работу\n"; // TODO: constants
-            echo "\tENTER для выхода:\n";
+            echo "Probably the " . self::EXECUTED_QUERIES_TABLE_NAME . " table was not created. Choose:\n";
+            echo "\t1 to create table and proceed\n"; // TODO: constants
+            echo "\tENTER to exit\n";
 
             $command_str = trim(fgets(STDIN));
 
@@ -80,7 +80,7 @@ class CLIExecuteSql
                 echo "\n" . $sql . "\n";
 
                 // TODO: constants
-                echo "\n\t1: выполнить запрос\n\t2: пометить запрос как выполненный, но не выполнять (если он был например выполнен руками)\n\tENTER пропустить этот запрос\n";
+                echo "\n\t1: execute query\n\t2: mark query as executed, but do not execute (you can execute one manually)\n\tENTER skip query\n";
 
                 $command_str = trim(fgets(STDIN));
 
@@ -93,7 +93,7 @@ class CLIExecuteSql
                             'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
                             array(time(), $sql)
                         );
-                        echo "Запрос выполнен.\n";
+                        echo "Query executed.\n";
                         break;
 
                     case '2': // TODO: constants
@@ -102,11 +102,11 @@ class CLIExecuteSql
                             'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
                             array(time(), $sql)
                         );
-                        echo "Запрос помечен как выполненный без выполнения.\n";
+                        echo "Query marked as executed without execution.\n";
                         break;
 
                     default:
-                        echo "Запрос пропущен.\n";
+                        echo "Query skipped.\n";
                         break;
                 }
             }
@@ -143,7 +143,7 @@ class CLIExecuteSql
 
         // TODO: must open file from current project root
         $sql_file_str = file_get_contents($filename); // TODO: better errors check?
-        \OLOG\Assert::assert($sql_file_str, 'Файл SQL запросов не найден или пустой.');
+        \OLOG\Assert::assert($sql_file_str, 'SQL queries file doesnt exist or empty.');
 
         $sql_arr = array();
         eval('$sql_arr = ' . $sql_file_str . ';');
