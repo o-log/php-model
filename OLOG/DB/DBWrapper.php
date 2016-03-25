@@ -81,9 +81,9 @@ class DBWrapper
         return $output_arr;
     }
 
-    static public function readColumn($db_name, $query, $params_arr = array())
+    static public function readColumn($db_id, $query, $params_arr = array())
     {
-        $statement_obj = self::query($db_name, $query, $params_arr);
+        $statement_obj = self::query($db_id, $query, $params_arr);
 
         $output_arr = array();
 
