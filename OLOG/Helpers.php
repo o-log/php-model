@@ -4,6 +4,9 @@ namespace OLOG;
 
 class Helpers
 {
+    
+    // TODO: remove whole class
+    
     static public function implode_intval($glue, $pieces)
     {
         $intval_arr = array();

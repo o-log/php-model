@@ -2,6 +2,8 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\CliUtil;
+
 class CLIMenu
 {
     const FUNCTION_EXECUTE_SQL = 1;
@@ -16,7 +18,7 @@ class CLIMenu
         echo "\t" . self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
         echo "\t" . self::FUNCTION_MODEL_FIELD_EXTRAS . ": extra operations on model field\n";
 
-        $command_str = trim(fgets(STDIN));
+        $command_str = CliUtil::readStdinAnswer();
 
         switch ($command_str){
             case self::FUNCTION_EXECUTE_SQL:

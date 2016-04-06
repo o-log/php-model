@@ -10,7 +10,7 @@ class ConfWrapper
     }
 
  	static public function get(){
-        \OLOG\Helpers::assert(self::$config_arr);
+        \OLOG\Assert::assert(self::$config_arr);
  		return self::$config_arr;
  	}
  
