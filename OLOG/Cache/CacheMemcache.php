@@ -2,7 +2,7 @@
 
 namespace OLOG\Cache;
 
-class Dmemcache
+class CacheMemcache
 {
 
     static public function dmemcache_set($key, $value, $exp = 0, $bin = 'cache')
@@ -70,6 +70,9 @@ class Dmemcache
     static public function dmemcache_delete($key, $bin = 'cache')
     {
         $mc = self::dmemcache_object($bin);  // do not check result - already checked
+        if (!$mc){
+            return false;
+        }
 
         $full_key = self::dmemcache_key($key, $bin);
         return $mc->delete($full_key);
@@ -88,12 +91,13 @@ class Dmemcache
             return null;
         }
 
+        // Memcached php extension not supported - slower, rare, extra features not needed
         $memcache = new \Memcache;
 
         foreach ($memcache_servers as $s => $c) {
             list($host, $port) = explode(':', $s);
 
-            \OLOG\Helpers::assert($memcache->addServer($host, $port));
+            \OLOG\Assert::assert($memcache->addServer($host, $port));
             $memcache->setCompressThreshold(5000, 0.2);
         }
 

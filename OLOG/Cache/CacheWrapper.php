@@ -2,12 +2,18 @@
 
 namespace OLOG\Cache;
 
+/**
+ * Основной класс для работы с кэшом. Устанавливать соединение с сервером мемкэша перед работой не надо - оно будет установлено автоматически.
+ * Class CacheWrapper
+ * @package OLOG\Cache
+ */
 class CacheWrapper
 {
 
     static protected $storage_arr = array();
 
     /**
+     * Получение значения из кэша. Если настроек мемкэша в конфиге нет - используется только статический кэш.
      * @param $key
      * @return array|string|false Возвращает false если значения нет в кэше. Нужно использовать типизированную проверку, чтобы отличить например от значения 0, полученного из кэша.
      */
@@ -17,7 +23,7 @@ class CacheWrapper
             return self::$storage_arr[$key];
         }
 
-        $value = \OLOG\Cache\Dmemcache::dmemcache_get($key);
+        $value = \OLOG\Cache\CacheMemcache::dmemcache_get($key);
 
         if ($value !== false) {
             self::$storage_arr[$key] = $value;
@@ -26,23 +32,38 @@ class CacheWrapper
         return $value;
     }
 
+    /**
+     * Удаление значения из кэша.
+     * @param $key
+     * @return bool
+     */
     static public function delete($key)
     {
         unset(self::$storage_arr[$key]);
 
+        /*
         $cache_obj = \OLOG\Cache\CacheFactory::getCacheObj();
         if (!$cache_obj->connected) {
             return false;
         }
+        */
 
-        return $cache_obj->delete($key);
+        //return $cache_obj->delete($key);
+        return CacheMemcache::dmemcache_delete($key);
     }
 
+    /**
+     * Запись значения в кэш.
+     * @param $key
+     * @param $value
+     * @param int $expire
+     * @return bool
+     */
     static public function set($key, $value, $expire = -1)
     {
         self::$storage_arr[$key] = $value;
 
-        return \OLOG\Cache\Dmemcache::dmemcache_set($key, $value, $expire);
+        return \OLOG\Cache\CacheMemcache::dmemcache_set($key, $value, $expire);
     }
 
     static public function increment($key)
@@ -51,6 +72,6 @@ class CacheWrapper
         // поэтому удаляем неактуальное значение с тем, чтобы оно если что перечиталось из мемкеша
         unset(self::$storage_arr[$key]);
 
-        return \OLOG\Cache\Dmemcache::dmemcache_increment($key);
+        return \OLOG\Cache\CacheMemcache::dmemcache_increment($key);
     }
 }

@@ -42,13 +42,15 @@ class DB
              * Хак для БД Postgres:
              * PDO кастит false в пустую строку и postgres не позволяет в поле типа boolean записать её.
              */
+            /*
             if($param_value === false) {
                 $params_prepared_arr[$key] = 'f';
             } elseif ($param_value === true) {
                 $params_prepared_arr[$key] = 't';
             } else {
+            */
                 $params_prepared_arr[$key] = $param_value;
-            }
+            //}
         }
 
         if (!$statement_obj->execute($params_prepared_arr)) {

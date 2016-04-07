@@ -9,7 +9,7 @@ class FactoryHelper
         $obj = \OLOG\Model\Factory::createAndLoadObject($class_name, $id_to_load);
 
         if ($exception_if_not_loaded) {
-            \OLOG\Helpers::assert($obj);
+            \OLOG\Assert::assert($obj);
         }
 
         return $obj;
