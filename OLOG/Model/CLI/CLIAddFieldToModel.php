@@ -299,7 +299,7 @@ EOT;
         return <<<'EOT'
 
     public function get#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#(){
-        return $this->get#FIELDTEMPLATE_FIELD_NAME#;
+        return $this->#FIELDTEMPLATE_FIELD_NAME#;
     }
 
     public function set#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value){
