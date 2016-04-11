@@ -5,7 +5,7 @@ namespace OLOG\Cache;
 class CacheMemcache
 {
 
-    static public function dmemcache_set($key, $value, $exp = 0, $bin = 'cache')
+    static public function set($key, $value, $exp = 0, $bin = 'cache')
     {
 
         if ($exp == -1) {
@@ -25,7 +25,7 @@ class CacheMemcache
             return true;
         }
 
-        $mc = self::dmemcache_object($bin); // do not check result - already checked
+        $mc = self::getMcConnectionObj(); // do not check result - already checked
         if (!$mc){
             return false;
         }
@@ -41,22 +41,24 @@ class CacheMemcache
         return TRUE;
     }
 
-    static public function dmemcache_increment($key, $bin = 'cache')
+    static public function increment($key, $bin = 'cache')
     {
-        if ($mc = self::dmemcache_object($bin)) {
-            $full_key = self::dmemcache_key($key, $bin);
-            if (!$mc->increment($full_key)) {
-                return FALSE;
-            } else {
-                return TRUE;
-            }
+        $mc = self::getMcConnectionObj();
+        if (!$mc){
+            return false;
         }
-        return FALSE;
+        
+        $full_key = self::dmemcache_key($key, $bin);
+        if (!$mc->increment($full_key)) {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
     }
 
-    static public function dmemcache_get($key, $bin = 'cache')
+    static public function get($key, $bin = 'cache')
     {
-        $mc = self::dmemcache_object($bin); // do not check result - already checked
+        $mc = self::getMcConnectionObj();
         if (!$mc){
             return false;
         }
@@ -67,9 +69,9 @@ class CacheMemcache
         return $result;
     }
 
-    static public function dmemcache_delete($key, $bin = 'cache')
+    static public function delete($key, $bin = 'cache')
     {
-        $mc = self::dmemcache_object($bin);  // do not check result - already checked
+        $mc = self::getMcConnectionObj();
         if (!$mc){
             return false;
         }
@@ -78,7 +80,7 @@ class CacheMemcache
         return $mc->delete($full_key);
     }
 
-    static public function dmemcache_object($bin = NULL)
+    static public function getMcConnectionObj()
     {
         static $memcache = NULL;
 

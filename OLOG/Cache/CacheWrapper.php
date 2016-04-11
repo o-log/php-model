@@ -23,7 +23,7 @@ class CacheWrapper
             return self::$storage_arr[$key];
         }
 
-        $value = \OLOG\Cache\CacheMemcache::dmemcache_get($key);
+        $value = \OLOG\Cache\CacheMemcache::get($key);
 
         if ($value !== false) {
             self::$storage_arr[$key] = $value;
@@ -41,15 +41,7 @@ class CacheWrapper
     {
         unset(self::$storage_arr[$key]);
 
-        /*
-        $cache_obj = \OLOG\Cache\CacheFactory::getCacheObj();
-        if (!$cache_obj->connected) {
-            return false;
-        }
-        */
-
-        //return $cache_obj->delete($key);
-        return CacheMemcache::dmemcache_delete($key);
+        return CacheMemcache::delete($key);
     }
 
     /**
@@ -63,7 +55,7 @@ class CacheWrapper
     {
         self::$storage_arr[$key] = $value;
 
-        return \OLOG\Cache\CacheMemcache::dmemcache_set($key, $value, $expire);
+        return \OLOG\Cache\CacheMemcache::set($key, $value, $expire);
     }
 
     static public function increment($key)
@@ -72,6 +64,6 @@ class CacheWrapper
         // поэтому удаляем неактуальное значение с тем, чтобы оно если что перечиталось из мемкеша
         unset(self::$storage_arr[$key]);
 
-        return \OLOG\Cache\CacheMemcache::dmemcache_increment($key);
+        return \OLOG\Cache\CacheMemcache::increment($key);
     }
 }
