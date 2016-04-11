@@ -274,8 +274,19 @@ http://www.php-fig.org/psr/psr-4/
 ...
 
 # Библиотека для работы с кэшом
+
+Конфигурация для работы с мемкэшом:
  
-...
+    $conf['memcache_servers'] = [
+        'localhost:11211'
+    ];
+    
+Основные методы для работы с кэшом находятся в классе OLOG\Cache\CacheWrapper:
+
+    static public function set($key, $value, $expire = -1)
+    static public function get($key)
+    static public function delete($key)
+    static public function increment($key)
 
 # ProtectProperties
 

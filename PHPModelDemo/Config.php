@@ -8,9 +8,12 @@ class Config
 
     public static function get()
     {
+        $conf = [];
         //$conf = \App\CommonConfig::get(); // uncomment this to inherit shared configuration part, stored to repository
         
-        $conf['cache'] = [];
+        $conf['memcache_servers'] = [
+            'localhost:11211'
+        ];
         
         $conf['cache_lifetime'] = 60;
         $conf['return_false_if_no_route'] = true; // for local php server

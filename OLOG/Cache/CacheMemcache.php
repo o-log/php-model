@@ -96,8 +96,8 @@ class CacheMemcache
         // Memcached php extension not supported - slower, rare, extra features not needed
         $memcache = new \Memcache;
 
-        foreach ($memcache_servers as $s => $c) {
-            list($host, $port) = explode(':', $s);
+        foreach ($memcache_servers as $server) {
+            list($host, $port) = explode(':', $server);
 
             \OLOG\Assert::assert($memcache->addServer($host, $port));
             $memcache->setCompressThreshold(5000, 0.2);
