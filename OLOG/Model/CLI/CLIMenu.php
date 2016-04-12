@@ -36,7 +36,7 @@ class CLIMenu
 
             case self::FUNCTION_MODEL_FIELD_EXTRAS:
                 $cli_add_field_obj = new CLIAddFieldToModel();
-                $cli_add_field_obj->extraFieldFunctions();
+                $cli_add_field_obj->extraFieldFunctionsScreen();
                 break;
 
             default:

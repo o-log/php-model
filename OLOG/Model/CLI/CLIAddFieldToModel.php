@@ -3,6 +3,7 @@
 namespace OLOG\Model\CLI;
 
 use OLOG\Assert;
+use OLOG\CliUtil;
 use Stringy\Stringy;
 
 class CLIAddFieldToModel
@@ -57,8 +58,10 @@ class CLIAddFieldToModel
     }
 
     public function askFieldName(){
+        echo CliUtil::delimiter();
         echo "\nEnter field name. Examples:\n\tnode_title\n\tmedia_id\n";
-        $field_name = trim(fgets(STDIN));
+        //$field_name = trim(fgets(STDIN));
+        $field_name = CliUtil::readStdinAnswer();
 
         // TODO: check field_name format
         return $field_name;
@@ -66,6 +69,7 @@ class CLIAddFieldToModel
 
     public function addField()
     {
+        echo CliUtil::delimiter();
         echo "\nChoose model class file:\n";
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
@@ -89,15 +93,19 @@ class CLIAddFieldToModel
 
 
         // request field_data_type
+        echo CliUtil::delimiter();
         echo "\nEnter db field data type. Examples:\n\tint\n\ttext\n\tvarchar(255)\n";
-        $field_data_type = trim(fgets(STDIN));
+        //$field_data_type = trim(fgets(STDIN));
+        $field_data_type = CliUtil::readStdinAnswer();
         // TODO: validate data_type
 
 
         // TODO: request default value
         // TODO: enable no default value
+        echo CliUtil::delimiter();
         echo "\nEnter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"value\"\n";
-        $default_value = trim(fgets(STDIN));
+        //$default_value = trim(fgets(STDIN));
+        $default_value = CliUtil::readStdinAnswer();
 
         // TODO: check default value format
 
@@ -146,15 +154,16 @@ class CLIAddFieldToModel
         // TODO: request field is nullable
         $field_is_nullable = '';
 
-        echo "\nChoose whether database field is nullable:\n1: null\n2: not null\n"; // TODO: use constants
+        echo CliUtil::delimiter();
+        echo "\nChoose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
         $is_nullable_reply = trim(fgets(STDIN));
 
         switch ($is_nullable_reply) {
-            case 1: // TODO: use constant
+            case 'n': // TODO: use constant
                 $field_is_nullable = '';
                 break;
 
-            case 2: // TODO: use constant
+            case '': // TODO: use constant
                 $field_is_nullable = ' not null ';
                 break;
 
@@ -176,7 +185,15 @@ class CLIAddFieldToModel
 
         echo "\nSQL registry updated\n";
 
-        $this->extraFieldFunctions();
+        echo CliUtil::delimiter();
+        echo "\nPress ENTER to execure SQL queries, enter n to skip:\n";
+        $command_str = CliUtil::readStdinAnswer();
+
+        if ($command_str == ''){
+            CLIExecuteSql::executeSqlScreen();
+        }
+
+        $this->extraFieldFunctionsScreen();
     }
 
     static public function replaceFieldVariables($str, $field_name){
@@ -191,7 +208,7 @@ class CLIAddFieldToModel
     const FUNCTION_CODE_ADD_UNIQUE_KEY = 1;
     const FUNCTION_ADD_FOREIGN_KEY = 2;
 
-    public function extraFieldFunctions()
+    public function extraFieldFunctionsScreen()
     {
         if (!$this->model_file_path){
             echo "\nChoose model class file:\n";
@@ -206,6 +223,7 @@ class CLIAddFieldToModel
         Assert::assert($this->model_file_path);
         Assert::assert($this->field_name);
 
+        echo CliUtil::delimiter();
         echo "\nExtra functions:\n";
         echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
         echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
