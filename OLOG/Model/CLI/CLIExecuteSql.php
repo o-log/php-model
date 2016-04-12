@@ -2,6 +2,7 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\CliUtil;
 use OLOG\DB\DBFactory;
 
 /**
@@ -12,6 +13,9 @@ use OLOG\DB\DBFactory;
 class CLIExecuteSql
 {
     const EXECUTED_QUERIES_TABLE_NAME = '_executed_queries';
+
+    const COMMAND_SKIP_QUERY = 's';
+    const COMMAND_IGNORE_QUERY = 'i';
 
     static public function executeSql()
     {
@@ -26,8 +30,7 @@ class CLIExecuteSql
 
     function process_db($db_id)
     {
-        // check DB connectivity
-
+        // checking DB connectivity
         $db_obj = null;
         try {
             $db_obj = \OLOG\DB\DBFactory::getDB($db_id);
@@ -60,7 +63,8 @@ class CLIExecuteSql
             echo "\t1 to create table and proceed\n"; // TODO: constants
             echo "\tENTER to exit\n";
 
-            $command_str = trim(fgets(STDIN));
+            //$command_str = trim(fgets(STDIN));
+            $command_str = CliUtil::readStdinAnswer();
 
             // TODO: switch
             if ($command_str == '1') { // TODO: constants
@@ -77,15 +81,19 @@ class CLIExecuteSql
 
         foreach ($sql_arr as $sql) {
             if (!in_array($sql, $executed_queries_sql_arr)) {
+                echo str_pad('', 30, '_') . "\n";
                 echo "\n" . $sql . "\n";
 
                 // TODO: constants
-                echo "\n\t1: execute query\n\t2: mark query as executed, but do not execute (you can execute one manually)\n\tENTER skip query\n";
+                echo "\n";
+                echo "\t" . self::COMMAND_SKIP_QUERY . ": skip query now, do not mark as executed\n";
+                echo "\t" . self::COMMAND_IGNORE_QUERY . ": ignore query - mark as executed, but do not execute (you can execute one manually)\n";
+                echo "\tENTER execute query\n";
 
-                $command_str = trim(fgets(STDIN));
+                $command_str = CliUtil::readStdinAnswer();
 
                 switch ($command_str) {
-                    case '1': // TODO: constants
+                    case '':
                         \OLOG\DB\DBWrapper::query($db_id, $sql);
 
                         \OLOG\DB\DBWrapper::query(
@@ -96,7 +104,7 @@ class CLIExecuteSql
                         echo "Query executed.\n";
                         break;
 
-                    case '2': // TODO: constants
+                    case self::COMMAND_IGNORE_QUERY:
                         \OLOG\DB\DBWrapper::query(
                             $db_id,
                             'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
@@ -105,9 +113,13 @@ class CLIExecuteSql
                         echo "Query marked as executed without execution.\n";
                         break;
 
-                    default:
+                    case self::COMMAND_SKIP_QUERY:
                         echo "Query skipped.\n";
                         break;
+
+                    default:
+                        echo "Unknown command.\n";
+                        break; // TODO: repeat entry?
                 }
             }
         }
