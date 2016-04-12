@@ -22,11 +22,11 @@ class CLIMenu
 
         switch ($command_str){
             case self::FUNCTION_EXECUTE_SQL:
-                CLIExecuteSql::executeSql();
+                CLIExecuteSql::executeSqlScreen();
                 break;
 
             case self::FUNCTION_CREATE_MODEL:
-                CLICreateModel::run();
+                CLICreateModel::enterClassNameScreen();
                 break;
 
             case self::FUNCTION_ADD_MODEL_FIELD:

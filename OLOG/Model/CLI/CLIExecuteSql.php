@@ -17,7 +17,7 @@ class CLIExecuteSql
     const COMMAND_SKIP_QUERY = 's';
     const COMMAND_IGNORE_QUERY = 'i';
 
-    static public function executeSql()
+    static public function executeSqlScreen()
     {
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
 
@@ -81,7 +81,7 @@ class CLIExecuteSql
 
         foreach ($sql_arr as $sql) {
             if (!in_array($sql, $executed_queries_sql_arr)) {
-                echo str_pad('', 30, '_') . "\n";
+                echo CliUtil::delimiter();
                 echo "\n" . $sql . "\n";
 
                 // TODO: constants

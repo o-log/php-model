@@ -2,6 +2,8 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\CliUtil;
+
 class CLIFileSelector
 {
     static public function selectFileName($folder, $only_files = true){
@@ -25,7 +27,8 @@ class CLIFileSelector
             }
 
             echo "\nEnter file or directory index:\n";
-            $index = trim(fgets(STDIN));
+            //$index = trim(fgets(STDIN));
+            $index = CliUtil::readStdinAnswer();
 
             if (!array_key_exists($index, $arr)) {
                 echo "Index not found\n";
@@ -40,12 +43,14 @@ class CLIFileSelector
                     continue;
                 }
 
-                echo "\nSelected directory: " . $selected_path . "\n";
+                echo CliUtil::delimiter();
+                echo "Selected directory: " . $selected_path . "\n";
                 echo "Use it or enter directory?\n\t1 use directory\n\tENTER enter directory\n"; // TODO: constants
-                $answer = trim(fgets(STDIN));
+                //$answer = trim(fgets(STDIN));
+                $answer = CliUtil::readStdinAnswer();
 
                 switch ($answer){
-                    case 1:
+                    case 1: // TODO: use constant
                         return $selected_path;
                     case '':
                         $folder = $selected_path;
