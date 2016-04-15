@@ -39,7 +39,8 @@ class CLIExecuteSql
         }
 
         if (!$db_obj) {
-            echo "Cant connect to database " . $db_id . "\n";
+            echo CliUtil::delimiter();
+            echo "Can't connect to database " . $db_id . "\n";
             echo "Probable problems:\n";
             echo "- misconfiguration. App config for database:\n";
             echo var_export(DBFactory::getConfigArr($db_id)) . "\n";
@@ -56,6 +57,7 @@ class CLIExecuteSql
                 'select sql_query from _executed_queries'
             );
         } catch (\Exception $e) {
+            echo CliUtil::delimiter();
             echo "Can not load the executed queries list from " . self::EXECUTED_QUERIES_TABLE_NAME . " table:\n";
             echo $e->getMessage() . "\n\n";
 
