@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 cd public
-php5 -S localhost:8000
+php -S localhost:8000
