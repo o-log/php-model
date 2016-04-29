@@ -134,6 +134,12 @@ class CLIExecuteSql
 
         $filename = $cwd . DIRECTORY_SEPARATOR . $db_name . '.sql';
 
+        $db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value('db.' . $db_name . '.sql_file', '');
+
+        if ($db_config_sql_file){
+            $filename = $cwd . DIRECTORY_SEPARATOR . $db_config_sql_file;
+        }
+
         return $filename;
     }
 

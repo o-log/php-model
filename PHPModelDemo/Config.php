@@ -24,7 +24,8 @@ class Config
                 'host' => '127.0.0.1',
                 'db_name' => 'phpmodel',
                 'user' => 'root',
-                'pass' => '1'
+                'pass' => '1',
+                //'sql_file' => 'sql_file/phpmodel.sql'
             ),
         );
 
