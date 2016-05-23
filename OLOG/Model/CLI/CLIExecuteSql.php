@@ -19,13 +19,42 @@ class CLIExecuteSql
 
     static public function executeSqlScreen()
     {
+        echo CliUtil::delimiter();
+        echo "Enter database index to execute queries for or press ENTER tot execute queries for all databases in config.\n";
+
         $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
 
-        foreach ($db_arr as $db_id => $db_config) {
-            echo "\nDatabase ID in application config: " . $db_id . "\n";
-
-            self::process_db($db_id);
+        // TODO: select db by index
+        $db_id_by_index = [];
+        $index = 1;
+        foreach ($db_arr as $db_id => $db_conf) {
+            echo "\t" . str_pad($index, 8, '.') . $db_id . "\n";
+            $db_id_by_index[$index] = $db_id;
+            $index++;
         }
+
+        $command_str = CliUtil::readStdinAnswer();
+
+        if ($command_str == '') {
+            $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
+
+            foreach ($db_arr as $db_id => $db_config) {
+                echo "\nDatabase ID in application config: " . $db_id . "\n";
+
+                self::process_db($db_id);
+            }
+
+            return;
+        }
+
+        $model_db_index = $command_str;
+
+        if (!array_key_exists($model_db_index, $db_id_by_index)) {
+            throw new \Exception('Wrong index');
+        }
+
+        $model_db_id = $db_id_by_index[$model_db_index];
+        self::process_db($model_db_id);
     }
 
     function process_db($db_id)
