@@ -22,7 +22,7 @@ class CLIExecuteSql
         echo CliUtil::delimiter();
         echo "Enter database index to execute queries for or press ENTER tot execute queries for all databases in config.\n";
 
-        $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
+        $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
 
         // TODO: select db by index
         $db_id_by_index = [];
@@ -36,7 +36,7 @@ class CLIExecuteSql
         $command_str = CliUtil::readStdinAnswer();
 
         if ($command_str == '') {
-            $db_arr = \OLOG\ConfWrapper::value('db'); // TODO: check not empty
+            $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
 
             foreach ($db_arr as $db_id => $db_config) {
                 echo "\nDatabase ID in application config: " . $db_id . "\n";
@@ -163,7 +163,7 @@ class CLIExecuteSql
 
         $filename = $cwd . DIRECTORY_SEPARATOR . $db_name . '.sql';
 
-        $db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value('db.' . $db_name . '.sql_file', '');
+        $db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.db.' . $db_name . '.sql_file', '');
 
         if ($db_config_sql_file){
             $filename = $cwd . DIRECTORY_SEPARATOR . $db_config_sql_file;
