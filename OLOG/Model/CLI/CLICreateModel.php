@@ -57,7 +57,7 @@ class CLICreateModel
     {
         echo CliUtil::delimiter();
         echo "Choose model DB index:\n";
-        $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
 
         // TODO: select db by index
         $db_id_by_index = [];

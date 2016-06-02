@@ -88,7 +88,7 @@ class CacheMemcache
             return $memcache;
         }
 
-        $memcache_servers = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.memcache_servers');
+        $memcache_servers = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.memcache_servers');
         if (!$memcache_servers){
             return null;
         }

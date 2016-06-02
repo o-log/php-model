@@ -7,7 +7,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testSaveLoadDelete()
     {
-        \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+        \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\ModelDemoConfig::get());
 
         $test_title = rand(1, 10000);
         $new_model = new \PHPModelDemo\DemoModel();
@@ -36,7 +36,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      * проверка отслеживания изменения объекта
      */
     public function testAfterUpdate(){
-        \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+        \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\ModelDemoConfig::get());
 
         $new_node_obj = new \PHPModelDemo\DemoNode();
         $new_node_obj->save();

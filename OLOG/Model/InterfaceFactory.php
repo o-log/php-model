@@ -8,7 +8,7 @@ namespace OLOG\Model;
  */
 interface InterfaceFactory {
     public static function factory($id_to_load, $exception_if_not_loaded = true);
-    public static function getMyGlobalizedClassName();
+    public static function getMyClassName();
     static public function removeObjFromCacheById($id_to_remove);
     public function afterUpdate();
     public function afterDelete();

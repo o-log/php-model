@@ -34,7 +34,7 @@ class DBFactory
     
     static public function getConfigArr($db_id){
         // find config
-        $databases_conf_arr = \OLOG\ConfWrapper::value(\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY . '.db');
+        $databases_conf_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db');
 
         if (!is_array($databases_conf_arr)) {
             return null;

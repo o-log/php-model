@@ -2,7 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
-\OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+\OLOG\ConfWrapper::assignConfig(\PHPModelDemo\ModelDemoConfig::get());
 
 echo '<div>MODELS <a href="/?a=add_model">+</a></div>';
 
@@ -19,7 +19,7 @@ if (isset($_GET['a'])){
 // DISPLAY
 
 $models_ids_arr = \OLOG\DB\DBWrapper::readColumn(
-    \PHPModelDemo\Config::DB_NAME_PHPMODELDEMO,
+    \PHPModelDemo\ModelDemoConfig::DB_NAME_PHPMODELDEMO,
     'select id from ' . \PHPModelDemo\DemoModel::DB_TABLE_NAME . ' order by id desc'
 );
 

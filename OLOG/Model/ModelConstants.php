@@ -2,7 +2,7 @@
 
 namespace OLOG\Model;
 
-class Constants
+class ModelConstants
 {
     const MODULE_CONFIG_ROOT_KEY = 'o-log/php-module';
 }

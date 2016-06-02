@@ -6,7 +6,7 @@
   },
   "require": {
     "danielstjules/stringy": "~2.3",
-    "o-log/php-lib": "1"
+    "o-log/php-lib": "1.*"
   },
   "autoload": {
     "psr-0": {

@@ -4,13 +4,13 @@ namespace OLOG\Model;
 
 trait FactoryTrait {
     /**
-     * Возвращает глобализованное имя класса модели.
+     * Возвращает имя класса модели.
      * @return string
      */
-    static public function getMyGlobalizedClassName()
+    static public function getMyClassName()
     {
         $class_name = get_called_class(); // "Gets the name of the class the static method is called in."
-        $class_name = \OLOG\Model\Helper::globalizeClassName($class_name);
+        //$class_name = \OLOG\Model\Helper::globalizeClassName($class_name);
         return $class_name;
     }
     
@@ -19,13 +19,13 @@ trait FactoryTrait {
      */
     static public function factory($id_to_load, $exception_if_not_loaded = true)
     {
-        $class_name = self::getMyGlobalizedClassName();
+        $class_name = self::getMyClassName();
         return \OLOG\Model\FactoryHelper::factory($class_name, $id_to_load, $exception_if_not_loaded);
     }
 
     static public function removeObjFromCacheById($id_to_remove)
     {
-        $class_name = self::getMyGlobalizedClassName();
+        $class_name = self::getMyClassName();
         \OLOG\Model\FactoryHelper::removeObjFromCacheById($class_name, $id_to_remove);
     }
 
@@ -43,7 +43,7 @@ trait FactoryTrait {
      */
     public function removeFromFactoryCache()
     {
-        $class_name = self::getMyGlobalizedClassName();
+        $class_name = self::getMyClassName();
         \OLOG\Model\FactoryHelper::afterUpdate($class_name, $this->getId()); // TODO: check interfaceLoad
     }
 
@@ -56,7 +56,7 @@ trait FactoryTrait {
      */
     public function afterDelete()
     {
-        $class_name = self::getMyGlobalizedClassName();
+        $class_name = self::getMyClassName();
         \OLOG\Model\FactoryHelper::afterDelete($class_name, $this->getId()); // TODO: check interfaceLoad
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PHPModelDemo;
 
-class Config
+class ModelDemoConfig
 {
     const DB_NAME_PHPMODELDEMO = 'phpmodel';
 
@@ -14,7 +14,7 @@ class Config
         //$conf['cache_lifetime'] = 60; // not used
         $conf['return_false_if_no_route'] = true; // for local php server
 
-        $conf[\OLOG\Model\Constants::MODULE_CONFIG_ROOT_KEY] = [
+        $conf[\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY] = [
             'db' => [
                 self::DB_NAME_PHPMODELDEMO => [
                     'host' => '127.0.0.1',
