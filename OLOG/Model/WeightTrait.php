@@ -11,7 +11,7 @@ trait WeightTrait
      */
     public function swapWeights($extra_fields_arr = array())
     {
-        $current_class_name = self::getMyGlobalizedClassName();
+        $current_class_name = self::getMyClassName();
 
         $current_item_weight = $this->getWeight();
 
