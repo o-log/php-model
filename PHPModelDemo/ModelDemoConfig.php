@@ -29,8 +29,7 @@ class ModelDemoConfig
                 'localhost:11211'
             ]
         ];
-
-
+        
         return $conf;
     }
 }
