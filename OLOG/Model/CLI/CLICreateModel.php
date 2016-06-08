@@ -89,7 +89,8 @@ class CLICreateModel
         // TODO: model_namespace_for_path may have leading '/' - remove it?
         $model_filename = $cwd . DIRECTORY_SEPARATOR . self::$model_namespace_for_path . DIRECTORY_SEPARATOR . self::$model_class_name . '.php';
 
-        $model_tablename = mb_strtolower(self::$model_class_name);
+        $model_tablename = mb_strtolower(self::$model_namespace_for_class . "\\" . self::$model_class_name);
+        $model_tablename = preg_replace('@\W@', '_', $model_tablename);
 
         //
         // creating model class file
@@ -207,9 +208,9 @@ class TEMPLATECLASS_CLASSNAME implements
     /**
      * @param string $title
      */
-    public function setCreatedAtTs($title)
+    public function setCreatedAtTs($timestamp)
     {
-        $this->created_at_ts = $title;
+        $this->created_at_ts = $timestamp;
     }
 }
 EOT;

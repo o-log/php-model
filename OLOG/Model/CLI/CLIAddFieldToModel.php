@@ -9,6 +9,7 @@ use Stringy\Stringy;
 class CLIAddFieldToModel
 {
     protected $field_name = '';
+    protected $db_table_field_name = '';
     protected $model_file_path = ''; // полный путь к файлу модели
     //protected $model_table_name = '';
     //protected $model_db_id = '';
@@ -16,7 +17,7 @@ class CLIAddFieldToModel
     public function getTableNameFromClassFile()
     {
         $file_str = file_get_contents($this->model_file_path);
-
+ 
         // extract model table name from class
         $table_name_pattern = '@const DB_TABLE_NAME = [\'\"](\w+)[\'\"]@';
         $matches = [];
@@ -74,12 +75,34 @@ class CLIAddFieldToModel
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
 
-        // ask field name
-
-        $this->field_name = $this->askFieldName();
-
         // TODO: check errors
         $file_str = file_get_contents($this->model_file_path);
+
+
+        $class_name_matches = [];
+        $class_name_pattern = '@\Rclass\s+(\w+)@';
+        $class_name = '';
+        if (preg_match($class_name_pattern, $file_str, $class_name_matches)) {
+            $class_name = $class_name_matches[1];
+        } else {
+            echo "class name not found\n";
+            exit;
+        }
+
+        $namespace_matches = [];
+        $namespace_pattern = '@\Rnamespace\s+(\w+);@';
+        $namespace = '';
+        if (preg_match($namespace_pattern, $file_str, $namespace_matches)) {
+            $namespace = $namespace_matches[1];
+        }
+
+        echo 'Class to be updated: ' . $namespace . "\\" . $class_name . "\n";
+
+
+        // ask field name
+        $this->field_name = $this->askFieldName();
+
+
 
         // check id field presence?
 
@@ -179,7 +202,12 @@ class CLIAddFieldToModel
         $model_db_id = $this->getDbIdFromClassFile();
         $model_table_name = $this->getTableNameFromClassFile();
 
-        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->field_name . ' ' . $field_data_type . ' ' . $field_is_nullable . ' ' . $default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
+        $this->db_table_field_name = $this->field_name;
+        //$this->db_table_field_name = $namespace . "\\" . $class_name . "_" . $this->field_name;
+        //$this->db_table_field_name = preg_replace('@\W@', '_', $this->db_table_field_name);
+        //$this->db_table_field_name = strtolower($this->db_table_field_name);
+
+        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type . ' ' . $field_is_nullable . ' ' . $default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
 
@@ -290,7 +318,7 @@ class CLIAddFieldToModel
 
         // TODO: check field name format
 
-        $sql = 'alter table ' . $model_table_name . ' add foreign key FK_' . $this->field_name . '_' . rand(0, 999999) . ' (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') /* rand' . rand(0, 999999) . ' */;';
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
 

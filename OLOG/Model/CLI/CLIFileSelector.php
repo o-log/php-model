@@ -6,6 +6,7 @@ use OLOG\CliUtil;
 
 class CLIFileSelector
 {
+    // TODO: docs
     static public function selectFileName($folder, $only_files = true){
         while (true) {
             $dirty_arr = scandir($folder);
@@ -27,7 +28,6 @@ class CLIFileSelector
             }
 
             echo "\nEnter file or directory index:\n";
-            //$index = trim(fgets(STDIN));
             $index = CliUtil::readStdinAnswer();
 
             if (!array_key_exists($index, $arr)) {
@@ -46,7 +46,6 @@ class CLIFileSelector
                 echo CliUtil::delimiter();
                 echo "Selected directory: " . $selected_path . "\n";
                 echo "Use it or enter directory?\n\t1 use directory\n\tENTER enter directory\n"; // TODO: constants
-                //$answer = trim(fgets(STDIN));
                 $answer = CliUtil::readStdinAnswer();
 
                 switch ($answer){
