@@ -206,7 +206,7 @@ class TEMPLATECLASS_CLASSNAME implements
     }
 
     /**
-     * @param string $title
+     * @param string $timestamp
      */
     public function setCreatedAtTs($timestamp)
     {

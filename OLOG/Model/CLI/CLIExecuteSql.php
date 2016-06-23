@@ -20,7 +20,7 @@ class CLIExecuteSql
     static public function executeSqlScreen()
     {
         echo CliUtil::delimiter();
-        echo "Enter database index to execute queries for or press ENTER tot execute queries for all databases in config.\n";
+        echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
 
         $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
 
@@ -57,7 +57,7 @@ class CLIExecuteSql
         self::process_db($model_db_id);
     }
 
-    function process_db($db_id)
+    static public function process_db($db_id)
     {
         // checking DB connectivity
         $db_obj = null;
