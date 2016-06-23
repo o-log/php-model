@@ -2,6 +2,7 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\Assert;
 use OLOG\CliUtil;
 use OLOG\DB\DBFactory;
 
@@ -23,6 +24,7 @@ class CLIExecuteSql
         echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
 
         $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        Assert::assert(!empty($db_arr), 'No database entries in config');
 
         // TODO: select db by index
         $db_id_by_index = [];
