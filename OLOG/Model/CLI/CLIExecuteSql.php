@@ -93,14 +93,14 @@ class CLIExecuteSql
             echo $e->getMessage() . "\n\n";
 
             echo "Probably the " . self::EXECUTED_QUERIES_TABLE_NAME . " table was not created. Choose:\n";
-            echo "\t1 to create table and proceed\n"; // TODO: constants
-            echo "\tENTER to exit\n";
+            echo "\tENTER to create table and proceed\n"; // TODO: constants
+            echo "\tany other key to exit\n";
 
             //$command_str = trim(fgets(STDIN));
             $command_str = CliUtil::readStdinAnswer();
 
             // TODO: switch
-            if ($command_str == '1') { // TODO: constants
+            if ($command_str == '') { // TODO: constants
                 \OLOG\DB\DBWrapper::query(
                     $db_id,
                     'create table ' . self::EXECUTED_QUERIES_TABLE_NAME . ' (id int not null auto_increment primary key, created_at_ts int not null, sql_query text) engine InnoDB default charset utf8'
