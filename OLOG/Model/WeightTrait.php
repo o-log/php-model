@@ -26,7 +26,7 @@ trait WeightTrait
             }
         }
 
-        $sql = 'SELECT id FROM "' . self::DB_TABLE_NAME . '" WHERE ' . implode(' AND ', $where_arr) . ' ORDER BY weight DESC, id DESC LIMIT 1';
+        $sql = 'SELECT id FROM ' . self::DB_TABLE_NAME . ' WHERE ' . implode(' AND ', $where_arr) . ' ORDER BY weight DESC, id DESC LIMIT 1';
         $object_to_swap_weights_id = \OLOG\DB\DBWrapper::readField(self::DB_ID,
             $sql,
             $params_arr

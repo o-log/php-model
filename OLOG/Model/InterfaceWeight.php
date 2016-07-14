@@ -4,7 +4,7 @@
 namespace OLOG\Model;
 
 interface InterfaceWeight {
-    public function swapUp();
+    public function swapWeights($extra_fields_arr = array());
     public function getWeight();
     public function setWeight($weight);
 }
