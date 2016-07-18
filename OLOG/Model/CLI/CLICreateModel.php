@@ -3,6 +3,7 @@
 namespace OLOG\Model\CLI;
 
 use OLOG\CliUtil;
+use OLOG\DB\DBConfig;
 
 class CLICreateModel
 {
@@ -57,12 +58,13 @@ class CLICreateModel
     {
         echo CliUtil::delimiter();
         echo "Choose model DB index:\n";
-        $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        $db_arr = DBConfig::getDBSettingsObjArr();
 
         // TODO: select db by index
         $db_id_by_index = [];
         $index = 1;
-        foreach ($db_arr as $db_id => $db_conf) {
+        foreach ($db_arr as $db_id => $db_settings_obj) {
             echo "\t" . str_pad($index, 8, '.') . $db_id . "\n";
             $db_id_by_index[$index] = $db_id;
             $index++;

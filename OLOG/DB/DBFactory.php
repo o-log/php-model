@@ -22,16 +22,13 @@ class DBFactory
             return $pdo_arr[$db_id];
         }
 
-        $db_conf_arr = self::getConfigArr($db_id);
-        if (!$db_conf_arr){
-            return null;
-        }
+        $db_settings_obj = DBConfig::getDBSettingsObj($db_id);
 
-        // connect
-        $pdo_arr[$db_id] = new \OLOG\DB\DB($db_conf_arr);
+        $pdo_arr[$db_id] = new \OLOG\DB\DB($db_settings_obj);
         return $pdo_arr[$db_id];
     }
-    
+
+    /*
     static public function getConfigArr($db_id){
         // find config
         $databases_conf_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db');
@@ -47,4 +44,5 @@ class DBFactory
         $db_conf_arr = $databases_conf_arr[$db_id];
         return $db_conf_arr;
     }
+    */
 }

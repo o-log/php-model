@@ -4,6 +4,7 @@ namespace OLOG\Model\CLI;
 
 use OLOG\Assert;
 use OLOG\CliUtil;
+use OLOG\DB\DBConfig;
 use OLOG\DB\DBFactory;
 
 /**
@@ -23,7 +24,8 @@ class CLIExecuteSql
         echo CliUtil::delimiter();
         echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
 
-        $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+        $db_arr = DBConfig::getDBSettingsObjArr();
         Assert::assert(!empty($db_arr), 'No database entries in config');
 
         // TODO: select db by index
@@ -38,7 +40,8 @@ class CLIExecuteSql
         $command_str = CliUtil::readStdinAnswer();
 
         if ($command_str == '') {
-            $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+            //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
+            $db_arr = DBConfig::getDBSettingsObjArr();
 
             foreach ($db_arr as $db_id => $db_config) {
                 echo "\nDatabase ID in application config: " . $db_id . "\n";
@@ -74,7 +77,7 @@ class CLIExecuteSql
             echo "Can't connect to database " . $db_id . "\n";
             echo "Probable problems:\n";
             echo "- misconfiguration. App config for database:\n";
-            echo var_export(DBFactory::getConfigArr($db_id)) . "\n";
+            //echo var_export(DBFactory::getConfigArr($db_id)) . "\n"; // TODO: fix
 
             echo "- database server not accessible\n";
             echo "- database not created. It must be created manually.\n";
@@ -165,7 +168,9 @@ class CLIExecuteSql
 
         $filename = $cwd . DIRECTORY_SEPARATOR . $db_name . '.sql';
 
-        $db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db.' . $db_name . '.sql_file', '');
+        //$db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db.' . $db_name . '.sql_file', '');
+        $db_settings_obj = DBConfig::getDBSettingsObj($db_name);
+        $db_config_sql_file = $db_settings_obj->getSqlFilePathInProjectRoot();
 
         if ($db_config_sql_file){
             $filename = $cwd . DIRECTORY_SEPARATOR . $db_config_sql_file;

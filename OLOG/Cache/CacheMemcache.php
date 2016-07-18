@@ -88,18 +88,20 @@ class CacheMemcache
             return $memcache;
         }
 
-        $memcache_servers = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.memcache_servers');
+        //$memcache_servers = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.memcache_servers');
+        $memcache_servers = CacheConfig::getServersObjArr();
+
         if (!$memcache_servers){
             return null;
         }
 
         // Memcached php extension not supported - slower, rare, extra features not needed
+        /** @var \Memcache $memcache */
         $memcache = new \Memcache;
 
-        foreach ($memcache_servers as $server) {
-            list($host, $port) = explode(':', $server);
-
-            \OLOG\Assert::assert($memcache->addServer($host, $port));
+        /** @var MemcacheServerSettings $server_settings_obj */
+        foreach ($memcache_servers as $server_settings_obj) {
+            \OLOG\Assert::assert($memcache->addServer($server_settings_obj->getHost(), $server_settings_obj->getPort()));
             $memcache->setCompressThreshold(5000, 0.2);
         }
 

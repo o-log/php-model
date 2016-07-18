@@ -2,34 +2,24 @@
 
 namespace PHPModelDemo;
 
+use OLOG\Cache\CacheConfig;
+use OLOG\Cache\MemcacheServerSettings;
+use OLOG\DB\DBConfig;
+use OLOG\DB\DBSettings;
+
 class ModelDemoConfig
 {
     const DB_NAME_PHPMODELDEMO = 'phpmodel';
 
-    public static function get()
+    public static function init()
     {
-        $conf = [];
-        //$conf = \App\CommonConfig::get(); // uncomment this to inherit shared configuration part, stored to repository
+        DBConfig::setDBSettingsObj(
+            self::DB_NAME_PHPMODELDEMO,
+            new DBSettings('localhost', 'phpmodel', 'root', '1')
+        );
 
-        //$conf['cache_lifetime'] = 60; // not used
-        $conf['return_false_if_no_route'] = true; // for local php server
-
-        $conf[\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY] = [
-            'db' => [
-                self::DB_NAME_PHPMODELDEMO => [
-                    'host' => '127.0.0.1',
-                    'db_name' => 'phpmodel',
-                    'user' => 'root',
-                    'pass' => '1',
-                    //'sql_file' => 'sql_file/phpmodel.sql'
-                 ]   
-            ],
-
-            'memcache_servers' => [
-                'localhost:11211'
-            ]
-        ];
-        
-        return $conf;
+        CacheConfig::addServerSettingsObj(
+            new MemcacheServerSettings('localhost', 11211)
+        );
     }
 }
