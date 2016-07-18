@@ -2,7 +2,6 @@
 
 require_once '../vendor/autoload.php';
 
-//\OLOG\ConfWrapper::assignConfig(\PHPModelDemo\ModelDemoConfig::get());
 \PHPModelDemo\ModelDemoConfig::init();
 
 echo '<div>MODELS <a href="/?a=add_model">+</a></div>';
