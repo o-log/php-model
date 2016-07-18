@@ -104,7 +104,7 @@ http://www.php-fig.org/psr/psr-4/
 
 Чтобы библиотека могла получить доступ к базе данных, перед ее использованием нужно указать настройки:
 
-    \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+    \PHPModelDemo\Config::init();
     
 Это можно сделать например в начале точки входа.
     
@@ -114,20 +114,12 @@ http://www.php-fig.org/psr/psr-4/
     {
         const DB_NAME_PHPMODELDEMO = 'phpmodel';
     
-        public static function get()
+        public static function init()
         {
-            $conf = array();
-        
-            $conf['db'] = array(
-                self::DB_NAME_PHPMODELDEMO => array(
-                    'host' => 'localhost',
-                    'db_name' => 'phpmodel',
-                    'user' => 'root',
-                    'pass' => '1'
-                ),
+            DBConfig::setDBSettingsObj(
+                self::DB_NAME_PHPMODELDEMO,
+                new DBSettings('localhost', 'phpmodel', 'root', '1')
             );
-    
-            return $conf;
         }
     }
 
@@ -247,27 +239,18 @@ http://www.php-fig.org/psr/psr-4/
     {
         const DB_NAME_PHPMODELDEMO = 'phpmodel';
     
-        public static function get()
+        public static function init()
         {
-            $conf['cache_lifetime'] = 60;
-            $conf['return_false_if_no_route'] = true; // for local php server
-            
-            $conf['db'] = array(
-                self::DB_NAME_PHPMODELDEMO => array(
-                    'host' => 'localhost',
-                    'db_name' => 'phpmodel',
-                    'user' => 'root',
-                    'pass' => '1'
-                ),
+            DBConfig::setDBSettingsObj(
+                self::DB_NAME_PHPMODELDEMO,
+                new DBSettings('localhost', 'phpmodel', 'root', '1')
             );
-    
-            return $conf;
         }
     }
 
 Эта конфигурация должна подключаться в точках входа такой командой:
 
-    \OLOG\ConfWrapper::assignConfig(\PHPModelDemo\Config::get());
+    \PHPModelDemo\Config::init();
 
 ## Транзакции
 
@@ -277,26 +260,18 @@ http://www.php-fig.org/psr/psr-4/
 
 Если приложение использует несколько модулей - оно должно иметь возможность выполнять sql-запросы от каждого из модулей, для этого в конфиге приложения нужно указать отдельно БД для каждого модуля. Вот пример:
 
-        $conf[\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY] = array(
-            'db' => array(
-                self::DB_NAME_APP => array(
-                    'host' => '127.0.0.1',
-                    'db_name' => 'db_app',
-                    'user' => 'root',
-                    'pass' => '1'
-                ),
-                \OLOG\Auth\Constants::DB_NAME_PHPAUTH => array(
-                    'host' => '127.0.0.1',
-                    'db_name' => 'db_app',
-                    'user' => 'root',
-                    'pass' => '1',
-                    'sql_file' => 'vendor/o-log/php-auth/db_phpauth.sql'
-                )
-            ),
-            'memcache_servers' => array(
-                'localhost:11211'
-            )
+    public static function init()
+    {
+        DBConfig::setDBSettingsObj(
+            self::DB_NAME_PHPMODELDEMO,
+            new DBSettings('localhost', 'phpmodel', 'root', '1')
         );
+
+        DBConfig::setDBSettingsObj(
+            \OLOG\Auth\Constants::DB_NAME_PHPAUTH,
+            new DBSettings('localhost', 'phpmodel', 'root', '1', 'vendor/o-log/php-auth/db_phpauth.sql')
+        );
+    }
 
 Здесь база приложения называется db_app, при этом приложение использует модуль php-auth, БД для которого прописывается в конфиге отдельно, для того, чтобы подключить дополнительный файл sql-запросов. Мигратор запросов будет обрабатывать все БД из конфига, таким образом если в модуле php-auth появятся изменения структуры БД - мигратор их увидит.
 
@@ -307,9 +282,9 @@ http://www.php-fig.org/psr/psr-4/
 
 Конфигурация для работы с мемкэшом:
  
-    $conf['memcache_servers'] = [
-        'localhost:11211'
-    ];
+    CacheConfig::addServerSettingsObj(
+        new MemcacheServerSettings('localhost', 11211)
+    );
     
 Основные методы для работы с кэшом находятся в классе OLOG\Cache\CacheWrapper:
 
