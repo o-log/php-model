@@ -263,20 +263,21 @@ http://www.php-fig.org/psr/psr-4/
     public static function init()
     {
         DBConfig::setDBSettingsObj(
-            self::DB_NAME_PHPMODELDEMO,
-            new DBSettings('localhost', 'phpmodel', 'root', '1')
+            \OLOG\Auth\Constants::DB_NAME_PHPAUTH,
+            new DBSettings('localhost', 'db_app', 'root', '1', 'vendor/o-log/php-auth/db_phpauth.sql')
         );
 
         DBConfig::setDBSettingsObj(
-            \OLOG\Auth\Constants::DB_NAME_PHPAUTH,
-            new DBSettings('localhost', 'phpmodel', 'root', '1', 'vendor/o-log/php-auth/db_phpauth.sql')
+            self::DB_NAME_PHPMODELDEMO,
+            new DBSettings('localhost', 'db_app', 'root', '1')
         );
     }
 
 Здесь база приложения называется db_app, при этом приложение использует модуль php-auth, БД для которого прописывается в конфиге отдельно, для того, чтобы подключить дополнительный файл sql-запросов. Мигратор запросов будет обрабатывать все БД из конфига, таким образом если в модуле php-auth появятся изменения структуры БД - мигратор их увидит.
 
-При этом все БД в конфиге могут на самом деле смотреть на одну физическую БД - таким образом можно настраивать ссылочную целостность и т.п.
+БД для модуля php-auth в конфиге стоит раньше, чем основная БД приложения, потому что таблицы приложения могут ссылаться на таблицы модулей, и поэтому таблицы модулей нужно создать до таблиц приложения. Мигратор обрабатывает БД в том порядке, в котором они идут в конфиге.
 
+При этом все БД в конфиге могут на самом деле смотреть на одну физическую БД - таким образом можно настраивать ссылочную целостность и т.п.
 
 # Библиотека для работы с кэшом
 
