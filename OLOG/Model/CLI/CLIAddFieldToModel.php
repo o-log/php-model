@@ -19,7 +19,7 @@ class CLIAddFieldToModel
         $file_str = file_get_contents($this->model_file_path);
  
         // extract model table name from class
-        $table_name_pattern = '@const DB_TABLE_NAME = [\'\"](\w+)[\'\"]@';
+        $table_name_pattern = '@const[\h]+DB_TABLE_NAME[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
         $matches = [];
         if (!preg_match($table_name_pattern, $file_str, $matches)) {
             throw new \Exception("table name not found in class file");
@@ -40,7 +40,7 @@ class CLIAddFieldToModel
 
         // attempt to extract model table name from class
 
-        $db_id_pattern = '@const DB_ID = [\'\"](\w+)[\'\"]@';
+        $db_id_pattern = '@const[\h]+DB_ID[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
         $matches = [];
         if (!preg_match($db_id_pattern, $file_str, $matches)) {
             echo "\nDB_ID constant not found in class or is not scalar. Enter model db id:\n";
