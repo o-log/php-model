@@ -107,7 +107,7 @@ class CLIAddFieldToModel
         // check id field presence?
 
         // TODO: more complex pattern?
-        $id_field_pattern = '@[ ]+protected \$id;@';
+        $id_field_pattern = '@[\h]+protected \$id;@';
         if (!preg_match($id_field_pattern, $file_str)) {
             echo "ID field not found\n";
             exit;
