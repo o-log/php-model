@@ -130,6 +130,21 @@ class ActiveRecordHelper
     }
 
 
+    public static function deleteModel($obj){
+        $can_delete_message = '';
+        if ($obj instanceof \OLOG\Model\InterfaceFactory) {
+            if (!$obj->canDelete($can_delete_message)) {
+                throw new \Exception($can_delete_message);
+            }
+        }
+
+        \OLOG\Model\ActiveRecordHelper::deleteModelObj($obj);
+
+        if (($obj instanceof \OLOG\Model\InterfaceLoad) && ($obj instanceof \OLOG\Model\InterfaceFactory)) {
+            $obj->afterDelete();
+        }
+    }
+
     /**
      * Удаление записи
      * @param $model_obj

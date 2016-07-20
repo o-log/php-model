@@ -56,15 +56,6 @@ trait ActiveRecord
 
     public function delete()
     {
-        $can_delete_message = '';
-        if (!$this->canDelete($can_delete_message)){
-            throw new \Exception($can_delete_message);
-        }
-
-        \OLOG\Model\ActiveRecordHelper::deleteModelObj($this);
-
-        if (($this instanceof \OLOG\Model\InterfaceLoad) && ($this instanceof \OLOG\Model\InterfaceFactory)) {
-            $this->afterDelete();
-        }
+        ActiveRecordHelper::deleteModel($this);
     }
 }
