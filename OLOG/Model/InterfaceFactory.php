@@ -11,5 +11,6 @@ interface InterfaceFactory {
     public static function getMyClassName();
     static public function removeObjFromCacheById($id_to_remove);
     public function afterUpdate();
+    public function canDelete(&$message);
     public function afterDelete();
 }
