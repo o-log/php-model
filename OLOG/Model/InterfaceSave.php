@@ -8,5 +8,6 @@ namespace OLOG\Model;
  * правильным значением.
  */
 interface InterfaceSave {
+    public function beforeSave();
     public function save();
 }

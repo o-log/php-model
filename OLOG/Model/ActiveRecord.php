@@ -42,6 +42,10 @@ trait ActiveRecord
 
     public function save()
     {
+        if ($this instanceof \OLOG\Model\InterfaceSave) {
+            $this->beforeSave();
+        }
+
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
 
         if (($this instanceof \OLOG\Model\InterfaceLoad) && ($this instanceof \OLOG\Model\InterfaceFactory)) {
