@@ -8,6 +8,10 @@ use Stringy\Stringy;
 
 class CLIAddFieldToModel
 {
+    const FUNCTION_CODE_ADD_UNIQUE_KEY = 1;
+    const FUNCTION_ADD_FOREIGN_KEY = 2;
+    const FUNCTION_ADD_SELECTOR = 3;
+
     protected $field_name = '';
     protected $db_table_field_name = '';
     protected $model_file_path = ''; // полный путь к файлу модели
@@ -61,7 +65,6 @@ class CLIAddFieldToModel
     public function askFieldName(){
         echo CliUtil::delimiter();
         echo "\nEnter field name. Examples:\n\tnode_title\n\tmedia_id\n";
-        //$field_name = trim(fgets(STDIN));
         $field_name = CliUtil::readStdinAnswer();
 
         // TODO: check field_name format
@@ -75,8 +78,8 @@ class CLIAddFieldToModel
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
 
-        // TODO: check errors
-        $file_str = file_get_contents($this->model_file_path);
+
+        $class_file_obj = new PHPClassFile($this->model_file_path);
 
 
         $class_name_matches = [];
@@ -104,9 +107,6 @@ class CLIAddFieldToModel
 
 
 
-        // check id field presence?
-
-        // TODO: more complex pattern?
         $id_field_pattern = '@[\h]+protected \$id;@';
         if (!preg_match($id_field_pattern, $file_str)) {
             echo "ID field not found\n";
@@ -127,7 +127,6 @@ class CLIAddFieldToModel
         // TODO: enable no default value
         echo CliUtil::delimiter();
         echo "\nEnter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"value\"\n";
-        //$default_value = trim(fgets(STDIN));
         $default_value = CliUtil::readStdinAnswer();
 
         // TODO: check default value format
@@ -146,7 +145,7 @@ class CLIAddFieldToModel
 
         $replacement = '';
 
-        // здесь поле id вставляется под новое поле, чтобы новые поля вставлялись над полем id, а новые метода - под ним
+        // здесь поле id вставляется под новое поле, чтобы новые поля вставлялись над полем id, а новые методы - под ним
         // поле id как бы разделяет свойства и методы
         $replacement .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
         $replacement .= '    protected $id;' . "\n";
@@ -233,9 +232,6 @@ class CLIAddFieldToModel
         return $str;
     }
 
-    const FUNCTION_CODE_ADD_UNIQUE_KEY = 1;
-    const FUNCTION_ADD_FOREIGN_KEY = 2;
-
     public function extraFieldFunctionsScreen()
     {
         if (!$this->model_file_path){
@@ -252,10 +248,12 @@ class CLIAddFieldToModel
         Assert::assert($this->field_name);
 
         echo CliUtil::delimiter();
+
         echo "\nExtra functions:\n";
         echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
         echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
-        //echo "\t" . "3: create index for key\n";
+        echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector for field\n";
+
         echo "\t" . "ENTER: exit\n"; // TODO: use constants
 
         $function_code = trim(fgets(STDIN));
@@ -271,9 +269,26 @@ class CLIAddFieldToModel
                 $this->addForeignKey();
                 exit;
 
+            case self::FUNCTION_ADD_SELECTOR:
+                $this->addSelector();
+                exit;
+
             case '':
                 exit;
         }
+    }
+
+    public function addSelector()
+    {
+        Assert::assert($this->field_name);
+        Assert::assert($this->model_file_path);
+
+
+
+
+
+
+        echo "\nSQL registry updated\n";
     }
 
     public function addUniqueKey()

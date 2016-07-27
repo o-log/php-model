@@ -24,7 +24,6 @@ class CLIExecuteSql
         echo CliUtil::delimiter();
         echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
 
-        //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
         $db_arr = DBConfig::getDBSettingsObjArr();
         Assert::assert(!empty($db_arr), 'No database entries in config');
 
@@ -40,7 +39,6 @@ class CLIExecuteSql
         $command_str = CliUtil::readStdinAnswer();
 
         if ($command_str == '') {
-            //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
             $db_arr = DBConfig::getDBSettingsObjArr();
 
             foreach ($db_arr as $db_id => $db_config) {
@@ -88,7 +86,7 @@ class CLIExecuteSql
         try {
             $executed_queries_sql_arr = \OLOG\DB\DBWrapper::readColumn(
                 $db_id,
-                'select sql_query from _executed_queries'
+                'select sql_query from ' . self::EXECUTED_QUERIES_TABLE_NAME
             );
         } catch (\Exception $e) {
             echo CliUtil::delimiter();
@@ -99,7 +97,6 @@ class CLIExecuteSql
             echo "\tENTER to create table and proceed\n"; // TODO: constants
             echo "\tany other key to exit\n";
 
-            //$command_str = trim(fgets(STDIN));
             $command_str = CliUtil::readStdinAnswer();
 
             // TODO: switch
@@ -134,7 +131,7 @@ class CLIExecuteSql
 
                         \OLOG\DB\DBWrapper::query(
                             $db_id,
-                            'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
+                            'insert into ' . self::EXECUTED_QUERIES_TABLE_NAME . ' (created_at_ts, sql_query) values (?, ?)',
                             array(time(), $sql)
                         );
                         echo "Query executed.\n";
@@ -143,7 +140,7 @@ class CLIExecuteSql
                     case self::COMMAND_IGNORE_QUERY:
                         \OLOG\DB\DBWrapper::query(
                             $db_id,
-                            'insert into _executed_queries (created_at_ts, sql_query) values (?, ?)',
+                            'insert into ' . self::EXECUTED_QUERIES_TABLE_NAME . ' (created_at_ts, sql_query) values (?, ?)',
                             array(time(), $sql)
                         );
                         echo "Query marked as executed without execution.\n";
