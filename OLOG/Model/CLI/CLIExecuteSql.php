@@ -151,7 +151,8 @@ class CLIExecuteSql
                         break;
 
                     default:
-                        echo "Unknown command.\n";
+                        //echo "Unknown command.\n";
+                        throw new \Exception('unknown command');
                         break; // TODO: repeat entry?
                 }
             }

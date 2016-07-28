@@ -15,8 +15,6 @@ class CLIAddFieldToModel
     protected $field_name = '';
     protected $db_table_field_name = '';
     protected $model_file_path = ''; // полный путь к файлу модели
-    //protected $model_table_name = '';
-    //protected $model_db_id = '';
 
     public function getTableNameFromClassFile()
     {
@@ -62,13 +60,75 @@ class CLIAddFieldToModel
         return $model_db_id;
     }
 
-    public function askFieldName(){
+    /**
+     * @param PHPClassFile $class_file_obj
+     * @return string
+     */
+    public function askFieldName($class_file_obj){
         echo CliUtil::delimiter();
-        echo "\nEnter field name. Examples:\n\tnode_title\n\tmedia_id\n";
+        echo "\nEnter field name. Examples for new field names:\n\tnode_title\n\tmedia_id\n";
+
+        //$class_field_names_arr = $class_file_obj->getFieldNamesArr();
+        //echo "\nFields in class:\n";
+
         $field_name = CliUtil::readStdinAnswer();
 
         // TODO: check field_name format
         return $field_name;
+    }
+
+    public function askDataType(){
+        echo CliUtil::delimiter();
+
+        $data_types_arr = [];
+
+        $data_types_arr[] = new FieldDataType('tinyint', true, true);
+        $data_types_arr[] = new FieldDataType('int', true, true);
+        $data_types_arr[] = new FieldDataType('varchar(255)', true, true);
+        $data_types_arr[] = new FieldDataType('text', false, false);
+        $data_types_arr[] = new FieldDataType('date', true, true);
+        $data_types_arr[] = new FieldDataType('datetime', true, true);
+
+        echo "\nEnter db field data type:\n";
+        /**
+         * @var  $index
+         * @var FieldDataType $data_type_obj
+         */
+        foreach ($data_types_arr as $index => $data_type_obj){
+            echo "\t" . $index . '. ' . $data_type_obj->sql_type_name . "\n";
+        }
+
+        $data_type_index = CliUtil::readStdinAnswer();
+
+        if (!array_key_exists($data_type_index, $data_types_arr)){
+            throw new \Exception('wrong answer');
+        }
+
+        $selected_data_type_obj = $data_types_arr[$data_type_index];
+
+        return $selected_data_type_obj;
+    }
+
+    /**
+     * @param FieldDataType $field_data_type
+     * @return string
+     */
+    public function askDefaultValue($field_data_type){
+
+        if (!$field_data_type->can_have_default_value){
+            return '';
+        }
+
+        // TODO: request default value
+        echo CliUtil::delimiter();
+        echo "\nEnter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"some_value\"\n";
+        $default_value = CliUtil::readStdinAnswer();
+
+        // TODO: check default value format
+
+        // TODO: check whether default value matches field data type
+
+        return $default_value;
     }
 
     public function addField()
@@ -78,121 +138,63 @@ class CLIAddFieldToModel
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
 
-
         $class_file_obj = new PHPClassFile($this->model_file_path);
+        echo 'Class to be updated: ' . $class_file_obj->class_namespace . "\\" . $class_file_obj->class_name . "\n";
 
+        $this->field_name = $this->askFieldName($class_file_obj);
 
-        $class_name_matches = [];
-        $class_name_pattern = '@\Rclass\s+(\w+)@';
-        $class_name = '';
-        if (preg_match($class_name_pattern, $file_str, $class_name_matches)) {
-            $class_name = $class_name_matches[1];
-        } else {
-            echo "class name not found\n";
-            exit;
-        }
+        /** @var FieldDataType $field_data_type */
+        $field_data_type = $this->askDataType();
 
-        $namespace_matches = [];
-        $namespace_pattern = '@\Rnamespace\s+(\w+);@';
-        $namespace = '';
-        if (preg_match($namespace_pattern, $file_str, $namespace_matches)) {
-            $namespace = $namespace_matches[1];
-        }
+        $default_value = $this->askDefaultValue($field_data_type);
 
-        echo 'Class to be updated: ' . $namespace . "\\" . $class_name . "\n";
-
-
-        // ask field name
-        $this->field_name = $this->askFieldName();
-
-
-
-        $id_field_pattern = '@[\h]+protected \$id;@';
-        if (!preg_match($id_field_pattern, $file_str)) {
-            echo "ID field not found\n";
-            exit;
-        }
-
-
-
-        // request field_data_type
-        echo CliUtil::delimiter();
-        echo "\nEnter db field data type. Examples:\n\tint\n\ttext\n\tvarchar(255)\n";
-        //$field_data_type = trim(fgets(STDIN));
-        $field_data_type = CliUtil::readStdinAnswer();
-        // TODO: validate data_type
-
-
-        // TODO: request default value
-        // TODO: enable no default value
-        echo CliUtil::delimiter();
-        echo "\nEnter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"value\"\n";
-        $default_value = CliUtil::readStdinAnswer();
-
-        // TODO: check default value format
-
-        // TODO: check whether default value matches field data type
+        //
+        //
+        //
 
         $class_field_default_value_str = '';
-        $default_value_str = '';
+        $sql_default_value_str = '';
+
         if ($default_value != '') {
             $class_field_default_value_str = ' = ' . $default_value;
-            $default_value_str = ' default ' . $default_value;
+            $sql_default_value_str = ' default ' . $default_value;
         }
 
-        // TODO: use field default value here
-        // TODO: more clever whitespace before new field (the same as before id field)
+        $field_string_for_class = '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
+        $class_file_obj->insertAboveIdField($field_string_for_class);
 
-        $replacement = '';
+        $getters_setters_template = self::gettersSettersTemplate();
+        $getters_setters_template = self::replaceFieldNamePlaceholders($getters_setters_template, $this->field_name);
+        $class_file_obj->insertBelowIdField($getters_setters_template);
 
-        // здесь поле id вставляется под новое поле, чтобы новые поля вставлялись над полем id, а новые методы - под ним
-        // поле id как бы разделяет свойства и методы
-        $replacement .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
-        $replacement .= '    protected $id;' . "\n";
-
-        echo "\nCreate selector method for new field?\n\t1 Yes\n\tENTER No\n";
-        $answer_create_selector = trim(fgets(STDIN));
-
-        if ($answer_create_selector == 1) {
-            $selector_template = self::selectorTemplate();
-            $selector_template = self::replaceFieldVariables($selector_template, $this->field_name);
-            $replacement .= $selector_template;
-        }
-
-        $gettersSettersTemplate = self::gettersSettersTemplate();
-        $gettersSettersTemplate = self::replaceFieldVariables($gettersSettersTemplate, $this->field_name);
-        $replacement .= $gettersSettersTemplate;
-
-        $file_str = preg_replace($id_field_pattern, $replacement, $file_str);
-
-        // TODO: write getter and setter
-
-        // TODO: check errors
-        file_put_contents($this->model_file_path, $file_str);
+        $class_file_obj->save();
 
         echo "\nModel class file updated\n";
 
+        //
+        //
+        //
 
-        // TODO: request field is nullable
-        $field_is_nullable = '';
+        $sql_field_is_nullable_str = '';
 
-        echo CliUtil::delimiter();
-        echo "\nChoose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
-        $is_nullable_reply = trim(fgets(STDIN));
+        if ($field_data_type->can_be_null) {
+            echo CliUtil::delimiter();
+            echo "\nChoose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
+            $is_nullable_reply = trim(fgets(STDIN));
 
-        switch ($is_nullable_reply) {
-            case 'n': // TODO: use constant
-                $field_is_nullable = '';
-                break;
+            switch ($is_nullable_reply) {
+                case 'n': // TODO: use constant
+                    $sql_field_is_nullable_str = '';
+                    break;
 
-            case '': // TODO: use constant
-                $field_is_nullable = ' not null ';
-                break;
+                case '': // TODO: use constant
+                    $sql_field_is_nullable_str = ' not null ';
+                    break;
 
-            default:
-                throw new \Exception('Unsupported answer');
+                default:
+                    throw new \Exception('Unsupported answer');
+            }
         }
-
 
         //
         // adding sql
@@ -202,11 +204,7 @@ class CLIAddFieldToModel
         $model_table_name = $this->getTableNameFromClassFile();
 
         $this->db_table_field_name = $this->field_name;
-        //$this->db_table_field_name = $namespace . "\\" . $class_name . "_" . $this->field_name;
-        //$this->db_table_field_name = preg_replace('@\W@', '_', $this->db_table_field_name);
-        //$this->db_table_field_name = strtolower($this->db_table_field_name);
-
-        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type . ' ' . $field_is_nullable . ' ' . $default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
 
@@ -223,7 +221,7 @@ class CLIAddFieldToModel
         $this->extraFieldFunctionsScreen();
     }
 
-    static public function replaceFieldVariables($str, $field_name){
+    static public function replaceFieldNamePlaceholders($str, $field_name){
         $camelized_field_name = Stringy::create($field_name)->upperCamelize();
 
         $str = str_replace('#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#', $camelized_field_name, $str);
@@ -240,8 +238,10 @@ class CLIAddFieldToModel
             echo "\nClass file: " . $this->model_file_path . "\n";
         }
 
+        $class_file_obj = new PHPClassFile($this->model_file_path);
+
         if (!$this->field_name) {
-            $this->field_name = $this->askFieldName();
+            $this->field_name = $this->askFieldName($class_file_obj);
         }
 
         Assert::assert($this->model_file_path);
@@ -283,12 +283,13 @@ class CLIAddFieldToModel
         Assert::assert($this->field_name);
         Assert::assert($this->model_file_path);
 
+        $class_file_obj = new PHPClassFile($this->model_file_path);
 
+        $selector_template = self::selectorTemplate();
+        $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
+        $class_file_obj->insertBelowIdField($selector_template);
 
-
-
-
-        echo "\nSQL registry updated\n";
+        echo "\nClass file updated\n";
     }
 
     public function addUniqueKey()
@@ -343,13 +344,19 @@ class CLIAddFieldToModel
     static public function selectorTemplate(){
         return <<<'EOT'
 
-    static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
-            self::DB_ID,
-            'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# = ? order by created_at_ts desc',
-            array($value)
-        );
-        return $ids_arr;
+    static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = 30){
+        if (is_null) {
+            return \OLOG\DB\DBWrapper::readColumn(
+                self::DB_ID,
+                'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+            );
+        } else {
+            return \OLOG\DB\DBWrapper::readColumn(
+                self::DB_ID,
+                'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
+                array($value)
+            );
+        }
     }
 
 EOT;

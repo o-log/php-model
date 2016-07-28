@@ -8,13 +8,92 @@ class PHPClassFile
 {
     public $class_file_path;
     public $class_file_text;
+    public $class_name;
+    public $class_namespace = '';
 
+    static public $id_field_pattern = '@[\h]+protected \$id;@';
+
+    // TODO
+    // implement on reflections, regexp cant match complex properties (with multi-line default values, etc.)
+    public function getFieldNamesArr(){
+        /*
+        $field_name_pattern = '@\h+(protected|public|private)\h+\$([\w_]+)(\h*=\h*[]);@';
+
+        $matches_arr = [];
+
+        preg_match_all($field_name_pattern, $this->class_file_text, $matches_arr);
+        */
+    }
+
+    public function save(){
+        $put_result = file_put_contents($this->class_file_path, $this->class_file_text);
+        Assert::assert($put_result);
+    }
+
+    /**
+     * здесь поле id вставляется под новое поле, чтобы новые поля вставлялись над полем id, а новые методы - под ним
+     * поле id как бы разделяет свойства и методы
+     * @param $str
+     * @throws \Exception
+     */
+    public function insertAboveIdField($str){
+        $id_field_pattern = self::$id_field_pattern;
+
+        if (!preg_match($id_field_pattern, $this->class_file_text)) {
+            throw new \Exception("ID field not found");
+        }
+
+        $str .= '    protected $id;' . "\n";
+
+        $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
+    }
+
+    public function insertBelowIdField($str){
+        $id_field_pattern = self::$id_field_pattern;
+
+        if (!preg_match($id_field_pattern, $this->class_file_text)) {
+            throw new \Exception("ID field not found");
+        }
+
+        $str = '    protected $id;' . "\n" . $str;
+
+        $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
+    }
+
+    /**
+     * Loads file.
+     * PHPClassFile constructor.
+     * @param $model_file_path
+     */
     public function __construct($model_file_path)
     {
         $this->class_file_path = $model_file_path;
 
         $this->class_file_text = file_get_contents($this->class_file_path);
         Assert::assert($this->class_file_text); // TODO: better check?
+
+        $this->extractClassName();
+        $this->extractClassNamespace();
+    }
+
+    public function extractClassNamespace(){
+        $namespace_matches = [];
+        $namespace_pattern = '@\Rnamespace\s+(\w+);@';
+        if (preg_match($namespace_pattern, $this->class_file_text, $namespace_matches)) {
+            $this->class_namespace = $namespace_matches[1];
+        }
+    }
+
+    public function extractClassName(){
+
+        $class_name_matches = [];
+        $class_name_pattern = '@\Rclass\s+(\w+)@';
+
+        if (preg_match($class_name_pattern, $this->class_file_text, $class_name_matches)) {
+            $this->class_name = $class_name_matches[1];
+        } else {
+            throw new \Exception("class name not found in class file");
+        }
     }
 
     /**
