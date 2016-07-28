@@ -171,10 +171,10 @@ class TEMPLATECLASS_CLASSNAME implements
     protected $created_at_ts; // initialized by constructor
     protected $id;
 
-    static public function getAllIdsArrByCreatedAtDesc(){
+    static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
         $ids_arr = \OLOG\DB\DBWrapper::readColumn(
             self::DB_ID,
-            'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc'
+            'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );
         return $ids_arr;
     }
