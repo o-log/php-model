@@ -289,6 +289,8 @@ class CLIAddFieldToModel
         $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
         $class_file_obj->insertBelowIdField($selector_template);
 
+        $class_file_obj->save();
+
         echo "\nClass file updated\n";
     }
 
@@ -345,7 +347,7 @@ class CLIAddFieldToModel
         return <<<'EOT'
 
     static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = 30){
-        if (is_null) {
+        if (is_null($value)) {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
                 'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
