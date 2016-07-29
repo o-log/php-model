@@ -247,34 +247,36 @@ class CLIAddFieldToModel
         Assert::assert($this->model_file_path);
         Assert::assert($this->field_name);
 
-        echo CliUtil::delimiter();
+        while (true) {
+            echo CliUtil::delimiter();
 
-        echo "\nExtra functions:\n";
-        echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
-        echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
-        echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector for field\n";
+            echo "\nExtra functions:\n";
+            echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
+            echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
+            echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector for field\n";
 
-        echo "\t" . "ENTER: exit\n"; // TODO: use constants
+            echo "\t" . "ENTER: exit to menu\n"; // TODO: use constants
 
-        $function_code = trim(fgets(STDIN));
+            $function_code = trim(fgets(STDIN));
 
-        // TODO: check format
+            // TODO: check format
 
-        switch ($function_code) {
-            case self::FUNCTION_CODE_ADD_UNIQUE_KEY:
-                $this->addUniqueKey();
-                exit;
+            switch ($function_code) {
+                case self::FUNCTION_CODE_ADD_UNIQUE_KEY:
+                    $this->addUniqueKey();
+                    break;
 
-            case self::FUNCTION_ADD_FOREIGN_KEY:
-                $this->addForeignKey();
-                exit;
+                case self::FUNCTION_ADD_FOREIGN_KEY:
+                    $this->addForeignKey();
+                    break;
 
-            case self::FUNCTION_ADD_SELECTOR:
-                $this->addSelector();
-                exit;
+                case self::FUNCTION_ADD_SELECTOR:
+                    $this->addSelector();
+                    break;
 
-            case '':
-                exit;
+                case '':
+                    return;
+            }
         }
     }
 
