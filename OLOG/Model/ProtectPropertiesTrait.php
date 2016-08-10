@@ -2,7 +2,7 @@
 
 namespace OLOG\Model;
 
-trait ProtectProperties {
+trait ProtectPropertiesTrait {
     public function __set($name, $value){
         throw new \Exception('Accessing invalid property ' . $name);
     }

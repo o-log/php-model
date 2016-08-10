@@ -20,13 +20,15 @@ class FactoryHelper
         \OLOG\Model\Factory::removeObjectFromCache($class_name, $id_to_remove);
     }
 
-    public static function afterUpdate($class_name, $id)
+    public static function removeObjectFromFactoryCache($class_name, $id)
     {
         self::removeObjFromCacheById($class_name, $id);
     }
 
+    /*
     public static function afterDelete($class_name, $id)
     {
         self::removeObjFromCacheById($class_name, $id);
     }
+    */
 }

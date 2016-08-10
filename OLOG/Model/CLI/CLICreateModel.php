@@ -130,7 +130,7 @@ class CLICreateModel
             CLIExecuteSql::executeSqlScreen();
         }
         
-        exit;
+        return;
     }
 
     static public function file_force_contents($filename, $data, $flags = 0)
@@ -162,8 +162,8 @@ class TEMPLATECLASS_CLASSNAME implements
     \OLOG\Model\InterfaceDelete
 {
     use \OLOG\Model\FactoryTrait;
-    use \OLOG\Model\ActiveRecord;
-    use \OLOG\Model\ProtectProperties;
+    use \OLOG\Model\ActiveRecordTrait;
+    use \OLOG\Model\ProtectPropertiesTrait;
 
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';

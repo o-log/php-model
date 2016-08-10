@@ -2,7 +2,7 @@
   "name": "o-log/php-model",
   "description": "Fast PHP ORM with caching.",
   "require-dev": {
-    "phpunit/phpunit": "4.8.*"
+    "phpunit/phpunit": "5.5.*"
   },
   "require": {
     "danielstjules/stringy": "~2.3",

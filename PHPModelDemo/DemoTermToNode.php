@@ -9,8 +9,8 @@ class DemoTermToNode implements
     \OLOG\Model\InterfaceDelete
 {
     use \OLOG\Model\FactoryTrait;
-    use \OLOG\Model\ActiveRecord;
-    use \OLOG\Model\ProtectProperties;
+    use \OLOG\Model\ActiveRecordTrait;
+    use \OLOG\Model\ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'demotermtonode';

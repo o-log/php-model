@@ -7,5 +7,7 @@ namespace OLOG\Model;
  * - Метод delete(), который удаляет данные объекта в базе. Поведение метода при наличии зависимых объектов пока не регламентировано.
  */
 interface InterfaceDelete {
+    public function canDelete(&$message);
     public function delete();
+    public function afterDelete();
 }

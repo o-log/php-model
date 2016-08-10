@@ -5,8 +5,8 @@ namespace PHPModelDemo;
 class DemoModel implements \OLOG\Model\InterfaceFactory
 {
     use \OLOG\Model\FactoryTrait;
-    use \OLOG\Model\ActiveRecord;
-    use \OLOG\Model\ProtectProperties;
+    use \OLOG\Model\ActiveRecordTrait;
+    use \OLOG\Model\ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'demo_model';

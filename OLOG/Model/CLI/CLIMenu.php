@@ -14,6 +14,7 @@ class CLIMenu
     static public function run()
     {
         while (true) {
+            echo CliUtil::delimiter();
             echo "Choose PHPModel function:\n";
             echo "\t" . self::FUNCTION_EXECUTE_SQL . ": execute new SQL queries from registry\n";
             echo "\t" . self::FUNCTION_CREATE_MODEL . ": create model\n";

@@ -5,7 +5,7 @@ namespace OLOG\Cache;
 class CacheMemcache
 {
 
-    static public function set($key, $value, $exp = 0, $bin = 'cache')
+    static public function set($key, $value, $exp = 0)
     {
 
         if ($exp == -1) {
@@ -30,7 +30,7 @@ class CacheMemcache
             return false;
         }
 
-        $full_key = self::dmemcache_key($key, $bin);
+        $full_key = self::dmemcache_key($key);
 
         $mcs_result = $mc->set($full_key, $value, MEMCACHE_COMPRESSED, $exp);
 
@@ -41,14 +41,14 @@ class CacheMemcache
         return TRUE;
     }
 
-    static public function increment($key, $bin = 'cache')
+    static public function increment($key)
     {
         $mc = self::getMcConnectionObj();
         if (!$mc){
             return false;
         }
         
-        $full_key = self::dmemcache_key($key, $bin);
+        $full_key = self::dmemcache_key($key);
         if (!$mc->increment($full_key)) {
             return FALSE;
         } else {
@@ -56,27 +56,27 @@ class CacheMemcache
         }
     }
 
-    static public function get($key, $bin = 'cache')
+    static public function get($key)
     {
         $mc = self::getMcConnectionObj();
         if (!$mc){
             return false;
         }
 
-        $full_key = self::dmemcache_key($key, $bin);
+        $full_key = self::dmemcache_key($key);
         $result = $mc->get($full_key);
 
         return $result;
     }
 
-    static public function delete($key, $bin = 'cache')
+    static public function delete($key)
     {
         $mc = self::getMcConnectionObj();
         if (!$mc){
             return false;
         }
 
-        $full_key = self::dmemcache_key($key, $bin);
+        $full_key = self::dmemcache_key($key);
         return $mc->delete($full_key);
     }
 
@@ -108,10 +108,14 @@ class CacheMemcache
         return $memcache;
     }
 
-    static public function dmemcache_key($key, $bin = 'cache')
+    static public function dmemcache_key($key)
     {
-        $prefix = '123';
-        $full_key = ($prefix ? $prefix . '-' : '') . $bin . '-' . $key;
+        $prefix = CacheConfig::getCacheKeyPrefix();
+        if ($prefix == ''){
+            $prefix = 'default';
+        }
+
+        $full_key = $prefix . '-' . $key;
 
         return md5($full_key);
     }

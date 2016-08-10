@@ -34,9 +34,7 @@ http://www.php-fig.org/psr/psr-4/
 
 Трейт для загрузки объектов из БД по идентификатору с многоуровневым кэшированием (Factory).
 
-Трейты для загрузки и сохранения объектов в БД и их удаления по идентификатору (ActiveRecord). Содержит инфраструктуру для отслеживания изменения объектов и обновления кэша. 
-
-Библиотека для подключения конфига приложения и работы с ним.
+Трейты для загрузки и сохранения объектов в БД и их удаления по идентификатору (ActiveRecordTrait). Содержит инфраструктуру для отслеживания изменения объектов и обновления кэша. 
 
 Библиотека для выполнения sql-запросов.
  
@@ -47,8 +45,6 @@ http://www.php-fig.org/psr/psr-4/
 Утилита для добавления новых свойств к объектам и соответствующего изменения структуры БД, включая создание вторичных ключей и методов для выборки списков.
 
 Утилита миграции БД для переноса изменений в структуре БД между инстансами приложения.
-
-Библиотека вспомогательных методов для работы с урлами, редиректов, проверок и т.п.
 
 # Пример использования
 
@@ -82,8 +78,8 @@ http://www.php-fig.org/psr/psr-4/
     class TestModel implements \OLOG\Model\InterfaceFactory
     {
         use \OLOG\Model\FactoryTrait;
-        use \OLOG\Model\ActiveRecord;
-        use \OLOG\Model\ProtectProperties;
+        use \OLOG\Model\ActiveRecordTrait;
+        use \OLOG\Model\ProtectPropertiesTrait;
 
         const DB_ID = \PHPModelTest\Config::DB_NAME_PHPMODELTEST;
         const DB_TABLE_NAME = 'test_model';
@@ -123,7 +119,7 @@ http://www.php-fig.org/psr/psr-4/
         }
     }
 
-# ActiveRecord
+# ActiveRecordTrait
 
 Этот трейт помогает загружать и сохранять простые объекты в БД.
 
@@ -153,9 +149,9 @@ http://www.php-fig.org/psr/psr-4/
     {
         $this->setLastUpdateTimestamp(time());
     
-        // скопированная из ActiveRecord реализация: сохранение в БД и сброс кэша фабрики
+        // скопированная из ActiveRecordTrait реализация: сохранение в БД и сброс кэша фабрики
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
-        $this->afterUpdate();
+        $this->afterSave();
     }
 
 ## Игнорирование полей при изменении структуры таблицы БД
@@ -188,18 +184,18 @@ http://www.php-fig.org/psr/psr-4/
 
 # Отслеживание изменения или удаления объекта
 
-Метод save трейта ActiveRecord после сохранения объекта в БД вызывает метод afterUpdate().
+Метод save трейта ActiveRecordTrait после сохранения объекта в БД вызывает метод afterSave().
 
 Этот метод имеет умолчательную реализацию, которая сбрасывает кэш фабрики для модели.
 
-Если нужно обрабатывать какие-то зависимости - метод afterUpdate можно переопределить и включить в него нужную логику.
+Если нужно обрабатывать какие-то зависимости - метод afterSave можно переопределить и включить в него нужную логику.
 
 Вот пример кода отслеживания:
 
     /**
-     * overrides factoryTrait method
+     * overrides default method
      */
-    public function afterUpdate()
+    public function afterSave()
     {
         $term_to_node_ids_arr = DemoTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
         foreach ($term_to_node_ids_arr as $term_to_node_id){
@@ -294,7 +290,7 @@ http://www.php-fig.org/psr/psr-4/
     static public function delete($key)
     static public function increment($key)
 
-# ProtectProperties
+# ProtectPropertiesTrait
 
 Сервисный трейт, выбрасывает исключения при обращении к необъявленным в классе свойствам объекта.
 

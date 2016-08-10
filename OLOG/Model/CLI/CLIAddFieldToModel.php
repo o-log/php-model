@@ -66,7 +66,7 @@ class CLIAddFieldToModel
      */
     public function askFieldName($class_file_obj){
         echo CliUtil::delimiter();
-        echo "\nEnter field name. Examples for new field names:\n\tnode_title\n\tmedia_id\n";
+        echo "Enter field name. Examples for new field names:\n\tnode_title\n\tmedia_id\n";
 
         //$class_field_names_arr = $class_file_obj->getFieldNamesArr();
         //echo "\nFields in class:\n";
@@ -89,7 +89,7 @@ class CLIAddFieldToModel
         $data_types_arr[] = new FieldDataType('date', true, true);
         $data_types_arr[] = new FieldDataType('datetime', true, true);
 
-        echo "\nEnter db field data type:\n";
+        echo "Enter db field data type:\n";
         /**
          * @var  $index
          * @var FieldDataType $data_type_obj
@@ -121,7 +121,7 @@ class CLIAddFieldToModel
 
         // TODO: request default value
         echo CliUtil::delimiter();
-        echo "\nEnter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"some_value\"\n";
+        echo "Enter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"some_value\"\n";
         $default_value = CliUtil::readStdinAnswer();
 
         // TODO: check default value format
@@ -134,7 +134,7 @@ class CLIAddFieldToModel
     public function addField()
     {
         echo CliUtil::delimiter();
-        echo "\nChoose model class file:\n";
+        echo "Choose model class file:\n";
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
 
@@ -179,7 +179,7 @@ class CLIAddFieldToModel
 
         if ($field_data_type->can_be_null) {
             echo CliUtil::delimiter();
-            echo "\nChoose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
+            echo "Choose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
             $is_nullable_reply = trim(fgets(STDIN));
 
             switch ($is_nullable_reply) {
@@ -211,7 +211,7 @@ class CLIAddFieldToModel
         echo "\nSQL registry updated\n";
 
         echo CliUtil::delimiter();
-        echo "\nPress ENTER to execure SQL queries, enter n to skip:\n";
+        echo "Press ENTER to execure SQL queries, enter n to skip:\n";
         $command_str = CliUtil::readStdinAnswer();
 
         if ($command_str == ''){
@@ -250,7 +250,7 @@ class CLIAddFieldToModel
         while (true) {
             echo CliUtil::delimiter();
 
-            echo "\nExtra functions:\n";
+            echo "Extra functions:\n";
             echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
             echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
             echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector for field\n";
@@ -338,7 +338,17 @@ class CLIAddFieldToModel
 
         // TODO: check field name format
 
-        $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') /* rand' . rand(0, 999999) . ' */;';
+        $on_delete_action = '';
+
+        echo "Choose foreign key action on delete:\n";
+        echo "\tc: cascade (delete this model when deleting referenced model)\n";
+        echo "\tENTER: default action (restrict deleting referenced model)\n";
+        $delete_action_code = trim(fgets(STDIN));
+        if ($delete_action_code == 'c'){
+            $on_delete_action = ' on delete cascade ';
+        }
+
+        $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') ' . $on_delete_action . '/* rand' . rand(0, 999999) . ' */;';
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
 

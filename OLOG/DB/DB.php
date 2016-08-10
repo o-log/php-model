@@ -72,9 +72,14 @@ class DB
         return $this->pdo->lastInsertId($db_sequence_name);
     }
 
+    public function inTransaction()
+    {
+        return $this->pdo->inTransaction();
+    }
+
     public function beginTransaction()
     {
-        $this->pdo->beginTransaction();
+        return $this->pdo->beginTransaction();
     }
 
     public function commit()

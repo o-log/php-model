@@ -9,4 +9,12 @@ array(
 'alter table demotermtonode add column node_id int  not null    /* rand464119 */;',
 'alter table demotermtonode add foreign key(term_id) references demoterm(id);',
 'alter table demotermtonode add foreign key(node_id) references modeldemonode(id);',
+'alter table modeldemonode add column term_id int  not null    /* rand592832 */;',
+'alter table modeldemonode drop column term_id /* rand59283255 */;',
+'alter table modeldemonode add column term_id int  /* rand59283243 */;',
+'alter table modeldemonode add constraint FK_term_id_239910 foreign key (term_id)  references demoterm (id)  on delete cascade /* rand434915 */;',
+'create table tests_testmodel (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand3534 */;',
+'alter table tests_testmodel add column title varchar(255)  not null   default ""  /* rand919378 */;',
+'alter table tests_testmodel add column disable_delete int  not null   default 0  /* rand943732 */;',
+'alter table tests_testmodel add column throw_exception_after_delete int  not null   default 0  /* rand631526 */;',
 )

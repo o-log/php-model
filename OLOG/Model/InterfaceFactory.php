@@ -10,7 +10,5 @@ interface InterfaceFactory {
     public static function factory($id_to_load, $exception_if_not_loaded = true);
     public static function getMyClassName();
     static public function removeObjFromCacheById($id_to_remove);
-    public function afterUpdate();
-    public function canDelete(&$message);
-    public function afterDelete();
+    public function removeFromFactoryCache();
 }

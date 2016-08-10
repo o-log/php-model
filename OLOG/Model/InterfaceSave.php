@@ -10,4 +10,5 @@ namespace OLOG\Model;
 interface InterfaceSave {
     public function beforeSave();
     public function save();
+    public function afterSave();
 }

@@ -21,13 +21,13 @@ class CLIExecuteSql
 
     static public function executeSqlScreen()
     {
-        echo CliUtil::delimiter();
-        echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
+        //echo CliUtil::delimiter();
+        //echo "Enter database index to execute queries for or press ENTER to execute queries for all databases in config.\n";
 
         $db_arr = DBConfig::getDBSettingsObjArr();
         Assert::assert(!empty($db_arr), 'No database entries in config');
 
-        // TODO: select db by index
+        /*
         $db_id_by_index = [];
         $index = 1;
         foreach ($db_arr as $db_id => $db_conf) {
@@ -35,21 +35,27 @@ class CLIExecuteSql
             $db_id_by_index[$index] = $db_id;
             $index++;
         }
+        */
 
-        $command_str = CliUtil::readStdinAnswer();
+        //$command_str = CliUtil::readStdinAnswer();
 
-        if ($command_str == '') {
+        //if ($command_str == '') {
             $db_arr = DBConfig::getDBSettingsObjArr();
 
             foreach ($db_arr as $db_id => $db_config) {
-                echo "\nDatabase ID in application config: " . $db_id . "\n";
+                echo "Database ID in application config: " . $db_id . "\n";
 
                 self::process_db($db_id);
             }
 
-            return;
-        }
+            echo "All queries executed, press ENTER to continue\n";
 
+        $command_str = CliUtil::readStdinAnswer();
+
+        return;
+        //}
+
+        /*
         $model_db_index = $command_str;
 
         if (!array_key_exists($model_db_index, $db_id_by_index)) {
@@ -58,6 +64,7 @@ class CLIExecuteSql
 
         $model_db_id = $db_id_by_index[$model_db_index];
         self::process_db($model_db_id);
+        */
     }
 
     static public function process_db($db_id)
@@ -115,7 +122,7 @@ class CLIExecuteSql
         foreach ($sql_arr as $sql) {
             if (!in_array($sql, $executed_queries_sql_arr)) {
                 echo CliUtil::delimiter();
-                echo "\n" . $sql . "\n";
+                echo $sql . "\n";
 
                 // TODO: constants
                 echo "\n";

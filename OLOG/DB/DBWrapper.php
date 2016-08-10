@@ -131,7 +131,17 @@ class DBWrapper
             throw new \Exception('getDB failed');
         }
 
-        $db_obj->beginTransaction();
+        return $db_obj->beginTransaction();
+    }
+
+    static public function inTransaction($db_name)
+    {
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
+        if (!$db_obj) {
+            throw new \Exception('getDB failed');
+        }
+
+        return $db_obj->inTransaction();
     }
 
     static public function commitTransaction($db_name)
