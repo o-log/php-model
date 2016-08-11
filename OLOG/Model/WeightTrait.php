@@ -19,13 +19,23 @@ trait WeightTrait
         if (!empty($extra_fields_arr)) {
             foreach ($extra_fields_arr as $extra_field_name => $extra_field_value) {
                 $extra_field_name = preg_replace('|[^a-zA-Z0-9_]|', '', $extra_field_name);
-                $where_arr[] = $extra_field_name . '=?';
-                $params_arr[] = $extra_field_value;
+
+                if (is_null($extra_field_value)){
+                    $where_arr[] = $extra_field_name . ' is null';
+                } else {
+                    $where_arr[] = $extra_field_name . '=?';
+                    $params_arr[] = $extra_field_value;
+                }
             }
         }
 
+        $sql = 'SELECT MAX(weight) FROM ' . self::DB_TABLE_NAME;
+        if (count($where_arr)){
+            $sql .= ' WHERE ' . implode(' AND ', $where_arr);
+        }
+
         $weight = \OLOG\DB\DBWrapper::readField(self::DB_ID,
-            'SELECT MAX(weight) FROM ' . self::DB_TABLE_NAME . ' WHERE ' . implode(' AND ', $where_arr),
+            $sql,
             $params_arr
         );
 
@@ -49,8 +59,13 @@ trait WeightTrait
         if (!empty($extra_fields_arr)) {
             foreach($extra_fields_arr as $extra_field_name => $extra_field_value) {
                 $extra_field_name = preg_replace('|[^a-zA-Z0-9_]|', '', $extra_field_name);
-                $where_arr[] = $extra_field_name . '=?';
-                $params_arr[] = $extra_field_value;
+
+                if (is_null($extra_field_value)){
+                    $where_arr[] = $extra_field_name . ' is null';
+                } else {
+                    $where_arr[] = $extra_field_name . '=?';
+                    $params_arr[] = $extra_field_value;
+                }
             }
         }
 
