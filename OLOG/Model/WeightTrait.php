@@ -42,6 +42,14 @@ trait WeightTrait
         return intval($weight);
     }
 
+    public function initWeight($context_fields_arr){
+        if (is_null($this->getId())){ // TODO: check interface
+            $this->setWeight(
+                self::getMaxWeightForContext($context_fields_arr) + 1
+            );
+        }
+    }
+
     /**
      * находит в указанном контексте (т.е. для набора пар поле - значение) объект с максимальным весом, меньшим чем у текущего, и меняет текущий объект с ним весами
      * т.е. объект поднимается на одну позицию вверх если сортировать по возрастанию веса
