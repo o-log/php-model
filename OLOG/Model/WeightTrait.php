@@ -7,11 +7,39 @@ namespace OLOG\Model;
 trait WeightTrait
 {
     /**
+     * возвращает максимальный вес в указанном контексте (т.е. для набора пар поле - значение)
+     * @param array $extra_fields_arr
+     * @return int
+     */
+    static public function getMaxWeightForContext($extra_fields_arr = array())
+    {
+        $where_arr = [];
+        $params_arr = [];
+
+        if (!empty($extra_fields_arr)) {
+            foreach ($extra_fields_arr as $extra_field_name => $extra_field_value) {
+                $extra_field_name = preg_replace('|[^a-zA-Z0-9_]|', '', $extra_field_name);
+                $where_arr[] = $extra_field_name . '=?';
+                $params_arr[] = $extra_field_value;
+            }
+        }
+
+        $weight = \OLOG\DB\DBWrapper::readField(self::DB_ID,
+            'SELECT MAX(weight) FROM ' . self::DB_TABLE_NAME . ' WHERE ' . implode(' AND ', $where_arr),
+            $params_arr
+        );
+
+        return intval($weight);
+    }
+
+    /**
+     * находит в указанном контексте (т.е. для набора пар поле - значение) объект с максимальным весом, меньшим чем у текущего, и меняет текущий объект с ним весами
+     * т.е. объект поднимается на одну позицию вверх если сортировать по возрастанию веса
      * @param array $extra_fields_arr
      */
     public function swapWeights($extra_fields_arr = array())
     {
-        $current_class_name = self::getMyClassName();
+       $current_class_name = self::getMyClassName();
 
         $current_item_weight = $this->getWeight();
 
