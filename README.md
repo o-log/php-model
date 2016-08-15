@@ -357,3 +357,17 @@ http://www.php-fig.org/psr/psr-4/
 # Тесты
 
 Скрипт test.sh в корневой папке запускает тесты.
+
+# Использование WeightTrait
+
+1. Создать у модели поле weight int not null default 0
+
+2. В модели:
+
+    implements WeightInterface
+    
+    use WeightTrait
+    
+3. В beforeSave() модели вызвать initWeight() с контекстом
+
+После этого можно вывести в списке моделей widgetWeight, также передавая ему контекст. При этом таблицу нужно отсортировать по полю weight по возрастанию.
