@@ -2,6 +2,7 @@
 
 namespace OLOG\Model\CLI;
 
+use OLOG\Assert;
 use OLOG\CliUtil;
 use OLOG\DB\DBConfig;
 
@@ -60,6 +61,8 @@ class CLICreateModel
         echo "Choose model DB index:\n";
         //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
         $db_arr = DBConfig::getDBSettingsObjArr();
+
+        Assert::assert(count($db_arr) > 0, 'No database settings found in config');
 
         // TODO: select db by index
         $db_id_by_index = [];
