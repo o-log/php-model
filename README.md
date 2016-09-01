@@ -1,16 +1,14 @@
-# Платформа для разработки приложений
+Библиотека может использоваться как автономно, так и совместно с:
 
-Платформа состоит из следующих библиотек:
+- Роутер: https://github.com/o-log/php-router
 
-Роутер: https://github.com/o-log/php-router
+- Работа с объектами: https://github.com/o-log/php-model
 
-Работа с объектами: https://github.com/o-log/php-model
+- Компоненты админки: https://github.com/o-log/php-crud
 
-Компоненты админки: https://github.com/o-log/php-crud
+- Адаптер bootstrap: https://github.com/o-log/php-bt
 
-Адаптер bootstrap: https://github.com/o-log/php-bt
-
-генератор каркаса приложений: https://github.com/o-log/create_application
+- Генератор каркаса приложений: https://github.com/o-log/create_application
 
 # Общие характеристики
 
@@ -30,7 +28,7 @@ http://www.php-fig.org/psr/psr-4/
 
 Кэш: memcached.
 
-# Основной функционал библиотеки php-model
+# Основные возможности
 
 Трейт для загрузки объектов из БД по идентификатору с многоуровневым кэшированием (Factory).
 
@@ -80,17 +78,17 @@ http://www.php-fig.org/psr/psr-4/
         use \OLOG\Model\FactoryTrait;
         use \OLOG\Model\ActiveRecordTrait;
         use \OLOG\Model\ProtectPropertiesTrait;
-
+        
         const DB_ID = \PHPModelTest\Config::DB_NAME_PHPMODELTEST;
         const DB_TABLE_NAME = 'test_model';
-
+        
         protected $id = 0;
         protected $title = '';
-
+        
         public function getTitle(){
             return $this->title;
         }
-
+        
         public function setTitle($title){
             $this->title = $title;
         }
@@ -102,7 +100,7 @@ http://www.php-fig.org/psr/psr-4/
 
     \PHPModelDemo\Config::init();
     
-Это можно сделать например в начале точки входа.
+Это можно сделать например в начале точки входа (файла index.php).
     
 Пример конфигурации:
 
@@ -139,7 +137,7 @@ http://www.php-fig.org/psr/psr-4/
 
 - иметь константы DB_ID и DB_TABLE_NAME
 
-## Переопределение методов загрузки, сохранения и удаления
+## Переопределение и дополнение методов загрузки, сохранения и удаления
   
 Методы load, save и delete, которые предоставляются трейтом, можно переопределить в классе модели и включить в них собственную логику.
 
@@ -186,6 +184,11 @@ http://www.php-fig.org/psr/psr-4/
         $match_obj->save();
     }
 
+Методы afterSave() и afterDelete() имеют умолчательную реализацию, которая сбрасывает кэш фабрики для модели. При переопределении этих методов нужно не забывать включать в них сброс кэша фабрики.
+
+## Транзакции
+
+Сохранение и удаление модели выполняются в рамках транзакции, поэтому можно безопасно выбрасывать исключение внутри beforeSave(), afterSave(), canDelete() и afterDelete() - при этом база вернется к состоянию до начала сохранения или удаления.
 
 ## Игнорирование полей при изменении структуры таблицы БД
 
@@ -209,38 +212,11 @@ http://www.php-fig.org/psr/psr-4/
 
 # Контроль ссылочной целостности данных
 
-Для контроля ссылочной целостности рекомендует создавать вторичные ключи в БД для всех полей, которые ссылаются на модели в других таблицах.
+Для контроля ссылочной целостности рекомендуется создавать вторичные ключи в БД для всех полей, которые ссылаются на модели в других таблицах.
 
 Вторичные ключи можно добавить утилитой добавления свойств к моделям непосредственно при создании свойства.
 
-При этом если ссылающееся поле может быть пустым - оно должно быть создано как nullable без значения по умолчанию. При этом отсутствие ссылки будет сохраняться как null. 
-
-# Отслеживание изменения или удаления объекта
-
-Метод save трейта ActiveRecordTrait после сохранения объекта в БД вызывает метод afterSave().
-
-Этот метод имеет умолчательную реализацию, которая сбрасывает кэш фабрики для модели.
-
-Если нужно обрабатывать какие-то зависимости - метод afterSave можно переопределить и включить в него нужную логику.
-
-Вот пример кода отслеживания:
-
-    /**
-     * overrides default method
-     */
-    public function afterSave()
-    {
-        $term_to_node_ids_arr = DemoTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
-        foreach ($term_to_node_ids_arr as $term_to_node_id){
-            $term_to_node_obj = DemoTermToNode::factory($term_to_node_id);
-            $term_to_node_obj->setCreatedAtTs($this->getCreatedAtTs());
-            $term_to_node_obj->save();
-        }
-        
-        $this->removeFromFactoryCache();
-    }
-
-Этот код реплицирует время создания ноды в модель связи ноды с термом.
+Если ссылающееся поле может быть пустым - оно должно быть создано как nullable без значения по умолчанию. При этом отсутствие ссылки будет сохраняться как null. 
 
 # Библиотека для работы с БД
 
@@ -322,6 +298,10 @@ http://www.php-fig.org/psr/psr-4/
     static public function get($key)
     static public function delete($key)
     static public function increment($key)
+
+Если с одним сервером мемкеша работает несколько сайтов - нужно добавить уникальный префикс ключа кэша:
+
+    CacheConfig::setCacheKeyPrefix('site_instance_uniq_name');
 
 # ProtectPropertiesTrait
 
