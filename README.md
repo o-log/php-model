@@ -143,16 +143,49 @@ http://www.php-fig.org/psr/psr-4/
   
 Методы load, save и delete, которые предоставляются трейтом, можно переопределить в классе модели и включить в них собственную логику.
 
-Вот пример переопределенного метода save: 
+При необходимости дополнительной обработки перед сохранением или после сохранения модели можно определить методы beforeSave() и afterSave():
 
-    public function save()
-    {
-        $this->setLastUpdateTimestamp(time());
-    
-        // скопированная из ActiveRecordTrait реализация: сохранение в БД и сброс кэша фабрики
-        \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
-        $this->afterSave();
+    public function beforeSave(){
+        $this->setBody($this->getTitle() . $this->getTitle());
     }
+
+    /**
+     * overrides factoryTrait method
+     */
+    public function afterSave()
+    {
+        $term_to_node_ids_arr = DemoTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
+        foreach ($term_to_node_ids_arr as $term_to_node_id){
+            $term_to_node_obj = DemoTermToNode::factory($term_to_node_id);
+            $term_to_node_obj->setCreatedAtTs($this->getCreatedAtTs());
+            $term_to_node_obj->save();
+        }
+        
+        $this->removeFromFactoryCache();
+    }
+
+Метод beforeSave() позволяет изменить данные модели перед сохранением или заблокировать сохранение.
+Метод afterSave() позволяет например сбросить кэш модели или обновить данные связанных моделей.
+
+Аналогичная пара методов вызывается при удалении модели: canDelete() и afterDelete():
+
+    public function canDelete(&$message){
+        if ($this->getDisableDele!te()){
+            $message = 'Delete disabled';
+            return false;
+        }
+
+        return true;
+    }
+
+    public function afterDelete(){
+        $match_obj = Match::factory($this->getMatchId());
+
+        // обновляем тайтл матча после отвязывания команд
+        $match_obj->regenerateTitle();
+        $match_obj->save();
+    }
+
 
 ## Игнорирование полей при изменении структуры таблицы БД
 
