@@ -102,10 +102,13 @@ trait ActiveRecordTrait
      */
     public function afterDelete()
     {
-        // сбрасываем фабричный кэш только ели модель реализует interfaceFactory
+        /*
         if ($this instanceof InterfaceFactory) {
             $class_name = self::getMyClassName();
             FactoryHelper::removeObjFromCacheById($class_name, $this->getId());
+        }*/
+        if ($this instanceof InterfaceFactory) {
+            $this->removeFromFactoryCache();
         }
     }
 
