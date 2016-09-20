@@ -2,6 +2,7 @@
 
 namespace OLOG\Model;
 use OLOG\DB\DBWrapper;
+use OLOG\FullObjectId;
 
 /**
  * Для работы с ActiveRecord необходимо:
@@ -56,7 +57,16 @@ trait ActiveRecordTrait
 
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
 
-        $this->afterSave();
+        // не вызываем afterSave если это вызов save для этого объекта изнутри aftersave этого же объекта (для предотвращения бесконечного рекурсивного вызова afterSave)
+        static $__inprogress = [];
+        $inprogress_key = FullObjectId::getFullObjectId($this);
+        if (!array_key_exists($inprogress_key, $__inprogress)) {
+            $__inprogress[$inprogress_key] = 1;
+
+            $this->afterSave();
+
+            unset($__inprogress[$inprogress_key]);
+        }
 
         // комитим только если мы же и стартовали транзакцию (на случай вложенных вызовов)
         if ($transaction_is_my) {

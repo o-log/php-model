@@ -19,7 +19,16 @@ class TestModel implements
     protected $title = "";
     protected $disable_delete = 0;
     protected $throw_exception_after_delete = 0;
+    protected $after_save_counter = 0;
     protected $id;
+
+    public function getAfterSaveCounter(){
+        return $this->after_save_counter;
+    }
+
+    public function setAfterSaveCounter($value){
+        $this->after_save_counter = $value;
+    }
 
     public function getThrowExceptionAfterDelete(){
         return $this->throw_exception_after_delete;
@@ -43,8 +52,6 @@ class TestModel implements
         $this->disable_delete = $value;
     }
 
-
-
     public function getTitle(){
         return $this->title;
     }
@@ -53,7 +60,12 @@ class TestModel implements
         $this->title = $value;
     }
 
+    public function afterSave(){
+        $this->removeFromFactoryCache();
 
+        $this->setAfterSaveCounter($this->getAfterSaveCounter() + 1);
+        $this->save();
+    }
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
         $ids_arr = \OLOG\DB\DBWrapper::readColumn(
