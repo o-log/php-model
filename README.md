@@ -152,14 +152,14 @@ http://www.php-fig.org/psr/psr-4/
      */
     public function afterSave()
     {
+        $this->removeFromFactoryCache();
+
         $term_to_node_ids_arr = DemoTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
         foreach ($term_to_node_ids_arr as $term_to_node_id){
             $term_to_node_obj = DemoTermToNode::factory($term_to_node_id);
             $term_to_node_obj->setCreatedAtTs($this->getCreatedAtTs());
             $term_to_node_obj->save();
         }
-        
-        $this->removeFromFactoryCache();
     }
 
 Метод beforeSave() позволяет изменить данные модели перед сохранением или заблокировать сохранение.
@@ -185,6 +185,7 @@ http://www.php-fig.org/psr/psr-4/
     }
 
 Методы afterSave() и afterDelete() имеют умолчательную реализацию, которая сбрасывает кэш фабрики для модели. При переопределении этих методов нужно не забывать включать в них сброс кэша фабрики.
+Срос кэша фабрики лучше делать первой операцией в обработчике, чтобы дальнейший код видел уже новую версию объекта. 
 
 ## Транзакции
 
@@ -377,10 +378,20 @@ http://www.php-fig.org/psr/psr-4/
 
 2. В модели:
 
-    implements WeightInterface
+    implements InterfaceWeight
     
     use WeightTrait
     
-3. В beforeSave() модели вызвать initWeight() с контекстом
+3. В beforeSave() модели вызвать initWeight() с контекстом.
+Вот пример инициализации веса для стадии турнира (внутри каждого турнира у стадий свои веса):
+
+    public function beforeSave(){
+        $this->initWeight(['tournament_id' => $this->getTournamentId()]);
+    }
 
 После этого можно вывести в списке моделей widgetWeight, также передавая ему контекст. При этом таблицу нужно отсортировать по полю weight по возрастанию.
+
+Внимание! Если weightTrait добавляется к существующй модели, то для существующих объектов веса проинициализированы не будут! У них всех веса будут равны 0.
+В этом случае нужно инициализировать их уникальными значениями, например:
+
+    update stage set weight = id;
