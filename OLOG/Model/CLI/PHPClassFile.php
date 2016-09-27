@@ -12,6 +12,7 @@ class PHPClassFile
     public $class_namespace = '';
 
     static public $id_field_pattern = '@[\h]+protected \$id;@';
+    static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+protected \$id;@';
 
     // TODO
     // implement on reflections, regexp cant match complex properties (with multi-line default values, etc.)
@@ -32,22 +33,40 @@ class PHPClassFile
 
     /**
      * здесь поле id вставляется под новое поле, чтобы новые поля вставлялись над полем id, а новые методы - под ним
-     * поле id как бы разделяет свойства и методы
+     * то есть поле id как бы разделяет свойства и методы
+     *
+     * поддерживается и просто поле id, и поле id с константой _ID над ним - если поле с константой, то они так и останутся парочкой
+     *
      * @param $str
      * @throws \Exception
      */
     public function insertAboveIdField($str){
-        $id_field_pattern = self::$id_field_pattern;
+        $id_field_with_constant_pattern = self::$id_field_with_constant_pattern;
 
-        if (!preg_match($id_field_pattern, $this->class_file_text)) {
-            throw new \Exception("ID field not found");
+        if (!preg_match($id_field_with_constant_pattern, $this->class_file_text)) {
+            $id_field_pattern = self::$id_field_pattern;
+
+            if (!preg_match($id_field_pattern, $this->class_file_text)) {
+                throw new \Exception("ID field not found");
+            }
+
+            $str .= '    protected $id;' . "\n";
+
+            $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
         }
 
+        $str .= '    const _ID = \'id\';' . "\n";
         $str .= '    protected $id;' . "\n";
 
-        $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
+        $this->class_file_text = preg_replace($id_field_with_constant_pattern, $str, $this->class_file_text);
     }
 
+    /**
+     * здесь поддержку константы _ID (как в insertAboveIdField) не делал - затрагивается только строка с самим полем id
+     *
+     * @param $str
+     * @throws \Exception
+     */
     public function insertBelowIdField($str){
         $id_field_pattern = self::$id_field_pattern;
 

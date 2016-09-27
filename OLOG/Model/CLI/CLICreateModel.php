@@ -171,13 +171,15 @@ class TEMPLATECLASS_CLASSNAME implements
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
+    const _CREATED_AT_TS = 'created_at_ts';
     protected $created_at_ts; // initialized by constructor
+    const _ID = 'id';
     protected $id;
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
         $ids_arr = \OLOG\DB\DBWrapper::readColumn(
             self::DB_ID,
-            'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );
         return $ids_arr;
     }

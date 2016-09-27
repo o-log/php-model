@@ -24,7 +24,7 @@ http://www.php-fig.org/psr/psr-2/
 
 http://www.php-fig.org/psr/psr-4/
 
-Педдерживаемые СУБД: MySQL, Postgres.
+Педдерживаемые СУБД: MySQL, Postgres (поддержка не протестирована!).
 
 Кэш: memcached.
 

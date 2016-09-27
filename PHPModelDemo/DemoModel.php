@@ -11,7 +11,19 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'demo_model';
 
+    const _WEIGHT = 'weight';
+    protected $weight = 0;
     protected $id;
+
+    public function getWeight(){
+        return $this->weight;
+    }
+
+    public function setWeight($value){
+        $this->weight = $value;
+    }
+
+
     protected $title = '';
 
     /**

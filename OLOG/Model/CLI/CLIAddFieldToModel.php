@@ -131,6 +131,10 @@ class CLIAddFieldToModel
         return $default_value;
     }
 
+    static public function constantNameForFieldName($field_name){
+        return '_' . strtoupper($field_name);
+    }
+
     public function addField()
     {
         echo CliUtil::delimiter();
@@ -160,7 +164,8 @@ class CLIAddFieldToModel
             $sql_default_value_str = ' default ' . $default_value;
         }
 
-        $field_string_for_class = '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
+        $field_string_for_class = '    const ' . self::constantNameForFieldName($this->field_name) . ' = \'' . $this->field_name . '\';' . "\n";
+        $field_string_for_class .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
         $class_file_obj->insertAboveIdField($field_string_for_class);
 
         $getters_setters_template = self::gettersSettersTemplate();
@@ -226,6 +231,7 @@ class CLIAddFieldToModel
 
         $str = str_replace('#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#', $camelized_field_name, $str);
         $str = str_replace('#FIELDTEMPLATE_FIELD_NAME#', $field_name, $str);
+        $str = str_replace('#FIELDTEMPLATE_FIELD_CONSTANT#', self::constantNameForFieldName($field_name), $str);
 
         return $str;
     }
@@ -355,6 +361,7 @@ class CLIAddFieldToModel
         echo "\nSQL registry updated\n";
     }
 
+    // TODO: replace hrdcoded "id" and "created_at_ts" field names by constants
     static public function selectorTemplate(){
         return <<<'EOT'
 
@@ -362,12 +369,12 @@ class CLIAddFieldToModel
         if (is_null($value)) {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
-                'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+                'select id from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
             );
         } else {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
-                'select id from ' . self::DB_TABLE_NAME . ' where #FIELDTEMPLATE_FIELD_NAME# = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
+                'select id from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
                 array($value)
             );
         }

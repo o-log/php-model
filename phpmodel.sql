@@ -27,4 +27,10 @@ array(
 'alter table testtermtonode add foreign key(node_id) references modeltestnode(id);',
 'create table testterm (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand5893 */;',
 'alter table tests_testmodel add column after_save_counter int  not null   default 0  /* rand334647 */;',
+'create table phpmodeldemo_consttest (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand4311 */;',
+'alter table phpmodeldemo_consttest add column title varchar(255)  not null    /* rand54733 */;',
+'alter table phpmodeldemo_consttest add column body text    /* rand767091 */;',
+'alter table phpmodeldemo_consttest add column weight int  not null   default 0  /* rand76196 */;',
+'alter table demo_model add column weight int  not null    /* rand209183 */;',
+'alter table demo_model change weight weight int not null default 0   /* rand209183 */;',
 )
