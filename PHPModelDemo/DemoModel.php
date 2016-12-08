@@ -13,7 +13,43 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
 
     const _WEIGHT = 'weight';
     protected $weight = 0;
+    const _COLLATE_TEST = 'collate_test';
+    protected $collate_test;
+    const _COLLATE_TEST_2 = 'collate_test_2';
+    protected $collate_test_2;
+    const _COLLATE_TEST_3 = 'collate_test_3';
+    protected $collate_test_3;
     protected $id;
+
+    public function getCollateTest3(){
+        return $this->collate_test_3;
+    }
+
+    public function setCollateTest3($value){
+        $this->collate_test_3 = $value;
+    }
+
+
+
+    public function getCollateTest2(){
+        return $this->collate_test_2;
+    }
+
+    public function setCollateTest2($value){
+        $this->collate_test_2 = $value;
+    }
+
+
+
+    public function getCollateTest(){
+        return $this->collate_test;
+    }
+
+    public function setCollateTest($value){
+        $this->collate_test = $value;
+    }
+
+
 
     public function getWeight(){
         return $this->weight;

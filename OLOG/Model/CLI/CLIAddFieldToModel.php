@@ -82,12 +82,12 @@ class CLIAddFieldToModel
 
         $data_types_arr = [];
 
-        $data_types_arr[] = new FieldDataType('tinyint', true, true);
-        $data_types_arr[] = new FieldDataType('int', true, true);
-        $data_types_arr[] = new FieldDataType('varchar(255)', true, true);
-        $data_types_arr[] = new FieldDataType('text', false, false);
-        $data_types_arr[] = new FieldDataType('date', true, true);
-        $data_types_arr[] = new FieldDataType('datetime', true, true);
+        $data_types_arr[] = new FieldDataType('tinyint', true, true, false);
+        $data_types_arr[] = new FieldDataType('int', true, true, false);
+        $data_types_arr[] = new FieldDataType('varchar(255)', true, true, true);
+        $data_types_arr[] = new FieldDataType('text', false, false, false);
+        $data_types_arr[] = new FieldDataType('date', true, true, false);
+        $data_types_arr[] = new FieldDataType('datetime', true, true, false);
 
         echo "Enter db field data type:\n";
         /**
@@ -131,6 +131,30 @@ class CLIAddFieldToModel
         return $default_value;
     }
 
+    /**
+     * @param FieldDataType $field_data_type
+     * @return string
+     */
+    public function askCollate($field_data_type){
+
+        if (!$field_data_type->can_have_collate){
+            return '';
+        }
+
+        echo CliUtil::delimiter();
+
+        // alter table imbalance_match change column url url varchar(255) collate utf8_bin not null /* 873468753645 */
+
+        echo "Enter database field collate, press ENTER to leave default. Examples:\n\tutf8_bin - for url fields to make them case sensitive\n";
+        $collate = CliUtil::readStdinAnswer();
+
+        // TODO: check format
+
+        // TODO: check whether value matches field data type
+
+        return $collate;
+    }
+
     static public function constantNameForFieldName($field_name){
         return '_' . strtoupper($field_name);
     }
@@ -151,6 +175,7 @@ class CLIAddFieldToModel
         $field_data_type = $this->askDataType();
 
         $default_value = $this->askDefaultValue($field_data_type);
+        $collate = $this->askCollate($field_data_type);
 
         //
         //
@@ -158,10 +183,15 @@ class CLIAddFieldToModel
 
         $class_field_default_value_str = '';
         $sql_default_value_str = '';
+        $sql_collate_str = '';
 
         if ($default_value != '') {
             $class_field_default_value_str = ' = ' . $default_value;
             $sql_default_value_str = ' default ' . $default_value;
+        }
+
+        if ($collate != '') {
+            $sql_collate_str = ' collate ' . $collate;
         }
 
         $field_string_for_class = '    const ' . self::constantNameForFieldName($this->field_name) . ' = \'' . $this->field_name . '\';' . "\n";
@@ -209,7 +239,7 @@ class CLIAddFieldToModel
         $model_table_name = $this->getTableNameFromClassFile();
 
         $this->db_table_field_name = $this->field_name;
-        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
 
         CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
 

@@ -33,4 +33,7 @@ array(
 'alter table phpmodeldemo_consttest add column weight int  not null   default 0  /* rand76196 */;',
 'alter table demo_model add column weight int  not null    /* rand209183 */;',
 'alter table demo_model change weight weight int not null default 0   /* rand209183 */;',
+'alter table demo_model add column collate_test varchar(255)   not null    /* rand203401 */;',
+'alter table demo_model add column collate_test_2 varchar(255)  collate utf8_bin  not null    /* rand546130 */;',
+'alter table demo_model add column collate_test_3 int   not null    /* rand174880 */;',
 )
