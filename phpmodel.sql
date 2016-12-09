@@ -36,4 +36,6 @@ array(
 'alter table demo_model add column collate_test varchar(255)   not null    /* rand203401 */;',
 'alter table demo_model add column collate_test_2 varchar(255)  collate utf8_bin  not null    /* rand546130 */;',
 'alter table demo_model add column collate_test_3 int   not null    /* rand174880 */;',
+'alter table demo_model add column demo_node_id int   not null    /* rand518678 */;',
+'alter table demo_model add constraint FK_demo_node_id_978168 foreign key (demo_node_id)  references modeldemonode (id) /* rand636538 */;',
 )

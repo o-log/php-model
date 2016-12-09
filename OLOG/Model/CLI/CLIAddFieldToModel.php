@@ -266,6 +266,12 @@ class CLIAddFieldToModel
         return $str;
     }
 
+    static public function replacePageSizePlaceholders($str, $page_size){
+        $str = str_replace('#SELECTOR_PAGE_SIZE#', $page_size, $str);
+
+        return $str;
+    }
+
     public function extraFieldFunctionsScreen()
     {
         if (!$this->model_file_path){
@@ -289,7 +295,7 @@ class CLIAddFieldToModel
             echo "Extra functions:\n";
             echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
             echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
-            echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector for field\n";
+            echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector method for field\n";
 
             echo "\t" . "ENTER: exit to menu\n"; // TODO: use constants
 
@@ -321,10 +327,20 @@ class CLIAddFieldToModel
         Assert::assert($this->field_name);
         Assert::assert($this->model_file_path);
 
+        echo "Enter page size for selector, press ENTER to leave default (30):\n";
+        $page_size = trim(fgets(STDIN));
+
+        if ($page_size == ''){
+            $page_size = '30';
+        }
+
+        // TODO: check page size validity
+
         $class_file_obj = new PHPClassFile($this->model_file_path);
 
         $selector_template = self::selectorTemplate();
         $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
+        $selector_template = self::replacePageSizePlaceholders($selector_template, $page_size);
         $class_file_obj->insertBelowIdField($selector_template);
 
         $class_file_obj->save();
@@ -369,8 +385,12 @@ class CLIAddFieldToModel
         // TODO: check table name format
 
         // TODO: select from target model fields?
-        echo "Enter target db table field name:\n";
+        echo "Enter target db table field name, press ENTER to leave default (id):\n";
         $target_field_name = trim(fgets(STDIN));
+
+        if ($target_field_name == ''){
+            $target_field_name = 'id';
+        }
 
         // TODO: check field name format
 
@@ -395,7 +415,7 @@ class CLIAddFieldToModel
     static public function selectorTemplate(){
         return <<<'EOT'
 
-    static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = 30){
+    static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
         if (is_null($value)) {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
