@@ -155,26 +155,38 @@ class CLICreateModel
         // здесь поле id стоит ниже остальных, потому что добавлялка полей будет вставлять новые поля под него. т.е. поле id как бы разделяет поля и методы
         return <<<'EOT'
 <?php
-
 namespace TEMPLATECLASS_NAMESPACE;
 
+use OLOG\Model\ActiveRecordTrait;
+use OLOG\Model\FactoryTrait;
+use OLOG\Model\InterfaceDelete;
+use OLOG\Model\InterfaceFactory;
+use OLOG\Model\InterfaceLoad;
+use OLOG\Model\InterfaceSave;
+use OLOG\Model\ProtectPropertiesTrait;
+
 class TEMPLATECLASS_CLASSNAME implements
-    \OLOG\Model\InterfaceFactory,
-    \OLOG\Model\InterfaceLoad,
-    \OLOG\Model\InterfaceSave,
-    \OLOG\Model\InterfaceDelete
+    InterfaceFactory,
+    InterfaceLoad,
+    InterfaceSave,
+    InterfaceDelete
 {
-    use \OLOG\Model\FactoryTrait;
-    use \OLOG\Model\ActiveRecordTrait;
-    use \OLOG\Model\ProtectPropertiesTrait;
+    use FactoryTrait;
+    use ActiveRecordTrait;
+    use ProtectPropertiesTrait;
 
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
-    const _CREATED_AT_TS = 'created_at_ts';
-    protected $created_at_ts; // initialized by constructor
     const _ID = 'id';
+    const _CREATED_AT_TS = 'created_at_ts';
+    
     protected $id;
+    protected $created_at_ts; // initialized by constructor
+    
+    public function __construct(){
+        $this->created_at_ts = time();
+    }
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
         $ids_arr = \OLOG\DB\DBWrapper::readColumn(
@@ -182,10 +194,6 @@ class TEMPLATECLASS_CLASSNAME implements
             'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );
         return $ids_arr;
-    }
-
-    public function __construct(){
-        $this->created_at_ts = time();
     }
 
     /**
