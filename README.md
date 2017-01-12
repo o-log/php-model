@@ -374,15 +374,15 @@ http://www.php-fig.org/psr/psr-4/
 
 # Использование WeightTrait
 
-1. Создать у модели поле weight int not null default 0
+Создать у модели поле weight int not null default 0
 
-2. В модели:
+В модели:
 
     implements InterfaceWeight
     
     use WeightTrait
     
-3. В beforeSave() модели вызвать initWeight() с контекстом.
+В beforeSave() модели вызвать initWeight() с контекстом.
 Вот пример инициализации веса для стадии турнира (внутри каждого турнира у стадий свои веса):
 
     public function beforeSave(){
