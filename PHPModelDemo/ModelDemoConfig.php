@@ -16,7 +16,7 @@ class ModelDemoConfig
     {
         DBConfig::setDBSettingsObj(
             self::DB_NAME_PHPMODELDEMO,
-            new DBSettings('localhost', 'db_imbalance', 'root', '303qaz')
+            new DBSettings('localhost', 'phpmodel', 'root', '1')
         );
 
         CacheConfig::addServerSettingsObj(
