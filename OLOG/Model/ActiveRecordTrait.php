@@ -1,7 +1,6 @@
 <?php
 
 namespace OLOG\Model;
-use ModelAfterSaveCallbackInterface;
 use OLOG\DB\DBWrapper;
 use OLOG\FullObjectId;
 
@@ -73,7 +72,7 @@ trait ActiveRecordTrait
                  * реализация интерфейса проверена на этапе добавления подписчиков
                  * @var ModelAfterSaveCallbackInterface $after_save_subscriber
                  */
-                $after_save_subscriber::afterSave();
+                $after_save_subscriber::afterSave($this->getId());
             }
 
             unset($__inprogress[$inprogress_key]);

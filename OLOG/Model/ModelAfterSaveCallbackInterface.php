@@ -4,5 +4,8 @@ namespace OLOG\Model;
 
 Interface ModelAfterSaveCallbackInterface {
 
-    public static function afterSave();
+    /**
+     * @param $id
+     */
+    public static function afterSave($id);
 }
