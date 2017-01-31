@@ -1,6 +1,7 @@
 <?php
 
 namespace OLOG\Model;
+use ModelAfterSaveCallbackInterface;
 use OLOG\DB\DBWrapper;
 use OLOG\FullObjectId;
 
@@ -64,6 +65,15 @@ trait ActiveRecordTrait
             $__inprogress[$inprogress_key] = 1;
 
             $this->afterSave();
+
+            $after_save_subscribers_arr = ModelConfig::getAfterSaveSubscribersArr(self::class);
+
+            foreach ($after_save_subscribers_arr as $after_save_subscriber) {
+                /**
+                 * @var ModelAfterSaveCallbackInterface $after_save_subscriber
+                 */
+                $after_save_subscriber::afterSave();
+            }
 
             unset($__inprogress[$inprogress_key]);
         }
