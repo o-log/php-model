@@ -4,6 +4,11 @@ require_once '../vendor/autoload.php';
 
 \PHPModelDemo\ModelDemoConfig::init();
 
+$new_model = new \PHPModelDemo\SomeModel();
+$new_model->save();
+
+
+
 echo '<div>MODELS <a href="/?a=add_model">+</a></div>';
 
 // ACTIONS
