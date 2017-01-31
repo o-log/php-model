@@ -70,6 +70,7 @@ trait ActiveRecordTrait
 
             foreach ($after_save_subscribers_arr as $after_save_subscriber) {
                 /**
+                 * реализация интерфейса проверена на этапе добавления подписчиков
                  * @var ModelAfterSaveCallbackInterface $after_save_subscriber
                  */
                 $after_save_subscriber::afterSave();
