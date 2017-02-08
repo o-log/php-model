@@ -9,7 +9,7 @@ class ModelConfig {
     static protected $after_save_subscribers_arr = [];
     static protected $before_save_subscribers_arr = [];
 
-    public static function getBeforeSavesubscribers(string $model_class_name) {
+    public static function getBeforeSavesubscribersArr(string $model_class_name) {
         return self::$before_save_subscribers_arr[$model_class_name] ?? [];
     }
 
@@ -31,7 +31,7 @@ class ModelConfig {
         self::$after_save_subscribers_arr[$model_class_name][] = $after_save_callback_class_name;
     }
 
-    public static function getAfterSaveSubscribers(string $model_class_name) {
+    public static function getAfterSaveSubscribersArr(string $model_class_name) {
         return self::$after_save_subscribers_arr[$model_class_name] ?? [];
     }
 }
