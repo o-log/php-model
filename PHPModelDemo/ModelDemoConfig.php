@@ -25,6 +25,6 @@ class ModelDemoConfig
 
 
         ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
-
+        ModelConfig::addBeforeSaveSubscribers(SomeModel::class, DemoBeforeSaveSubscriber::class);
     }
 }
