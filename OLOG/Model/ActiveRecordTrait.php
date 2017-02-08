@@ -54,7 +54,7 @@ trait ActiveRecordTrait
         }
 
         $this->beforeSave();
-        $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribers(self::class);
+        $before_save_subscribers_arr = ModelConfig::getBeforeSavesubscribersArr(self::class);
 
         foreach ($before_save_subscribers_arr as $before_save_subscriber) {
             /**
