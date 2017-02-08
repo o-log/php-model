@@ -16,7 +16,7 @@ class ModelDemoConfig
     {
         DBConfig::setDBSettingsObj(
             self::DB_NAME_PHPMODELDEMO,
-            new DBSettings('localhost', 'phpmodel', 'root', '1')
+            new DBSettings('localhost', 'db_imbalance', 'root', '303qaz')
         );
 
         CacheConfig::addServerSettingsObj(
@@ -25,6 +25,7 @@ class ModelDemoConfig
 
 
         ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
+        ModelConfig::addBeforeSaveSubscribers(SomeModel::class, DemoBeforeSaveSubscriber::class);
         
     }
 }
