@@ -54,7 +54,7 @@ trait ActiveRecordTrait
         }
 
         $this->beforeSave();
-        $before_save_subscribers_arr = ModelConfig::getBeforeSavesubscribersArr(self::class);
+        $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribersArr(self::class);
 
         foreach ($before_save_subscribers_arr as $before_save_subscriber) {
             /**
@@ -83,6 +83,7 @@ trait ActiveRecordTrait
                  */
                 $after_save_subscriber::afterSave($this->getId());
             }
+            
             unset($__inprogress[$inprogress_key]);
         }
 
