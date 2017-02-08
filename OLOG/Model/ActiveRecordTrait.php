@@ -53,20 +53,15 @@ trait ActiveRecordTrait
             $transaction_is_my = true;
         }
 
-        static $__inprogress_before_save = [];
-        $inprogress_key = FullObjectId::getFullObjectId($this);
-        if (!array_key_exists($inprogress_key, $__inprogress_before_save) && is_null($this->getId())) {
-            $this->beforeSave();
-            $__inprogress_before_save[$inprogress_key] = 1;
-            $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribers(self::class);
+        $this->beforeSave();
+        $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribers(self::class);
 
-            foreach ($before_save_subscribers_arr as $before_save_subscriber) {
-                /**
-                 * реализация интерфейса проверена на этапе добавления подписчиков
-                 * @var ModelBeforeSaveCallbackInterface $before_save_subscriber
-                 */
-                $before_save_subscriber::beforeSave($this);
-            }
+        foreach ($before_save_subscribers_arr as $before_save_subscriber) {
+            /**
+             * реализация интерфейса проверена на этапе добавления подписчиков
+             * @var ModelBeforeSaveCallbackInterface $before_save_subscriber
+             */
+            $before_save_subscriber::beforeSave($this);
         }
 
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
