@@ -30,7 +30,6 @@ class SaveTest extends \PHPUnit_Framework_TestCase
          * меняем время создания ноды и сохраняем
          * при этом afterSave в ноде должен реплицировать измененную дату в связь ноды с термом
          */
-
         $loaded_node_obj = \Tests\TestNode::factory($node_id);
         $updated_node_created_at = $initial_node_created_at + 1000;
         $loaded_node_obj->setCreatedAtTs($updated_node_created_at);
