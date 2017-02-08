@@ -54,6 +54,15 @@ trait ActiveRecordTrait
         }
 
         $this->beforeSave();
+        $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribersArr(self::class);
+
+        foreach ($before_save_subscribers_arr as $before_save_subscriber) {
+            /**
+             * реализация интерфейса проверена на этапе добавления подписчиков
+             * @var ModelBeforeSaveCallbackInterface $before_save_subscriber
+             */
+            $before_save_subscriber::beforeSave($this);
+        }
 
         \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
 
@@ -74,7 +83,7 @@ trait ActiveRecordTrait
                  */
                 $after_save_subscriber::afterSave($this->getId());
             }
-
+            
             unset($__inprogress[$inprogress_key]);
         }
 
