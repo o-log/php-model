@@ -83,6 +83,7 @@ trait ActiveRecordTrait
                  */
                 $after_save_subscriber::afterSave($this->getId());
             }
+            unset($__inprogress[$inprogress_key]);
         }
 
         // комитим только если мы же и стартовали транзакцию (на случай вложенных вызовов)
