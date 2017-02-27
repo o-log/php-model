@@ -1,6 +1,7 @@
 <?php
 
 namespace OLOG\DB;
+use OLOG\Assert;
 
 /**
  * Class DB
@@ -40,8 +41,9 @@ class DB
         //$this->pdo = new \PDO('mysql:host=' . $db_conf_arr['host'] . ';dbname=' . $db_conf_arr['db_name'] . ';charset=utf8', $db_conf_arr['user'], $db_conf_arr['pass']);
         //$this->pdo = new \PDO('pgsql:dbname='. $db_conf_arr['db_name'] . ';host=' . $db_conf_arr['host'] . ';user='.$db_conf_arr['user'].';password='.$db_conf_arr['pass']);
 
-        if (!is_null($db_settings_obj->getDbConnectorObj())){
-            $dbconnector_obj = $db_settings_obj->getDbConnectorObj();
+        if ($db_settings_obj->getDbConnectorId() != ''){
+            $dbconnector_obj = DBConfig::getDBConnectorObj($db_settings_obj->getDbConnectorId());
+            Assert::assert($dbconnector_obj);
             $this->setPdoObj($dbconnector_obj->getPdoObj());
         } else {
             $pdo_obj = new \PDO('mysql:host=' . $db_settings_obj->getServerHost() . ';dbname=' . $db_settings_obj->getDbName() . ';charset=utf8', $db_settings_obj->getUser(), $db_settings_obj->getPassword());

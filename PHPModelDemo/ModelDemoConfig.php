@@ -12,14 +12,17 @@ use OLOG\Model\ModelConfig;
 class ModelDemoConfig
 {
     const DB_NAME_PHPMODELDEMO = 'phpmodel';
+    const DB_CONNECTOR_PHPMODELDEMO = 'phpmodel';
 
     public static function init()
     {
-        $db_connector = new DBConnector('localhost', 'phpmodel', 'root', '1');
+        DBConfig::setDBConnectorObj(self::DB_CONNECTOR_PHPMODELDEMO,
+            new DBConnector('localhost', 'phpmodel', 'root', '1')
+        );
 
         DBConfig::setDBSettingsObj(
             self::DB_NAME_PHPMODELDEMO,
-            new DBSettings('', '', '', '', '', $db_connector)
+            new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO)
         );
 
         CacheConfig::addServerSettingsObj(

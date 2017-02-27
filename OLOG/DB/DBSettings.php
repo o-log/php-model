@@ -2,6 +2,8 @@
 
 namespace OLOG\DB;
 
+use OLOG\Assert;
+
 class DBSettings
 {
     //$this->pdo = new \PDO('mysql:host=' . $db_conf_arr['host'] . ';dbname=' . $db_conf_arr['db_name'] . ';charset=utf8', $db_conf_arr['user'], $db_conf_arr['pass']);
@@ -10,32 +12,26 @@ class DBSettings
     protected $user;
     protected $password;
     protected $sql_file_path_in_project_root;
-    protected $db_connector_obj = null;
+    protected $db_connector_id = '';
 
-    /**
-     * @return DBConnector
-     */
-    public function getDbConnectorObj()
+    public function getDbConnectorId()
     {
-        return $this->db_connector_obj;
+        return $this->db_connector_id;
     }
 
-    /**
-     * @param DBConnector $db_connector_obj
-     */
-    public function setDbConnectorObj($db_connector_obj)
+    public function setDbConnectorId($db_connector_id)
     {
-        $this->db_connector_obj = $db_connector_obj;
+        $this->db_connector_id = $db_connector_id;
     }
 
-    public function __construct($server_host, $db_name, $user, $password, $sql_file_path_in_project_root = '', DBConnector $db_connector_obj = null)
+    public function __construct($server_host, $db_name, $user, $password, $sql_file_path_in_project_root = '', $db_connector_id = '')
     {
         $this->setServerHost($server_host);
         $this->setDbName($db_name);
         $this->setUser($user);
         $this->setPassword($password);
         $this->setSqlFilePathInProjectRoot($sql_file_path_in_project_root);
-        $this->setDbConnectorObj($db_connector_obj);
+        $this->setDbConnectorId($db_connector_id);
     }
 
     /**
