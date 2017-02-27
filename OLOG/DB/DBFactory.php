@@ -27,22 +27,4 @@ class DBFactory
         $pdo_arr[$db_id] = new \OLOG\DB\DB($db_settings_obj);
         return $pdo_arr[$db_id];
     }
-
-    /*
-    static public function getConfigArr($db_id){
-        // find config
-        $databases_conf_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db');
-
-        if (!is_array($databases_conf_arr)) {
-            return null;
-        }
-
-        if (!array_key_exists($db_id, $databases_conf_arr)) {
-            return null;
-        }
-
-        $db_conf_arr = $databases_conf_arr[$db_id];
-        return $db_conf_arr;
-    }
-    */
 }

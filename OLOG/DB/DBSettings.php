@@ -10,14 +10,32 @@ class DBSettings
     protected $user;
     protected $password;
     protected $sql_file_path_in_project_root;
+    protected $db_connector_obj = null;
 
-    public function __construct($server_host, $db_name, $user, $password, $sql_file_path_in_project_root = '')
+    /**
+     * @return DBConnector
+     */
+    public function getDbConnectorObj()
+    {
+        return $this->db_connector_obj;
+    }
+
+    /**
+     * @param DBConnector $db_connector_obj
+     */
+    public function setDbConnectorObj($db_connector_obj)
+    {
+        $this->db_connector_obj = $db_connector_obj;
+    }
+
+    public function __construct($server_host, $db_name, $user, $password, $sql_file_path_in_project_root = '', DBConnector $db_connector_obj = null)
     {
         $this->setServerHost($server_host);
         $this->setDbName($db_name);
         $this->setUser($user);
         $this->setPassword($password);
         $this->setSqlFilePathInProjectRoot($sql_file_path_in_project_root);
+        $this->setDbConnectorObj($db_connector_obj);
     }
 
     /**

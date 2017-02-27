@@ -13,16 +13,41 @@ class DB
      * Throws PDOException on failure.
      * @var \PDO|null
      */
-    public $pdo = null;
+    protected $pdo_obj = null;
 
+    /**
+     * @return null|\PDO
+     */
+    public function getPdoObj()
+    {
+        return $this->pdo_obj;
+    }
+
+    /**
+     * @param null|\PDO $pdo_obj
+     */
+    public function setPdoObj($pdo_obj)
+    {
+        $this->pdo_obj = $pdo_obj;
+    }
+
+    /**
+     * Умеет или сам подключаться к БД или использовать объект PDO из указанного DBConnector (при этом можно использовать одно подключение для нескольких объектов БД (если они смотрят на одну физическую базу) чтобы правильно работали транзакции)
+     * @param DBSettings $db_settings_obj
+     */
     public function __construct(DBSettings $db_settings_obj)
     {
         //$this->pdo = new \PDO('mysql:host=' . $db_conf_arr['host'] . ';dbname=' . $db_conf_arr['db_name'] . ';charset=utf8', $db_conf_arr['user'], $db_conf_arr['pass']);
         //$this->pdo = new \PDO('pgsql:dbname='. $db_conf_arr['db_name'] . ';host=' . $db_conf_arr['host'] . ';user='.$db_conf_arr['user'].';password='.$db_conf_arr['pass']);
 
-        $this->pdo = new \PDO('mysql:host=' . $db_settings_obj->getServerHost() . ';dbname=' . $db_settings_obj->getDbName() . ';charset=utf8', $db_settings_obj->getUser(), $db_settings_obj->getPassword());
-
-        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        if (!is_null($db_settings_obj->getDbConnectorObj())){
+            $dbconnector_obj = $db_settings_obj->getDbConnectorObj();
+            $this->setPdoObj($dbconnector_obj->getPdoObj());
+        } else {
+            $pdo_obj = new \PDO('mysql:host=' . $db_settings_obj->getServerHost() . ';dbname=' . $db_settings_obj->getDbName() . ';charset=utf8', $db_settings_obj->getUser(), $db_settings_obj->getPassword());
+            $pdo_obj->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->setPdoObj($pdo_obj);
+        }
     }
 
     /**
@@ -34,7 +59,7 @@ class DB
      */
     public function query($query, $params_arr = array())
     {
-        $statement_obj = $this->pdo->prepare($query);
+        $statement_obj = $this->getPdoObj()->prepare($query);
 
         $params_prepared_arr = array();
         foreach($params_arr as $key => $param_value) {
@@ -69,26 +94,26 @@ class DB
      */
     public function lastInsertId($db_sequence_name)
     {
-        return $this->pdo->lastInsertId($db_sequence_name);
+        return $this->getPdoObj()->lastInsertId($db_sequence_name);
     }
 
     public function inTransaction()
     {
-        return $this->pdo->inTransaction();
+        return $this->getPdoObj()->inTransaction();
     }
 
     public function beginTransaction()
     {
-        return $this->pdo->beginTransaction();
+        return $this->getPdoObj()->beginTransaction();
     }
 
     public function commit()
     {
-        $this->pdo->commit();
+        $this->getPdoObj()->commit();
     }
 
     public function rollBack()
     {
-        $this->pdo->rollBack();
+        $this->getPdoObj()->rollBack();
     }
 }
