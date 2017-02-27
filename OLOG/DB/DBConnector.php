@@ -48,6 +48,7 @@ class DBConnector
         $pdo_obj = new \PDO('mysql:host=' . $this->getServerHost() . ';dbname=' . $this->getDbName() . ';charset=utf8', $this->getUser(), $this->getPassword());
         $pdo_obj->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         $this->setPdoObj($pdo_obj);
+        $this->setPdoIsConnected(true);
 
         return $this->pdo_obj;
     }
