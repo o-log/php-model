@@ -257,6 +257,30 @@ http://www.php-fig.org/psr/psr-4/
 Эта конфигурация должна подключаться в точках входа такой командой:
 
     \PHPModelDemo\Config::init();
+    
+Пример конфигурации для работы нескольких модулей с одной БД:
+
+    \OLOG\DB\DBConfig::setDBConnectorObj(
+        ProjectConfig::DBCONNECTOR_ID
+        new \OLOG\DB\DBConnector('localhost', 'db_project', 'root', '1')
+    );
+
+    DBConfig::setDBSettingsObj(
+        AuthConstants::DB_NAME_PHPAUTH,
+        new DBSettings('', '', '', '', 'vendor/o-log/php-auth/db_phpauth.sql', ProjectConfig::DBCONNECTOR_ID)
+    );
+
+    DBConfig::setDBSettingsObj(
+        EmailAuthConstant::DB_NAME,
+        new DBSettings('', '', '', '', 'vendor/o-log/php-auth-email/db_emailauth.sql', ProjectConfig::DBCONNECTOR_ID)
+    );
+
+    DBConfig::setDBSettingsObj(
+        SocialAuthConfig::AUTH_SOCIAL_DB_NAME,
+        new DBSettings('', '', '', '', 'vendor/o-log/php-auth-social/db_authsocial.sql', ProjectConfig::DBCONNECTOR_ID)
+    );
+
+В этом случае объект DBConnector создаст одно соединение с СУБД, которое будет использоваться для нескольких модулей. Это позволяет например правильно работать транзакциям в операциях, затрагивающих сразу несколько модулей.
 
 ## Транзакции
 
