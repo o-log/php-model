@@ -6,6 +6,25 @@ class CacheConfig
 {
     static protected $servers_obj_arr = [];
     static protected $cache_key_prefix = '';
+    static protected $engine_class_name = CacheMemcache::class;
+
+    /**
+     * @return string
+     */
+    public static function getEngineClassname()
+    {
+        return self::$engine_class_name;
+    }
+
+    /**
+     * @param string $engine_class_name
+     */
+    public static function setEngineClassname($engine_class_name)
+    {
+        // TODO: check cache engine interface
+
+        self::$engine_class_name = $engine_class_name;
+    }
 
     /**
      * @return string

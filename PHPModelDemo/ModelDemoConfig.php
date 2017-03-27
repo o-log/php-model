@@ -3,6 +3,7 @@
 namespace PHPModelDemo;
 
 use OLOG\Cache\CacheConfig;
+use OLOG\Cache\CacheRedis;
 use OLOG\Cache\MemcacheServerSettings;
 use OLOG\DB\DBConfig;
 use OLOG\DB\DBConnector;
@@ -25,10 +26,12 @@ class ModelDemoConfig
             new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO)
         );
 
+        /*
         CacheConfig::addServerSettingsObj(
             new MemcacheServerSettings('localhost', 11211)
         );
-
+        */
+        CacheConfig::setEngineClassname(CacheRedis::class);
 
         ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
         ModelConfig::addBeforeSaveSubscriber(SomeModel::class, DemoBeforeSaveSubscriber::class);
