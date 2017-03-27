@@ -104,31 +104,23 @@ class CacheRedis
             return $redis;
         }
 
-        //$memcache_servers = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.memcache_servers');
-        /*
         $memcache_servers = CacheConfig::getServersObjArr();
-
         if (!$memcache_servers){
             return null;
         }
-        */
 
         // Memcached php extension not supported - slower, rare, extra features not needed
         /** @var \Memcache $redis */
         $redis = new \Redis();
 
         /** @var MemcacheServerSettings $server_settings_obj */
-        /*
         foreach ($memcache_servers as $server_settings_obj) {
-            \OLOG\Assert::assert($redis->addServer($server_settings_obj->getHost(), $server_settings_obj->getPort()));
-            $redis->setCompressThreshold(5000, 0.2);
+            \OLOG\Assert::assert(
+                $redis->connect($server_settings_obj->getHost(), $server_settings_obj->getPort())
+            );
         }
-        */
 
         // TODO: finish
-        if (!$redis->connect('127.0.0.1', 6379)){
-            throw new \Exception('redis connect failed');
-        }
 
         return $redis;
     }

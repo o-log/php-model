@@ -26,11 +26,11 @@ class ModelDemoConfig
             new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO)
         );
 
-        /*
         CacheConfig::addServerSettingsObj(
-            new MemcacheServerSettings('localhost', 11211)
+            //new MemcacheServerSettings('localhost', 11211)
+            new MemcacheServerSettings('localhost', 6379)
         );
-        */
+
         CacheConfig::setEngineClassname(CacheRedis::class);
 
         ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
