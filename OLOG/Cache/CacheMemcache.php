@@ -2,14 +2,11 @@
 
 namespace OLOG\Cache;
 
-class CacheMemcache
+class CacheMemcache implements CacheEngineInterface
 {
-
-    static public function set($key, $value, $exp = 0)
+    static public function set($key, $value, $exp)
     {
-
         if ($exp == -1) {
-            // TODO: придумать, как глобально правлять временем кэширования
             $exp = 60;
         }
 

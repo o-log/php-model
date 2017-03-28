@@ -4,10 +4,38 @@ require_once '../vendor/autoload.php';
 
 \PHPModelDemo\ModelDemoConfig::init();
 
+echo '<div><a href="/">Main</a></div>';
+
+/*
 $new_model = new \PHPModelDemo\SomeModel();
 $new_model->save();
+*/
 
+$test_key = 'test_key';
 
+if (\OLOG\GETAccess::getOptionalGetValue('a') == 'cache_set'){
+    \OLOG\Cache\CacheWrapper::set($test_key, 100);
+}
+
+if (\OLOG\GETAccess::getOptionalGetValue('a') == 'cache_inc'){
+    \OLOG\Cache\CacheWrapper::increment($test_key);
+}
+
+if (\OLOG\GETAccess::getOptionalGetValue('a') == 'cache_del'){
+    \OLOG\Cache\CacheWrapper::delete($test_key);
+}
+
+echo '<h2>Cache test</h2>';
+
+$test_value_from_cache = OLOG\Cache\CacheWrapper::get($test_key);
+
+echo '<div><code>' . json_encode($test_value_from_cache) . '</code></div>';
+
+echo '<div><a href="?a=cache_set">set value</a></div>';
+echo '<div><a href="?a=cache_inc">increment value</a></div>';
+echo '<div><a href="?a=cache_del">delete value</a></div>';
+
+echo '<h2>Models test</h2>';
 
 echo '<div>MODELS <a href="/?a=add_model">+</a></div>';
 

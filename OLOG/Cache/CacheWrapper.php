@@ -9,7 +9,6 @@ namespace OLOG\Cache;
  */
 class CacheWrapper
 {
-
     static protected $storage_arr = array();
 
     /**
@@ -23,7 +22,9 @@ class CacheWrapper
             return self::$storage_arr[$key];
         }
 
-        $value = \OLOG\Cache\CacheMemcache::get($key);
+        /** @var CacheEngineInterface $engine_classname */
+        $engine_classname = CacheConfig::getEngineClassname();
+        $value = $engine_classname::get($key);
 
         if ($value !== false) {
             self::$storage_arr[$key] = $value;
@@ -41,7 +42,9 @@ class CacheWrapper
     {
         unset(self::$storage_arr[$key]);
 
-        return CacheMemcache::delete($key);
+        /** @var CacheEngineInterface $engine_classname */
+        $engine_classname = CacheConfig::getEngineClassname();
+        return $engine_classname::delete($key);
     }
 
     /**
@@ -55,7 +58,9 @@ class CacheWrapper
     {
         self::$storage_arr[$key] = $value;
 
-        return \OLOG\Cache\CacheMemcache::set($key, $value, $expire);
+        /** @var CacheEngineInterface $engine_classname */
+        $engine_classname = CacheConfig::getEngineClassname();
+        return $engine_classname::set($key, $value, $expire);
     }
 
     static public function increment($key)
@@ -64,6 +69,8 @@ class CacheWrapper
         // поэтому удаляем неактуальное значение с тем, чтобы оно если что перечиталось из мемкеша
         unset(self::$storage_arr[$key]);
 
-        return \OLOG\Cache\CacheMemcache::increment($key);
+        /** @var CacheEngineInterface $engine_classname */
+        $engine_classname = CacheConfig::getEngineClassname();
+        return $engine_classname::increment($key);
     }
 }
