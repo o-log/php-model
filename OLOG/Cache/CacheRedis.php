@@ -2,24 +2,15 @@
 
 namespace OLOG\Cache;
 
-class CacheRedis
+class CacheRedis implements CacheEngineInterface
 {
-
-    static public function set($key, $value, $ttl_secs = 0)
+    static public function set($key, $value, $ttl_secs)
     {
-
         if ($ttl_secs == -1) {
-            // TODO: придумать, как глобально правлять временем кэширования
             $ttl_secs = 60;
         }
 
-        if ($ttl_secs > 0) {
-            /*
-            if ($exp > 2592000) { // не добавляем тайм для мелких значений, чтобы не добавлять сложностей с разными часами на серверах и т.п.
-                $exp += time();
-            }
-            */
-        } else {
+        if ($ttl_secs < 0) {
             $ttl_secs = 0;
         }
 
@@ -44,22 +35,25 @@ class CacheRedis
         return true;
     }
 
-    /*
     static public function increment($key)
     {
+        throw new \Exception('redis increment not implemented');
+        // инкремент сейчас не поддерживается
+        // что надо сделать:
+        // 1. если такого ключа еще нет - редис создает новый со значением 1, при этом у нас все значения должны быть сериализованные, а это будет не сериализованное. нужно запретить создавать ключ если если его при инкременте?
+        // 2. перед инкрементом десериализовать, а потом сериализовать обратно
+
+        /*
         $mc = self::getRedisConnectionObj();
         if (!$mc){
             return false;
         }
 
-        $full_key = self::dmemcache_key($key);
-        if (!$mc->increment($full_key)) {
-            return FALSE;
-        } else {
-            return TRUE;
-        }
+        $full_key = self::cache_key($key);
+        $mc->incr($full_key);
+        return true;
+        */
     }
-    */
 
     /**
      * returns false if key not found
@@ -87,6 +81,7 @@ class CacheRedis
 
     static public function delete($key)
     {
+        /** @var Redis $mc */
         $mc = self::getRedisConnectionObj();
         if (!$mc){
             return false;
@@ -96,6 +91,10 @@ class CacheRedis
         return $mc->delete($full_key);
     }
 
+    /**
+     * @return null|\Redis
+     * @throws \Exception
+     */
     static public function getRedisConnectionObj()
     {
         static $redis = NULL;
@@ -109,8 +108,10 @@ class CacheRedis
             return null;
         }
 
-        // Memcached php extension not supported - slower, rare, extra features not needed
-        /** @var \Memcache $redis */
+        if (count($memcache_servers) > 1){
+            throw new \Exception('CacheRedis doesnt support multiple servers');
+        }
+
         $redis = new \Redis();
 
         /** @var MemcacheServerSettings $server_settings_obj */
@@ -119,8 +120,6 @@ class CacheRedis
                 $redis->connect($server_settings_obj->getHost(), $server_settings_obj->getPort())
             );
         }
-
-        // TODO: finish
 
         return $redis;
     }

@@ -4,6 +4,7 @@ namespace PHPModelDemo;
 
 use OLOG\Cache\CacheConfig;
 use OLOG\Cache\CacheRedis;
+use OLOG\Cache\CacheWrapper;
 use OLOG\Cache\MemcacheServerSettings;
 use OLOG\DB\DBConfig;
 use OLOG\DB\DBConnector;

@@ -2,6 +2,8 @@
 
 namespace OLOG\Cache;
 
+use OLOG\CheckClassInterfaces;
+
 class CacheConfig
 {
     static protected $servers_obj_arr = [];
@@ -21,7 +23,7 @@ class CacheConfig
      */
     public static function setEngineClassname($engine_class_name)
     {
-        // TODO: check cache engine interface
+        CheckClassInterfaces::exceptionIfClassNotImplementsInterface($engine_class_name, CacheEngineInterface::class);
 
         self::$engine_class_name = $engine_class_name;
     }
