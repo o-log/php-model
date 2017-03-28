@@ -37,6 +37,7 @@ class CacheRedis implements CacheEngineInterface
 
     static public function increment($key)
     {
+        // TODO: implement
         throw new \Exception('redis increment not implemented');
         // инкремент сейчас не поддерживается
         // что надо сделать:
@@ -108,6 +109,7 @@ class CacheRedis implements CacheEngineInterface
             return null;
         }
 
+        // TODO: implement
         if (count($memcache_servers) > 1){
             throw new \Exception('CacheRedis doesnt support multiple servers');
         }
