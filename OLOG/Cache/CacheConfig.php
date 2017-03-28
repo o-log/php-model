@@ -44,11 +44,19 @@ class CacheConfig
         self::$cache_key_prefix = $cache_key_prefix;
     }
 
-    static public function addServerSettingsObj(MemcacheServerSettings $server_settings_obj){
+    /**
+     * @param CacheServerSettings $server_settings_obj
+     */
+    static public function addServerSettingsObj(CacheServerSettings $server_settings_obj)
+    {
         self::$servers_obj_arr[] = $server_settings_obj;
     }
 
-    static public function getServersObjArr(){
+    /**
+     * @return CacheServerSettings[]
+     */
+    static public function getServersObjArr()
+    {
         return self::$servers_obj_arr;
     }
 }

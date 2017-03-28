@@ -14,19 +14,23 @@ class CacheRedis implements CacheEngineInterface
             $ttl_secs = 0;
         }
 
-        if($ttl_secs == 0) {
+        if ($ttl_secs == 0) {
             return true;
         }
 
-        $mc = self::getRedisConnectionObj(); // do not check result - already checked
-        if (!$mc){
+        $redis_connection_obj = self::getRedisConnectionObj(); // do not check result - already checked
+        if (!$redis_connection_obj) {
             return false;
         }
 
         $full_key = self::cache_key($key);
-
         $value_ser = serialize($value);
-        $mcs_result = $mc->set($full_key, $value_ser, $ttl_secs);
+
+        if ($ttl_secs > 0) {
+            $mcs_result = $redis_connection_obj->setex($full_key, $ttl_secs, $value_ser);
+        } else {
+            $mcs_result = $redis_connection_obj->set($full_key, $value_ser);
+        }
 
         if (!$mcs_result) {
             return false;
@@ -63,15 +67,15 @@ class CacheRedis implements CacheEngineInterface
      */
     static public function get($key)
     {
-        $mc = self::getRedisConnectionObj();
-        if (!$mc){
+        $redis_connection_obj = self::getRedisConnectionObj();
+        if (!$redis_connection_obj) {
             return false;
         }
 
         $full_key = self::cache_key($key);
-        $result = $mc->get($full_key);
+        $result = $redis_connection_obj->get($full_key);
 
-        if ($result === false){
+        if ($result === false) {
             return false;
         }
 
@@ -82,18 +86,17 @@ class CacheRedis implements CacheEngineInterface
 
     static public function delete($key)
     {
-        /** @var Redis $mc */
-        $mc = self::getRedisConnectionObj();
-        if (!$mc){
+        $redis_connection_obj = self::getRedisConnectionObj();
+        if (!$redis_connection_obj) {
             return false;
         }
 
         $full_key = self::cache_key($key);
-        return $mc->delete($full_key);
+        return $redis_connection_obj->del($full_key);
     }
 
     /**
-     * @return null|\Redis
+     * @return null|\Predis\Client
      * @throws \Exception
      */
     static public function getRedisConnectionObj()
@@ -105,23 +108,20 @@ class CacheRedis implements CacheEngineInterface
         }
 
         $memcache_servers = CacheConfig::getServersObjArr();
-        if (!$memcache_servers){
+        if (!$memcache_servers) {
             return null;
         }
 
-        // TODO: implement
-        if (count($memcache_servers) > 1){
-            throw new \Exception('CacheRedis doesnt support multiple servers');
-        }
-
-        $redis = new \Redis();
-
-        /** @var MemcacheServerSettings $server_settings_obj */
+        $servers_arr = [];
         foreach ($memcache_servers as $server_settings_obj) {
-            \OLOG\Assert::assert(
-                $redis->connect($server_settings_obj->getHost(), $server_settings_obj->getPort())
-            );
+            $servers_arr[] = [
+                'scheme'   => 'tcp',
+                'host'     => $server_settings_obj->getHost(),
+                'port'     => $server_settings_obj->getPort()
+            ];
         }
+
+        $redis = new \Predis\Client($servers_arr);
 
         return $redis;
     }
@@ -129,7 +129,7 @@ class CacheRedis implements CacheEngineInterface
     static public function cache_key($key)
     {
         $prefix = CacheConfig::getCacheKeyPrefix();
-        if ($prefix == ''){
+        if ($prefix == '') {
             $prefix = 'default';
         }
 
