@@ -88,6 +88,7 @@ class CLIAddFieldToModel
         $data_types_arr[] = new FieldDataType('text', false, false, false);
         $data_types_arr[] = new FieldDataType('date', true, true, false);
         $data_types_arr[] = new FieldDataType('datetime', true, true, false);
+        $data_types_arr[] = new FieldDataType('longint', true, true, false);
 
         echo "Enter db field data type:\n";
         /**
