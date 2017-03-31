@@ -21,6 +21,7 @@ class CLIMenu
             echo "\t" . self::FUNCTION_CREATE_MODEL . ": create model\n";
             echo "\t" . self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
             echo "\t" . self::FUNCTION_MODEL_FIELD_EXTRAS . ": extra operations on model field\n";
+            echo "\t" . self::FUNCTION_CREATE_COMPONENT . ": create new component\n";
             echo "\tENTER: exit\n";
 
             $command_str = CliUtil::readStdinAnswer();
