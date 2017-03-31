@@ -10,6 +10,7 @@ class CLIMenu
     const FUNCTION_CREATE_MODEL = 2;
     const FUNCTION_ADD_MODEL_FIELD = 3;
     const FUNCTION_MODEL_FIELD_EXTRAS = 4;
+    const FUNCTION_CREATE_COMPONENT = 5;
 
     static public function run()
     {
@@ -41,6 +42,10 @@ class CLIMenu
                 case self::FUNCTION_MODEL_FIELD_EXTRAS:
                     $cli_add_field_obj = new CLIAddFieldToModel();
                     $cli_add_field_obj->extraFieldFunctionsScreen();
+                    break;
+
+                case self::FUNCTION_CREATE_COMPONENT:
+                    CLICreateComponent::chooseNamespaceScreen();
                     break;
 
                 default:
