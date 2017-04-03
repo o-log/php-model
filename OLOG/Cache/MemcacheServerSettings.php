@@ -5,6 +5,7 @@ namespace OLOG\Cache;
 /**
  * Class MemcacheServerSettings
  * @deprecated Use CacheServerSettings instead
+ * @see CacheServerSettings
  * @package OLOG\Cache
  */
 class MemcacheServerSettings extends CacheServerSettings

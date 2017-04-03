@@ -162,6 +162,14 @@ class ActiveRecordHelper
             $obj->afterDelete();
         }
 
+        $after_delete_subscribers_arr = ModelConfig::getAfterDeleteSubscribersArr($obj_class_name);
+        foreach ($after_delete_subscribers_arr as $after_delete_subscriber) {
+            /**
+             * реализация интерфейса проверена на этапе добавления подписчиков
+             */
+            $after_delete_subscriber::afterDelete($obj->getId());
+        }
+
         if ($transaction_is_my) {
             DBWrapper::commitTransaction($obj_db_id);
         }
