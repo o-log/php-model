@@ -166,6 +166,7 @@ class ActiveRecordHelper
         foreach ($after_delete_subscribers_arr as $after_delete_subscriber) {
             /**
              * реализация интерфейса проверена на этапе добавления подписчиков
+             * в метод передаётся объект, т.к. модели уже нет в базе, подписчики должны использовать только данные объекта в памяти(не используя фабрику)
              */
             $after_delete_subscriber::onAfterDelete($obj);
         }
