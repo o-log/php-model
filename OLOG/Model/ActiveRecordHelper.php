@@ -7,6 +7,8 @@ use OLOG\DB\DBWrapper;
 
 class ActiveRecordHelper
 {
+    const INGORE_LIST_FIELD_NAME = 'active_record_ignore_fields_arr';
+
     public static function getIdFieldName($model_obj)
     {
         $obj_class_name = get_class($model_obj);
@@ -37,19 +39,20 @@ class ActiveRecordHelper
         $reflect = new \ReflectionClass($model_obj);
 
 	    $ignore_properties_names_arr = array();
-	    if ($reflect->hasProperty('active_record_ignore_fields_arr'))
+	    if ($reflect->hasProperty(self::INGORE_LIST_FIELD_NAME))
 	    {
-		    $ignore_properties_names_arr = $reflect->getProperty('active_record_ignore_fields_arr')->getValue();
+		    $ignore_fields_arr_field = $reflect->getProperty(self::INGORE_LIST_FIELD_NAME);
+            $ignore_fields_arr_field->setAccessible(true); // на случай если поле будет protected
+            $ignore_properties_names_arr = $ignore_fields_arr_field->getValue($model_obj);
 	    }
 
         foreach ($reflect->getProperties() as $property_obj) {
-            if (
-                $property_obj->isStatic()
-                || in_array($property_obj->getName(), $ignore_properties_names_arr)
-            ) {
-                continue; // игнорируем статические свойства класса - они относятся не к объекту, а только к классу (http://www.php.net/manual/en/language.oop5.static.php), и в них хранятся настройки ActiveRecord и CRUD
-	                        // также игнорируем свойства класса перечисленные в игнор листе $active_record_ignore_fields_arr
+            // игнорируем статические свойства класса
+            // также игнорируем свойства класса перечисленные в игнор листе $active_record_ignore_fields_arr
+            if ($property_obj->isStatic() || in_array($property_obj->getName(), $ignore_properties_names_arr)) {
+                continue;
             }
+
             $property_obj->setAccessible(true);
             $fields_to_save_arr[$property_obj->getName()] = $property_obj->getValue($model_obj);
         }

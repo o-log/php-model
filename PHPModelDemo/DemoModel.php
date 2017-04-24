@@ -14,11 +14,11 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
     const _WEIGHT = 'weight';
     protected $weight = 0;
     const _COLLATE_TEST = 'collate_test';
-    protected $collate_test;
+    protected $collate_test = '';
     const _COLLATE_TEST_2 = 'collate_test_2';
-    protected $collate_test_2;
+    protected $collate_test_2 = '';
     const _COLLATE_TEST_3 = 'collate_test_3';
-    protected $collate_test_3;
+    protected $collate_test_3 = 0;
     const _DEMO_NODE_ID = 'demo_node_id';
     protected $demo_node_id;
     protected $id;

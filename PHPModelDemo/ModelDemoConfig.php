@@ -4,6 +4,7 @@ namespace PHPModelDemo;
 
 use OLOG\Cache\CacheConfig;
 use OLOG\Cache\CacheRedis;
+use OLOG\Cache\CacheServerSettings;
 use OLOG\Cache\CacheWrapper;
 use OLOG\Cache\MemcacheServerSettings;
 use OLOG\DB\DBConfig;
@@ -29,7 +30,7 @@ class ModelDemoConfig
 
         CacheConfig::addServerSettingsObj(
             //new MemcacheServerSettings('localhost', 11211)
-            new MemcacheServerSettings('localhost', 6379)
+            new CacheServerSettings('localhost', 6379)
         );
 
         CacheConfig::setEngineClassname(CacheRedis::class);

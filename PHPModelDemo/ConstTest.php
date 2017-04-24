@@ -15,6 +15,8 @@ class ConstTest implements
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'phpmodeldemo_consttest';
 
+    protected static $active_record_ignore_fields_arr = [];
+
     const _CREATED_AT_TS = 'created_at_ts';
     protected $created_at_ts; // initialized by constructor
     const _TITLE = 'title';
