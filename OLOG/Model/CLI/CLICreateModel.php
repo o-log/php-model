@@ -213,7 +213,7 @@ class TEMPLATECLASS_CLASSNAME implements
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getCreatedAtTs()
     {
@@ -221,7 +221,7 @@ class TEMPLATECLASS_CLASSNAME implements
     }
 
     /**
-     * @param string $timestamp
+     * @param int $timestamp
      */
     public function setCreatedAtTs($timestamp)
     {

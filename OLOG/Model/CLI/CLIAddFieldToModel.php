@@ -420,12 +420,12 @@ class CLIAddFieldToModel
         if (is_null($value)) {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
-                'select id from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
             );
         } else {
             return \OLOG\DB\DBWrapper::readColumn(
                 self::DB_ID,
-                'select id from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
+                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset),
                 array($value)
             );
         }
