@@ -105,6 +105,7 @@ class ActiveRecordHelper
      * @param $id
      * @return bool
      */
+    /*
     public static function loadModelObj($model_obj, $id)
     {
         self::exceptionIfObjectIsIncompatibleWithActiveRecord($model_obj);
@@ -116,7 +117,7 @@ class ActiveRecordHelper
 
         $data_obj = \OLOG\DB\DBWrapper::readObject(
             $db_id,
-            'select /* LMO */ * from ' . $db_table_name . ' where ' . $db_id_field_name . ' = ?',
+            'select * from ' . $db_table_name . ' where ' . $db_id_field_name . ' = ?',
             array($id)
         );
 
@@ -133,6 +134,7 @@ class ActiveRecordHelper
 
         return true;
     }
+    */
 
     /**
      * все удаление делается внутри транзакции (включая canDelete и afterDelete), если будет исключение - транзакция будет откачена PDO

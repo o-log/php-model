@@ -5,9 +5,25 @@ namespace OLOG\Model;
 use OLOG\CheckClassInterfaces;
 
 class ModelConfig {
-
     static protected $after_save_subscribers_arr = [];
     static protected $before_save_subscribers_arr = [];
+    static protected $ignore_missing_properties_on_load = false;
+
+    /**
+     * @return bool
+     */
+    public static function isIgnoreMissingPropertiesOnLoad()
+    {
+        return self::$ignore_missing_properties_on_load;
+    }
+
+    /**
+     * @param bool $ignore_missing_properties_on_load
+     */
+    public static function setIgnoreMissingPropertiesOnLoad($ignore_missing_properties_on_load)
+    {
+        self::$ignore_missing_properties_on_load = $ignore_missing_properties_on_load;
+    }
 
     public static function getBeforeSaveSubscribersArr($model_class_name) {
         return array_key_exists($model_class_name, self::$before_save_subscribers_arr) ? self::$before_save_subscribers_arr[$model_class_name] : [];

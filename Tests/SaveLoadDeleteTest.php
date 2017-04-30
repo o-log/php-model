@@ -1,6 +1,8 @@
 <?php
 
-class SaveLoadDeleteTest extends PHPUnit_Framework_TestCase
+namespace Tests;
+
+class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Тест проверяет создание, сохранение, загрузку и удаление объекта через activeRecord и factory
@@ -30,6 +32,4 @@ class SaveLoadDeleteTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(0, count($test_model_ids_arr)); // проверяем что записей с таким ИД в таблице нет
     }
-
-
 }

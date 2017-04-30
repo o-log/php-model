@@ -24,11 +24,4 @@ class FactoryHelper
     {
         self::removeObjFromCacheById($class_name, $id);
     }
-
-    /*
-    public static function afterDelete($class_name, $id)
-    {
-        self::removeObjFromCacheById($class_name, $id);
-    }
-    */
 }

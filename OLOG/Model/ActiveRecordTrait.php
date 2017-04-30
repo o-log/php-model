@@ -3,6 +3,7 @@
 namespace OLOG\Model;
 use OLOG\DB\DBWrapper;
 use OLOG\FullObjectId;
+use OLOG\Sanitize;
 
 /**
  * Для работы с ActiveRecord необходимо:
@@ -27,7 +28,56 @@ trait ActiveRecordTrait
 {
     public function load($id)
     {
-        return \OLOG\Model\ActiveRecordHelper::loadModelObj($this, $id);
+        return self::loadModelObj($this, $id);
+    }
+
+    /**
+     * Метод собственно загрузки из БД сделан отдельно от load чтобы можно было использовать его в переопределенных
+     * версиях load.
+     * Сделан в трейте, а не в отдельном вспомогательном классе - чтобы был доступ к защищенным свойствам ообъекта без
+     * использования reflection (для производительности).
+     * @param $model_obj
+     * @param $id
+     * @return bool
+     */
+    protected static function loadModelObj($model_obj, $id)
+    {
+        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($model_obj);
+
+        $model_class_name = get_class($model_obj);
+        $db_id = $model_class_name::DB_ID;
+        $db_table_name = $model_class_name::DB_TABLE_NAME;
+        $db_id_field_name = ActiveRecordHelper::getIdFieldName($model_obj);
+
+        $data_obj = \OLOG\DB\DBWrapper::readObject(
+            $db_id,
+            'select /* LMO */ * from ' . Sanitize::sanitizeSqlColumnName($db_table_name) . ' where ' . Sanitize::sanitizeSqlColumnName($db_id_field_name) . ' = ?',
+            array($id)
+        );
+
+        if (!$data_obj) {
+            return false;
+        }
+
+        //$reflect = new \ReflectionClass($model_class_name);
+        foreach ($data_obj as $field_name => $field_value) {
+            /*
+            $property = $reflect->getProperty($field_name);
+            $property->setAccessible(true);
+            $property->setValue($model_obj, $field_value);
+            */
+            if (property_exists($model_class_name, $field_name)){
+                $model_obj->$field_name = $field_value;
+            } else {
+                if (ModelConfig::isIgnoreMissingPropertiesOnLoad()){
+                    // ignore missing property
+                } else {
+                    throw new \Exception('Missing "' . $field_name . '" property in class "' . $model_class_name . '" while property is present in DB table "' . $db_table_name . '"');
+                }
+            }
+        }
+
+        return true;
     }
 
     /**

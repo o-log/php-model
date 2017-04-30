@@ -41,4 +41,6 @@ array(
 'create table phpmodeldemo_somemodel (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand3279 */;',
 'alter table testtermtonode drop foreign key testtermtonode_ibfk_1 /* rand2342342 */;',
 'alter table testtermtonode add constraint testtermtonode_ibfk_1 foreign key (term_id) references testterm (id) /* rand636123123538 */;',
+'create table tests_loadtestmodel (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand7303 */;',
+'alter table tests_loadtestmodel add column extra_field int     /* rand58321 */;',
 )
