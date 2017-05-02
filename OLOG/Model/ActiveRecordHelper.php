@@ -4,6 +4,7 @@ namespace OLOG\Model;
 
 
 use OLOG\DB\DBWrapper;
+use OLOG\Sanitize;
 
 class ActiveRecordHelper
 {
@@ -21,10 +22,44 @@ class ActiveRecordHelper
         return $id_field_name;
     }
 
+    public static function updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value){
+        $placeholders_arr = array();
+
+        foreach ($fields_to_save_arr as $field_name => $field_value) {
+            $placeholders_arr[] = $field_name . '=?';
+        }
+
+        $values_arr = array_values($fields_to_save_arr);
+        array_push($values_arr, $model_id_value);
+
+        $query = 'update ' . Sanitize::sanitizeSqlColumnName($db_table_name) . ' set ' . implode(',', $placeholders_arr) . ' where ' . $id_field_name . ' = ?';
+        \OLOG\DB\DBWrapper::query($db_id, $query, $values_arr);
+    }
+
+    public static function insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name){
+        $placeholders_arr = array_fill(0, count($fields_to_save_arr), '?');
+
+        $quoted_fields_to_save_arr = array();
+        foreach (array_keys($fields_to_save_arr) as $field_name_to_save) {
+            $quoted_fields_to_save_arr[] = Sanitize::sanitizeSqlColumnName($field_name_to_save);
+        }
+
+        \OLOG\DB\DBWrapper::query(
+            $db_id,
+            'insert into ' . $db_table_name . ' (' . implode(',', $quoted_fields_to_save_arr) . ') values (' . implode(',', $placeholders_arr) . ')',
+            array_values($fields_to_save_arr)
+        );
+
+        $db_sequence_name = $db_table_name . '_' . $id_field_name . '_seq';
+        $last_insert_id = \OLOG\DB\DBWrapper::lastInsertId($db_id, $db_sequence_name);
+        return $last_insert_id;
+    }
+
     /**
      * Сохранение записи
      * @param $model_obj
      */
+    /*
     public static function saveModelObj($model_obj)
     {
         self::exceptionIfObjectIsIncompatibleWithActiveRecord($model_obj);
@@ -32,24 +67,25 @@ class ActiveRecordHelper
         $model_class_name = get_class($model_obj);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
+
+        $db_table_fields_arr = DBWrapper::readObjects(
+            $db_id,
+            'explain ' . Sanitize::sanitizeSqlColumnName($db_table_name)
+        );
+
         $db_id_field_name = self::getIdFieldName($model_obj);
 
         $fields_to_save_arr = array();
 
         $reflect = new \ReflectionClass($model_obj);
 
-	    $ignore_properties_names_arr = array();
-	    if ($reflect->hasProperty(self::INGORE_LIST_FIELD_NAME))
-	    {
-		    $ignore_fields_arr_field = $reflect->getProperty(self::INGORE_LIST_FIELD_NAME);
-            $ignore_fields_arr_field->setAccessible(true); // на случай если поле будет protected
-            $ignore_properties_names_arr = $ignore_fields_arr_field->getValue($model_obj);
-	    }
-
         foreach ($reflect->getProperties() as $property_obj) {
             // игнорируем статические свойства класса
             // также игнорируем свойства класса перечисленные в игнор листе $active_record_ignore_fields_arr
-            if ($property_obj->isStatic() || in_array($property_obj->getName(), $ignore_properties_names_arr)) {
+            //if ($property_obj->isStatic() || in_array($property_obj->getName(), $ignore_properties_names_arr)) {
+            //    continue;
+            //}
+            if ($property_obj->isStatic()) {
                 continue;
             }
 
@@ -98,6 +134,7 @@ class ActiveRecordHelper
             //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'UPDATE');
         }
     }
+    */
 
     /**
      * Загружаем запись
@@ -164,7 +201,17 @@ class ActiveRecordHelper
         \OLOG\Model\ActiveRecordHelper::deleteModelObj($obj);
 
         if ($obj instanceof \OLOG\Model\InterfaceDelete) {
-            $obj->afterDelete();
+            try {
+                $obj->afterDelete();
+            } catch (\Exception $e){
+                // in the case of any exception - rollback transaction and rethrow exception
+                // thus actual db record will not be deleted
+                if ($transaction_is_my) {
+                    DBWrapper::rollbackTransaction($obj_db_id);
+                }
+
+                throw $e;
+            }
         }
 
         if ($transaction_is_my) {

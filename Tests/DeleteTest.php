@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use OLOG\DB\DBWrapper;
+
 class DeleteTest extends \PHPUnit_Framework_TestCase
 {
     public function testCanDeleteTrue()
@@ -12,8 +14,13 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
 
         $obj = new \Tests\TestModel();
         $obj->save();
+
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+
         $obj_id = $obj->getId();
         $obj->delete();
+
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
 
         $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
             \Tests\TestModel::DB_ID,
@@ -31,12 +38,26 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $obj2 = new \Tests\TestModel();
         $obj2->setDisableDelete(true);
         $obj2->save();
+
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+
         $obj2_id = $obj2->getId();
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Delete disabled');
+        //$this->expectException(\Exception::class);
+        //$this->expectExceptionMessage('Delete disabled');
 
-        $obj2->delete();
+        $exception_message = '';
+
+        try {
+            $obj2->delete();
+        } catch (\Exception $e){
+            $exception_message = $e->getMessage();
+            //DBWrapper::rollBackTransaction(TestModel::DB_ID);
+        }
+
+        $this->assertEquals('Delete disabled', $exception_message);
+
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
 
         $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
             \Tests\TestModel::DB_ID,
@@ -44,7 +65,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
             array($obj2_id)
         );
 
-        $this->assertEquals(0, count($test_model_ids_arr)); // проверяем что запись в БД удалена
+        $this->assertEquals(1, count($test_model_ids_arr)); // проверяем что запись в БД не удалена
 
     }
 
@@ -58,12 +79,24 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $obj->setThrowExceptionAfterDelete(true);
         $obj->save();
 
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+
         $obj_id = $obj->getId();
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('After delete');
+        //$this->expectException(\Exception::class);
+        //$this->expectExceptionMessage('After delete');
 
-        $obj->delete();
+        $exception_message = '';
+        try {
+            $obj->delete();
+        } catch (\Exception $e){
+            $exception_message = $e->getMessage();
+            //DBWrapper::rollBackTransaction(TestModel::DB_ID);
+        }
+
+        $this->assertEquals('After delete', $exception_message);
+
+        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
 
         $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
             \Tests\TestModel::DB_ID,
@@ -72,7 +105,6 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(1, count($test_model_ids_arr)); // проверяем что запись в БД осталась, т.е. транзакция с удалением была откачена
-
     }
 
 }

@@ -8,6 +8,23 @@ class ModelConfig {
     static protected $after_save_subscribers_arr = [];
     static protected $before_save_subscribers_arr = [];
     static protected $ignore_missing_properties_on_load = false;
+    static protected $ignore_missing_properties_on_save = false;
+
+    /**
+     * @return bool
+     */
+    public static function isIgnoreMissingPropertiesOnSave()
+    {
+        return self::$ignore_missing_properties_on_save;
+    }
+
+    /**
+     * @param bool $ignore_missing_properties_on_save
+     */
+    public static function setIgnoreMissingPropertiesOnSave($ignore_missing_properties_on_save)
+    {
+        self::$ignore_missing_properties_on_save = $ignore_missing_properties_on_save;
+    }
 
     /**
      * @return bool

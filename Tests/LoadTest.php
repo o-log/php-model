@@ -2,41 +2,47 @@
 
 namespace Tests;
 
+use OLOG\DB\DBWrapper;
 use OLOG\Model\ModelConfig;
 
 class LoadTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * Тест проверяет создание, сохранение, загрузку и удаление объекта через activeRecord и factory
-     */
-    public function testLoadWithException()
+    public function testLoadWithMissingFieldWithException()
     {
         \PHPModelDemo\ModelDemoConfig::init();
 
-        $new_model = new \Tests\LoadTestModel();
-        $new_model->save();
+        $new_model_obj = new \Tests\LoadTestModel();
+        ModelConfig::setIgnoreMissingPropertiesOnSave(true);
+        $new_model_obj->save();
 
-        $test_model_id = $new_model->getId();
+        $test_model_id = $new_model_obj->getId();
         $this->assertNotEmpty($test_model_id);
 
         // test missing property exception
 
         ModelConfig::setIgnoreMissingPropertiesOnLoad(false);
+        $exception_message = '';
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Missing "extra_field" property in class "Tests\LoadTestModel" while property is present in DB table "tests_loadtestmodel"');
+        try {
+            $loaded_model_obj = \Tests\LoadTestModel::factory($test_model_id);
+        } catch (\Exception $e){
+            $exception_message = $e->getMessage();
+        }
 
-        $loaded_model_obj = \Tests\LoadTestModel::factory($test_model_id);
+        $this->assertEquals('Missing "extra_field" property in class "Tests\LoadTestModel" while property is present in DB table "tests_loadtestmodel"', $exception_message);
+
+        // ensure we have no active transaction after load
+        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
     }
 
-    public function testLoadWithoutException()
+    public function testLoadWithMissingFieldWithoutException()
     {
         \PHPModelDemo\ModelDemoConfig::init();
 
-        $new_model = new \Tests\LoadTestModel();
-        $new_model->save();
+        $new_model_obj = new \Tests\LoadTestModel();
+        $new_model_obj->save();
 
-        $test_model_id = $new_model->getId();
+        $test_model_id = $new_model_obj->getId();
         $this->assertNotEmpty($test_model_id);
 
         // test disabled missing property exception
@@ -44,5 +50,8 @@ class LoadTest extends \PHPUnit_Framework_TestCase
         ModelConfig::setIgnoreMissingPropertiesOnLoad(true);
 
         $loaded_model_obj = \Tests\LoadTestModel::factory($test_model_id);
+
+        // ensure we have no active transaction after load
+        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
     }
 }

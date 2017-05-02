@@ -6,15 +6,15 @@ class DBWrapper
 {
     /**
      *
-     * @param string $db_name
+     * @param string $db_id
      * @param string $query
      * @param array $params_arr
      * @return \PDOStatement
      * @throws \Exception
      */
-    static public function query($db_name, $query, $params_arr = array())
+    static public function query($db_id, $query, $params_arr = array())
     {
-        $db_obj = \OLOG\DB\DBFactory::getDB($db_name);
+        $db_obj = \OLOG\DB\DBFactory::getDB($db_id);
         if (!$db_obj) {
             throw new \Exception('getDB failed');
         }

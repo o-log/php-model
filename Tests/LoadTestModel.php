@@ -29,7 +29,20 @@ class LoadTestModel implements
     //const _EXTRA_FIELD = 'extra_field';
     //protected $extra_field;
 
+    const _TITLE = 'title';
+    protected $title;
     protected $id;
+    protected $field_not_in_table;
+
+    public function getTitle(){
+        return $this->title;
+    }
+
+    public function setTitle($value){
+        $this->title = $value;
+    }
+
+
 
     public function getExtraField(){
         return $this->extra_field;

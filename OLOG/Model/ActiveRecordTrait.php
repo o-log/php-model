@@ -28,7 +28,7 @@ trait ActiveRecordTrait
 {
     public function load($id)
     {
-        return self::loadModelObj($this, $id);
+        return $this->loadModelObj($id);
     }
 
     /**
@@ -40,14 +40,14 @@ trait ActiveRecordTrait
      * @param $id
      * @return bool
      */
-    protected static function loadModelObj($model_obj, $id)
+    protected function loadModelObj($id)
     {
-        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($model_obj);
+        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($this);
 
-        $model_class_name = get_class($model_obj);
+        $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
-        $db_id_field_name = ActiveRecordHelper::getIdFieldName($model_obj);
+        $db_id_field_name = ActiveRecordHelper::getIdFieldName($this);
 
         $data_obj = \OLOG\DB\DBWrapper::readObject(
             $db_id,
@@ -59,15 +59,9 @@ trait ActiveRecordTrait
             return false;
         }
 
-        //$reflect = new \ReflectionClass($model_class_name);
         foreach ($data_obj as $field_name => $field_value) {
-            /*
-            $property = $reflect->getProperty($field_name);
-            $property->setAccessible(true);
-            $property->setValue($model_obj, $field_value);
-            */
             if (property_exists($model_class_name, $field_name)){
-                $model_obj->$field_name = $field_value;
+                $this->$field_name = $field_value;
             } else {
                 if (ModelConfig::isIgnoreMissingPropertiesOnLoad()){
                     // ignore missing property
@@ -116,7 +110,16 @@ trait ActiveRecordTrait
             $before_save_subscriber::beforeSave($this);
         }
 
-        \OLOG\Model\ActiveRecordHelper::saveModelObj($this);
+        try {
+            $this->saveModelObj();
+        } catch (\Exception $e) {
+            // if any exception while saving - rollback transaction and rethrow exception
+            if ($transaction_is_my) {
+                DBWrapper::rollbackTransaction($obj_db_id);
+            }
+
+            throw $e;
+        }
 
         // не вызываем afterSave если это вызов save для этого объекта изнутри aftersave этого же объекта (для предотвращения бесконечного рекурсивного вызова afterSave)
         static $__inprogress = [];
@@ -142,6 +145,94 @@ trait ActiveRecordTrait
         // комитим только если мы же и стартовали транзакцию (на случай вложенных вызовов)
         if ($transaction_is_my) {
             DBWrapper::commitTransaction($obj_db_id);
+        }
+    }
+
+    /**
+     * Метод собственно записи в БД сделан отдельно от load чтобы можно было использовать его в переопределенных
+     * версиях load.
+     * Сделан в трейте, а не в отдельном вспомогательном классе - чтобы был доступ к защищенным свойствам ообъекта без
+     * использования reflection (для производительности).
+     * @param $model_obj
+     */
+    protected function saveModelObj()
+    {
+        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($this);
+
+        $model_class_name = get_class($this);
+        $db_id = $model_class_name::DB_ID;
+        $db_table_name = $model_class_name::DB_TABLE_NAME;
+
+        $db_table_fields_arr = DBWrapper::readObjects(
+            $db_id,
+            'explain ' . Sanitize::sanitizeSqlColumnName($db_table_name)
+        );
+
+        $id_field_name = ActiveRecordHelper::getIdFieldName($this);
+
+        $fields_to_save_arr = array();
+
+        //$reflect = new \ReflectionClass($model_obj);
+
+        /*
+	    $ignore_properties_names_arr = array();
+	    if ($reflect->hasProperty(self::INGORE_LIST_FIELD_NAME))
+	    {
+		    $ignore_fields_arr_field = $reflect->getProperty(self::INGORE_LIST_FIELD_NAME);
+            $ignore_fields_arr_field->setAccessible(true); // на случай если поле будет protected
+            $ignore_properties_names_arr = $ignore_fields_arr_field->getValue($model_obj);
+	    }
+        */
+
+        /*
+        foreach ($reflect->getProperties() as $property_obj) {
+            // игнорируем статические свойства класса
+            // также игнорируем свойства класса перечисленные в игнор листе $active_record_ignore_fields_arr
+            //if ($property_obj->isStatic() || in_array($property_obj->getName(), $ignore_properties_names_arr)) {
+            //    continue;
+            //}
+            if ($property_obj->isStatic()) {
+                continue;
+            }
+
+            $property_obj->setAccessible(true);
+            $fields_to_save_arr[$property_obj->getName()] = $property_obj->getValue($model_obj);
+        }
+        */
+        foreach ($db_table_fields_arr as $field_index => $field_obj){
+            $field_name = $field_obj->Field;
+
+            if (property_exists($model_class_name, $field_name)) {
+                $property_value = $this->$field_name;
+                $fields_to_save_arr[$field_name] = $property_value;
+            } else {
+                if (ModelConfig::isIgnoreMissingPropertiesOnSave()) {
+                    // ignore
+                } else {
+                    throw new \Exception('missing property');
+                }
+            }
+        }
+
+        unset($fields_to_save_arr[$id_field_name]);
+
+        /*
+        $property_obj = $reflect->getProperty($db_id_field_name);
+        $property_obj->setAccessible(true);
+        $model_id_value = $property_obj->getValue($model_obj);
+        */
+        $model_id_value = $this->$id_field_name;
+
+        if ($model_id_value == '') {
+            $last_insert_id = ActiveRecordHelper::insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name);
+            //$property_obj->setValue($model_obj, $last_insert_id);
+            $this->$id_field_name = $last_insert_id;
+
+            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'CREATE');
+        } else {
+            ActiveRecordHelper::updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value);
+
+            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'UPDATE');
         }
     }
 
