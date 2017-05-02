@@ -9,6 +9,17 @@ class ModelConfig {
     static protected $before_save_subscribers_arr = [];
     static protected $ignore_missing_properties_on_load = false;
     static protected $ignore_missing_properties_on_save = false;
+    static protected $cli_menu_classes_arr = [];
+
+    public static function addCLIMenuClass($class_name){
+        CheckClassInterfaces::exceptionIfClassNotImplementsInterface($class_name, InterfaceCLIMenu::class);
+
+        self::$cli_menu_classes_arr[] = $class_name;
+    }
+
+    public static function getCLIMenuClassesArr(){
+        return self::$cli_menu_classes_arr;
+    }
 
     /**
      * @return bool

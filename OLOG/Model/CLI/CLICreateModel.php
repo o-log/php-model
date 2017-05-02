@@ -3,7 +3,7 @@
 namespace OLOG\Model\CLI;
 
 use OLOG\Assert;
-use OLOG\CliUtil;
+use OLOG\CLIUtil;
 use OLOG\DB\DBConfig;
 
 class CLICreateModel
@@ -15,11 +15,11 @@ class CLICreateModel
 
     static public function enterClassNameScreen()
     {
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Еnter new model class name. Example:\n\tTestModel\n";
 
         // TODO: sanitize
-        self::$model_class_name = CliUtil::readStdinAnswer();
+        self::$model_class_name = CLIUtil::readStdinAnswer();
 
         // TODO: check class name format
 
@@ -28,7 +28,7 @@ class CLICreateModel
 
     static public function chooseNamespaceScreen()
     {
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Select new model namespace:\n";
         //echo "Example: \"Test\", \"Deep\\Test\"\n";
 
@@ -57,7 +57,7 @@ class CLICreateModel
 
     static public function chooseModelDBIndex()
     {
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Choose model DB index:\n";
         //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
         $db_arr = DBConfig::getDBSettingsObjArr();
@@ -73,7 +73,7 @@ class CLICreateModel
             $index++;
         }
 
-        $model_db_index = CliUtil::readStdinAnswer();
+        $model_db_index = CLIUtil::readStdinAnswer();
 
         if (!array_key_exists($model_db_index, $db_id_by_index)) {
             throw new \Exception('Wrong index');
@@ -128,7 +128,7 @@ class CLICreateModel
 
         echo "\nType ENTER to execute SQL queries, Ctrl+C to exit.\n";
         
-        $command_str = CliUtil::readStdinAnswer();
+        $command_str = CLIUtil::readStdinAnswer();
         if ($command_str == ''){
             CLIExecuteSql::executeSqlScreen();
         }

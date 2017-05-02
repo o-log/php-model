@@ -3,7 +3,7 @@
 namespace OLOG\Model\CLI;
 
 use OLOG\Assert;
-use OLOG\CliUtil;
+use OLOG\CLIUtil;
 use Stringy\Stringy;
 
 class CLIAddFieldToModel
@@ -65,20 +65,20 @@ class CLIAddFieldToModel
      * @return string
      */
     public function askFieldName($class_file_obj){
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Enter field name. Examples for new field names:\n\tnode_title\n\tmedia_id\n";
 
         //$class_field_names_arr = $class_file_obj->getFieldNamesArr();
         //echo "\nFields in class:\n";
 
-        $field_name = CliUtil::readStdinAnswer();
+        $field_name = CLIUtil::readStdinAnswer();
 
         // TODO: check field_name format
         return $field_name;
     }
 
     public function askDataType(){
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
 
         $data_types_arr = [];
 
@@ -99,7 +99,7 @@ class CLIAddFieldToModel
             echo "\t" . $index . '. ' . $data_type_obj->sql_type_name . "\n";
         }
 
-        $data_type_index = CliUtil::readStdinAnswer();
+        $data_type_index = CLIUtil::readStdinAnswer();
 
         if (!array_key_exists($data_type_index, $data_types_arr)){
             throw new \Exception('wrong answer');
@@ -121,9 +121,9 @@ class CLIAddFieldToModel
         }
 
         // TODO: request default value
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Enter field default value: it will be used for class property and database field. If no default value - just press ENTER. Examples:\n\t0\n\t\"\"\n\t\"some_value\"\n";
-        $default_value = CliUtil::readStdinAnswer();
+        $default_value = CLIUtil::readStdinAnswer();
 
         // TODO: check default value format
 
@@ -142,12 +142,12 @@ class CLIAddFieldToModel
             return '';
         }
 
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
 
         // alter table imbalance_match change column url url varchar(255) collate utf8_bin not null /* 873468753645 */
 
         echo "Enter database field collate, press ENTER to leave default. Examples:\n\tutf8_bin - for url fields to make them case sensitive\n";
-        $collate = CliUtil::readStdinAnswer();
+        $collate = CLIUtil::readStdinAnswer();
 
         // TODO: check format
 
@@ -162,7 +162,7 @@ class CLIAddFieldToModel
 
     public function addField()
     {
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Choose model class file:\n";
         $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
         echo "\nClass file: " . $this->model_file_path . "\n";
@@ -214,7 +214,7 @@ class CLIAddFieldToModel
         $sql_field_is_nullable_str = '';
 
         if ($field_data_type->can_be_null) {
-            echo CliUtil::delimiter();
+            echo CLIUtil::delimiter();
             echo "Choose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
             $is_nullable_reply = trim(fgets(STDIN));
 
@@ -246,9 +246,9 @@ class CLIAddFieldToModel
 
         echo "\nSQL registry updated\n";
 
-        echo CliUtil::delimiter();
+        echo CLIUtil::delimiter();
         echo "Press ENTER to execure SQL queries, enter n to skip:\n";
-        $command_str = CliUtil::readStdinAnswer();
+        $command_str = CLIUtil::readStdinAnswer();
 
         if ($command_str == ''){
             CLIExecuteSql::executeSqlScreen();
@@ -291,7 +291,7 @@ class CLIAddFieldToModel
         Assert::assert($this->field_name);
 
         while (true) {
-            echo CliUtil::delimiter();
+            echo CLIUtil::delimiter();
 
             echo "Extra functions:\n";
             echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";

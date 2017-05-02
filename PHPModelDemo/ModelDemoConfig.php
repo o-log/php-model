@@ -37,5 +37,7 @@ class ModelDemoConfig
 
         ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
         ModelConfig::addBeforeSaveSubscriber(SomeModel::class, DemoBeforeSaveSubscriber::class);
+
+        ModelConfig::addCLIMenuClass(DemoCLIMenu::class);
     }
 }

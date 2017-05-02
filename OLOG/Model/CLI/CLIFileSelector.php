@@ -2,7 +2,7 @@
 
 namespace OLOG\Model\CLI;
 
-use OLOG\CliUtil;
+use OLOG\CLIUtil;
 
 class CLIFileSelector
 {
@@ -28,7 +28,7 @@ class CLIFileSelector
             }
 
             echo "\nEnter file or directory index:\n";
-            $index = CliUtil::readStdinAnswer();
+            $index = CLIUtil::readStdinAnswer();
 
             if (!array_key_exists($index, $arr)) {
                 echo "Index not found\n";
@@ -43,10 +43,10 @@ class CLIFileSelector
                     continue;
                 }
 
-                echo CliUtil::delimiter();
+                echo CLIUtil::delimiter();
                 echo "Selected directory: " . $selected_path . "\n";
                 echo "Use it or enter directory?\n\t1 use directory\n\tENTER enter directory\n"; // TODO: constants
-                $answer = CliUtil::readStdinAnswer();
+                $answer = CLIUtil::readStdinAnswer();
 
                 switch ($answer){
                     case 1: // TODO: use constant

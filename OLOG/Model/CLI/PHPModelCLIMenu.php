@@ -2,9 +2,10 @@
 
 namespace OLOG\Model\CLI;
 
-use OLOG\CliUtil;
+use OLOG\CLIUtil;
+use OLOG\Model\InterfaceCLIMenu;
 
-class CLIMenu
+class PHPModelCLIMenu implements InterfaceCLIMenu
 {
     const FUNCTION_EXECUTE_SQL = 1;
     const FUNCTION_CREATE_MODEL = 2;
@@ -14,7 +15,6 @@ class CLIMenu
     static public function run()
     {
         while (true) {
-            echo CliUtil::delimiter();
             echo "Choose PHPModel function:\n";
             echo "\t" . self::FUNCTION_EXECUTE_SQL . ": execute new SQL queries from registry\n";
             echo "\t" . self::FUNCTION_CREATE_MODEL . ": create model\n";
@@ -22,7 +22,7 @@ class CLIMenu
             echo "\t" . self::FUNCTION_MODEL_FIELD_EXTRAS . ": extra operations on model field\n";
             echo "\tENTER: exit\n";
 
-            $command_str = CliUtil::readStdinAnswer();
+            $command_str = CLIUtil::readStdinAnswer();
 
             switch ($command_str) {
                 case self::FUNCTION_EXECUTE_SQL:

@@ -3,7 +3,7 @@
 namespace OLOG\Model\CLI;
 
 use OLOG\Assert;
-use OLOG\CliUtil;
+use OLOG\CLIUtil;
 use OLOG\DB\DBConfig;
 use OLOG\DB\DBFactory;
 
@@ -47,7 +47,7 @@ class CLIExecuteSql
 
         echo "All queries executed, press ENTER to continue\n";
 
-        $command_str = CliUtil::readStdinAnswer();
+        $command_str = CLIUtil::readStdinAnswer();
 
         return;
     }
@@ -63,7 +63,7 @@ class CLIExecuteSql
         }
 
         if (!$db_obj) {
-            echo CliUtil::delimiter();
+            echo CLIUtil::delimiter();
             echo "Can't connect to database " . $db_id . "\n";
             echo "Probable problems:\n";
             echo "- misconfiguration. App config for database:\n";
@@ -81,7 +81,7 @@ class CLIExecuteSql
                 'select sql_query from ' . self::EXECUTED_QUERIES_TABLE_NAME
             );
         } catch (\Exception $e) {
-            echo CliUtil::delimiter();
+            echo CLIUtil::delimiter();
             echo "Can not load the executed queries list from " . self::EXECUTED_QUERIES_TABLE_NAME . " table:\n";
             echo $e->getMessage() . "\n\n";
 
@@ -89,7 +89,7 @@ class CLIExecuteSql
             echo "\tENTER to create table and proceed\n"; // TODO: constants
             echo "\tany other key to exit\n";
 
-            $command_str = CliUtil::readStdinAnswer();
+            $command_str = CLIUtil::readStdinAnswer();
 
             // TODO: switch
             if ($command_str == '') { // TODO: constants
@@ -106,7 +106,7 @@ class CLIExecuteSql
 
         foreach ($sql_arr as $sql) {
             if (!in_array($sql, $executed_queries_sql_arr)) {
-                echo CliUtil::delimiter();
+                echo CLIUtil::delimiter();
                 echo $sql . "\n";
 
                 // TODO: constants
@@ -115,7 +115,7 @@ class CLIExecuteSql
                 echo "\t" . self::COMMAND_IGNORE_QUERY . ": ignore query - mark as executed, but do not execute (you can execute one manually)\n";
                 echo "\tENTER execute query\n";
 
-                $command_str = CliUtil::readStdinAnswer();
+                $command_str = CLIUtil::readStdinAnswer();
 
                 switch ($command_str) {
                     case '':
