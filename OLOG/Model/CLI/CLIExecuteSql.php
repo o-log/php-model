@@ -37,34 +37,19 @@ class CLIExecuteSql
         }
         */
 
-        //$command_str = CliUtil::readStdinAnswer();
+        $db_arr = DBConfig::getDBSettingsObjArr();
 
-        //if ($command_str == '') {
-            $db_arr = DBConfig::getDBSettingsObjArr();
+        foreach ($db_arr as $db_id => $db_config) {
+            echo "Database ID in application config: " . $db_id . "\n";
 
-            foreach ($db_arr as $db_id => $db_config) {
-                echo "Database ID in application config: " . $db_id . "\n";
+            self::process_db($db_id);
+        }
 
-                self::process_db($db_id);
-            }
-
-            echo "All queries executed, press ENTER to continue\n";
+        echo "All queries executed, press ENTER to continue\n";
 
         $command_str = CliUtil::readStdinAnswer();
 
         return;
-        //}
-
-        /*
-        $model_db_index = $command_str;
-
-        if (!array_key_exists($model_db_index, $db_id_by_index)) {
-            throw new \Exception('Wrong index');
-        }
-
-        $model_db_id = $db_id_by_index[$model_db_index];
-        self::process_db($model_db_id);
-        */
     }
 
     static public function process_db($db_id)
@@ -166,27 +151,28 @@ class CLIExecuteSql
         }
     }
 
-    static public function getSqlFileNameForDB($db_name)
+    static public function getSqlFileNameForDB($db_name, $project_root_path_in_filesystem = '')
     {
-        // TODO: open file in current project root
-        $cwd = getcwd();
+        if ($project_root_path_in_filesystem == '') {
+            // detect path if not passed
+            $project_root_path_in_filesystem = getcwd()  . DIRECTORY_SEPARATOR;
+        }
 
-        $filename = $cwd . DIRECTORY_SEPARATOR . $db_name . '.sql';
+        $filename = $project_root_path_in_filesystem . $db_name . '.sql';
 
-        //$db_config_sql_file = $db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db.' . $db_name . '.sql_file', '');
         $db_settings_obj = DBConfig::getDBSettingsObj($db_name);
         $db_config_sql_file = $db_settings_obj->getSqlFilePathInProjectRoot();
 
         if ($db_config_sql_file){
-            $filename = $cwd . DIRECTORY_SEPARATOR . $db_config_sql_file;
+            $filename = $project_root_path_in_filesystem . $db_config_sql_file;
         }
 
         return $filename;
     }
 
-    static public function loadSqlArrForDB($db_name)
+    static public function loadSqlArrForDB($db_name, $project_root_path_in_filesystem = '')
     {
-        $filename = self::getSqlFileNameForDB($db_name);
+        $filename = self::getSqlFileNameForDB($db_name, $project_root_path_in_filesystem);
 
         if (!file_exists($filename)) {
             echo "Не найден файл SQL запросов для БД " . $db_name . ": " . $filename . "\n";

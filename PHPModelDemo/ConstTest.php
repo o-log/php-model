@@ -25,8 +25,20 @@ class ConstTest implements
     protected $body;
     const _WEIGHT = 'weight';
     protected $weight = 0;
+    const _TEST_INT = 'test_int';
+    protected $test_int;
     const _ID = 'id';
     protected $id;
+
+    public function getTestInt(){
+        return $this->test_int;
+    }
+
+    public function setTestInt($value){
+        $this->test_int = $value;
+    }
+
+
 
     public function getWeight(){
         return $this->weight;

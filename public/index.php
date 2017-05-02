@@ -10,6 +10,8 @@ require_once '../vendor/autoload.php';
 
 \PHPModelDemo\ModelDemoConfig::init();
 
+\OLOG\Model\WebExecuteSQL::render(__DIR__ . '/../');
+
 echo '<div><a href="/">reload</a></div>';
 
 //
