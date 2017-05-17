@@ -209,7 +209,7 @@ trait ActiveRecordTrait
                 if (ModelConfig::isIgnoreMissingPropertiesOnSave()) {
                     // ignore
                 } else {
-                    throw new \Exception('missing property');
+                    throw new \Exception('Missing property when saving model: field "' . $field_name . '" exists in DB table and not present in model class');
                 }
             }
         }

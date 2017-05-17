@@ -25,7 +25,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
             $exception_message = $e->getMessage();
         }
 
-        $this->assertEquals('missing property', $exception_message);
+        $this->assertStringStartsWith('Missing property when saving model: ', $exception_message);
 
         //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
 
@@ -57,7 +57,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
             $exception_message = $e->getMessage();
         }
 
-        $this->assertEquals('missing property', $exception_message);
+        $this->assertStringStartsWith('Missing property when saving model: ', $exception_message);
 
         //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
 
