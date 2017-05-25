@@ -10,7 +10,11 @@ require_once '../vendor/autoload.php';
 
 \PHPModelDemo\ModelDemoConfig::init();
 
+echo '<h1>WebExecuteSQL</h1>';
+
 \OLOG\Model\WebExecuteSQL::render(__DIR__ . '/../');
+
+echo '<hr/>';
 
 echo '<div><a href="/">reload</a></div>';
 

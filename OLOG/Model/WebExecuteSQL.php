@@ -21,11 +21,25 @@ use OLOG\Sanitize;
 class WebExecuteSQL
 {
     const OPERATION_EXECUTE_QUERY = 'OPERATION_EXECUTE_QUERY';
+    const OPERATION_CREATE_EXECUTED_QUERIES_TABLE = 'OPERATION_CREATE_EXECUTED_QUERIES_TABLE';
 
     const INPUT_NAME_SQL = 'INPUT_NAME_SQL';
     const INPUT_NAME_DB_ID = 'INPUT_NAME_DB_ID';
 
     static public function render($project_root_path_in_filesystem){
+        Operations::matchOperation(self::OPERATION_CREATE_EXECUTED_QUERIES_TABLE, function() {
+            $db_id = POSTAccess::getRequiredPostValue(self::INPUT_NAME_DB_ID);
+
+            self::renderLine("Creating executed queries table...");
+
+            \OLOG\DB\DBWrapper::query(
+                $db_id,
+                'create table ' . CLIExecuteSql::EXECUTED_QUERIES_TABLE_NAME . ' (id int not null auto_increment primary key, created_at_ts int not null, sql_query text) engine InnoDB default charset utf8'
+            );
+
+            self::renderLine("Table created");
+        });
+
         Operations::matchOperation(self::OPERATION_EXECUTE_QUERY, function() {
             $sql = POSTAccess::getRequiredPostValue(self::INPUT_NAME_SQL);
             $db_id = POSTAccess::getRequiredPostValue(self::INPUT_NAME_DB_ID);
@@ -87,24 +101,14 @@ class WebExecuteSQL
             self::renderLine("Can not load the executed queries list from " . CLIExecuteSql::EXECUTED_QUERIES_TABLE_NAME . " table:");
             self::renderLine($e->getMessage());
 
-            self::renderLine("Probably the " . CLIExecuteSql::EXECUTED_QUERIES_TABLE_NAME . " table was not created. Choose:");
-            self::renderLine("- ENTER to create table and proceed"); // TODO: constants
-            self::renderLine("- any other key to exit");
+            self::renderLine("Probably the " . CLIExecuteSql::EXECUTED_QUERIES_TABLE_NAME . " table was not created.");
 
-            // TODO: restore
-            /*
-            $command_str = CliUtil::readStdinAnswer();
+            echo '<form method="post">';
+            echo Operations::operationCodeHiddenField(self::OPERATION_CREATE_EXECUTED_QUERIES_TABLE);
+            echo '<input type="hidden" name="' . self::INPUT_NAME_DB_ID . '" value="' . Sanitize::sanitizeAttrValue($db_id) . '">';
+            echo '<div><input type="submit" value="Создать таблицу в БД"></div>';
+            echo '</form>';
 
-            // TODO: switch
-            if ($command_str == '') { // TODO: constants
-                \OLOG\DB\DBWrapper::query(
-                    $db_id,
-                    'create table ' . self::EXECUTED_QUERIES_TABLE_NAME . ' (id int not null auto_increment primary key, created_at_ts int not null, sql_query text) engine InnoDB default charset utf8'
-                );
-            } else {
-                exit;
-            }
-            */
             return;
         }
 
