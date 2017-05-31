@@ -121,7 +121,8 @@ class CacheRedis implements CacheEngineInterface
             ];
         }
 
-        $redis = new \Predis\Client($servers_arr);
+        $cache_engine_params_arr = CacheConfig::getCacheEngineParamsArr();
+        $redis = new \Predis\Client($servers_arr, $cache_engine_params_arr);
 
         return $redis;
     }

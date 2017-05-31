@@ -9,6 +9,7 @@ class CacheConfig
     static protected $servers_obj_arr = [];
     static protected $cache_key_prefix = '';
     static protected $engine_class_name = CacheMemcache::class;
+    static protected $cache_engine_params_arr = [];
 
     /**
      * @return string
@@ -58,5 +59,21 @@ class CacheConfig
     static public function getServersObjArr()
     {
         return self::$servers_obj_arr;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getCacheEngineParamsArr()
+    {
+        return self::$cache_engine_params_arr;
+    }
+
+    /**
+     * @param array $cache_engine_params_arr
+     */
+    public static function setCacheEngineParamsArr($cache_engine_params_arr)
+    {
+        self::$cache_engine_params_arr = $cache_engine_params_arr;
     }
 }
