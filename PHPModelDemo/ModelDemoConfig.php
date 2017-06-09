@@ -19,13 +19,15 @@ class ModelDemoConfig
 
     public static function init()
     {
-        DBConfig::setDBConnectorObj(self::DB_CONNECTOR_PHPMODELDEMO,
+        DBConfig::setDBConnectorObj(
+            self::DB_CONNECTOR_PHPMODELDEMO,
             new DBConnector('localhost', 'phpmodel', 'root', '1')
         );
 
         DBConfig::setDBSettingsObj(
             self::DB_NAME_PHPMODELDEMO,
-            new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO)
+            new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO),
+            null
         );
 
         CacheConfig::addServerSettingsObj(
