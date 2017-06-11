@@ -36,10 +36,21 @@ class DB
      * Умеет или сам подключаться к БД или использовать объект PDO из указанного DBConnector (при этом можно использовать одно подключение для нескольких объектов БД (если они смотрят на одну физическую базу) чтобы правильно работали транзакции)
      * @param DBSettings $db_settings_obj
      */
-    public function __construct(DBSettings $db_settings_obj)
+    public function __construct(DBSettings $db_settings_obj, DBTablesetObj $db_tableset_obj = null)
     {
         //$this->pdo = new \PDO('mysql:host=' . $db_conf_arr['host'] . ';dbname=' . $db_conf_arr['db_name'] . ';charset=utf8', $db_conf_arr['user'], $db_conf_arr['pass']);
         //$this->pdo = new \PDO('pgsql:dbname='. $db_conf_arr['db_name'] . ';host=' . $db_conf_arr['host'] . ';user='.$db_conf_arr['user'].';password='.$db_conf_arr['pass']);
+
+        if (!is_null($db_tableset_obj)){
+            $readwrite_dbconnector_id = $db_tableset_obj->getReadwriteDbConnectorId();
+            $readwrite_dbconnector_obj = DBConfig::getDBConnectorObj($readwrite_dbconnector_id);
+            Assert::assert($readwrite_dbconnector_obj);
+            $this->setPdoObj($readwrite_dbconnector_obj->getPdoObj());
+
+            // TODO: add support for readonly PDO
+
+            return;
+        }
 
         if ($db_settings_obj->getDbConnectorId() != ''){
             $dbconnector_obj = DBConfig::getDBConnectorObj($db_settings_obj->getDbConnectorId());

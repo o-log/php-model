@@ -4,16 +4,16 @@ namespace OLOG\DB;
 
 class DBConnector
 {
-    protected $server_host;
+    protected $dsn;
     protected $db_name;
     protected $user;
     protected $password;
     protected $pdo_obj = null;
     protected $pdo_is_connected = false;
 
-    public function __construct($server_host, $db_name, $user, $password)
+    public function __construct($dsn, $db_name, $user, $password)
     {
-        $this->server_host = $server_host;
+        $this->dsn = $dsn;
         $this->db_name = $db_name;
         $this->user = $user;
         $this->password = $password;
@@ -62,19 +62,37 @@ class DBConnector
     }
 
     /**
+     * @deprecated replaced with getDsn
      * @return mixed
      */
     public function getServerHost()
     {
-        return $this->server_host;
+        return $this->dsn;
     }
 
     /**
-     * @param mixed $server_host
+     * @deprecated replaced with setDsn
+     * @param mixed $dsn
      */
-    public function setServerHost($server_host)
+    public function setServerHost($dsn)
     {
-        $this->server_host = $server_host;
+        $this->dsn = $dsn;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDsn()
+    {
+        return $this->dsn;
+    }
+
+    /**
+     * @param mixed $dsn
+     */
+    public function setDsn($dsn)
+    {
+        $this->dsn = $dsn;
     }
 
     /**

@@ -22,9 +22,15 @@ class DBFactory
             return $pdo_arr[$db_id];
         }
 
-        $db_settings_obj = DBConfig::getDBSettingsObj($db_id);
 
-        $pdo_arr[$db_id] = new \OLOG\DB\DB($db_settings_obj);
+        $db_settings_obj = DBConfig::getDBSettingsObj($db_id, false);
+
+        $db_tableset_obj = null;
+        if (is_null($db_settings_obj)){
+            $db_tableset_obj = DBConfig::getDBTablesetObj($db_id);
+        }
+
+        $pdo_arr[$db_id] = new \OLOG\DB\DB($db_settings_obj, $db_tableset_obj);
         return $pdo_arr[$db_id];
     }
 }

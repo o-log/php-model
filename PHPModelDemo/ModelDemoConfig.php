@@ -10,24 +10,34 @@ use OLOG\Cache\MemcacheServerSettings;
 use OLOG\DB\DBConfig;
 use OLOG\DB\DBConnector;
 use OLOG\DB\DBSettings;
+use OLOG\DB\DBTablesetObj;
 use OLOG\Model\ModelConfig;
 
 class ModelDemoConfig
 {
-    const DB_NAME_PHPMODELDEMO = 'phpmodel';
-    const DB_CONNECTOR_PHPMODELDEMO = 'phpmodel';
+    const DBTABLESET_PHPMODELDEMO = 'phpmodel';
+    const DBCONNECTOR_PHPMODELDEMO_READWRITE = 'phpmodel';
 
     public static function init()
     {
         DBConfig::setDBConnectorObj(
-            self::DB_CONNECTOR_PHPMODELDEMO,
+            self::DBCONNECTOR_PHPMODELDEMO_READWRITE,
             new DBConnector('localhost', 'phpmodel', 'root', '1')
         );
 
+        /*
         DBConfig::setDBSettingsObj(
             self::DB_NAME_PHPMODELDEMO,
             new DBSettings('', '', '', '', '', self::DB_CONNECTOR_PHPMODELDEMO),
             null
+        );
+        */
+
+        DBConfig::setDBTablesetObj(
+            self::DBTABLESET_PHPMODELDEMO,
+            new DBTablesetObj(
+                self::DBCONNECTOR_PHPMODELDEMO_READWRITE
+            )
         );
 
         CacheConfig::addServerSettingsObj(

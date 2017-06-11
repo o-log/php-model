@@ -85,7 +85,7 @@ echo '<h2>Models <a href="/?' . FIELD_OPERATION . '=' . OPERATION_ADD_MODEL . '"
 echo '<div>Class name: <b>' . \PHPModelDemo\DemoModel::class . '</b></div>';
 
 $models_ids_arr = \OLOG\DB\DBWrapper::readColumn(
-    \PHPModelDemo\ModelDemoConfig::DB_NAME_PHPMODELDEMO,
+    \PHPModelDemo\ModelDemoConfig::DBTABLESET_PHPMODELDEMO,
     'select id from ' . \PHPModelDemo\DemoModel::DB_TABLE_NAME . ' order by id desc'
 );
 

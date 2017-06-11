@@ -2,11 +2,8 @@
 
 namespace OLOG\DB;
 
-use OLOG\Assert;
-
 class DBSettings
 {
-    //$this->pdo = new \PDO('mysql:host=' . $db_conf_arr['host'] . ';dbname=' . $db_conf_arr['db_name'] . ';charset=utf8', $db_conf_arr['user'], $db_conf_arr['pass']);
     protected $server_host;
     protected $db_name;
     protected $user;
