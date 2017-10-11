@@ -4,10 +4,26 @@
   "require-dev": {
     "phpunit/phpunit": "5.5.*"
   },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/o-log/php-message.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/o-log/php-db.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/o-log/php-cache.git"
+    }
+  ],
+
   "require": {
     "danielstjules/stringy": "~2.3",
-    "o-log/php-lib": "1.*",
-    "predis/predis": "1.*"
+    "o-log/php-router": "2.*",
+    "o-log/php-db": "0.*",
+    "o-log/php-cache": "0.*"
   },
   "autoload": {
     "psr-0": {

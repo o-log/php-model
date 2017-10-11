@@ -3,10 +3,8 @@
 namespace PHPModelDemo;
 
 class DemoNode implements
-    \OLOG\Model\InterfaceFactory,
-    \OLOG\Model\InterfaceLoad,
-    \OLOG\Model\InterfaceSave,
-    \OLOG\Model\InterfaceDelete
+    \OLOG\Model\FactoryInterface,
+    \OLOG\Model\ActiveRecordInterface
 {
     use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;

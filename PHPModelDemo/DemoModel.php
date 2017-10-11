@@ -2,7 +2,7 @@
 
 namespace PHPModelDemo;
 
-class DemoModel implements \OLOG\Model\InterfaceFactory
+class DemoModel implements \OLOG\Model\FactoryInterface
 {
     use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;
@@ -25,12 +25,12 @@ class DemoModel implements \OLOG\Model\InterfaceFactory
 
     static public function getIdsArrForDemoNodeIdByCreatedAtDesc($value, $offset = 0, $page_size = 10){
         if (is_null($value)) {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select id from ' . self::DB_TABLE_NAME . ' where ' . self::_DEMO_NODE_ID . ' is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
             );
         } else {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select id from ' . self::DB_TABLE_NAME . ' where ' . self::_DEMO_NODE_ID . ' = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
                 array($value)

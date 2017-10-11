@@ -1,9 +1,7 @@
 <?php
 
 namespace OLOG\Model;
-use OLOG\DB\DBWrapper;
-use OLOG\FullObjectId;
-use OLOG\Sanitize;
+use OLOG\DB\DB;
 
 /**
  * Для работы с ActiveRecord необходимо:
@@ -49,9 +47,9 @@ trait ActiveRecordTrait
         $db_table_name = $model_class_name::DB_TABLE_NAME;
         $db_id_field_name = ActiveRecordHelper::getIdFieldName($this);
 
-        $data_obj = \OLOG\DB\DBWrapper::readObject(
+        $data_obj = DB::readObject(
             $db_id,
-            'select /* LMO */ * from ' . Sanitize::sanitizeSqlColumnName($db_table_name) . ' where ' . Sanitize::sanitizeSqlColumnName($db_id_field_name) . ' = ?',
+            'select /* LMO */ * from ' . $db_table_name . ' where ' . $db_id_field_name . ' = ?',
             array($id)
         );
 
@@ -94,8 +92,8 @@ trait ActiveRecordTrait
         $obj_db_id = $obj_class_name::DB_ID;
 
         $transaction_is_my = false;
-        if (!DBWrapper::inTransaction($obj_db_id)) {
-            DBWrapper::beginTransaction($obj_db_id);
+        if (!DB::inTransaction($obj_db_id)) {
+            DB::beginTransaction($obj_db_id);
             $transaction_is_my = true;
         }
 
@@ -115,7 +113,7 @@ trait ActiveRecordTrait
         } catch (\Exception $e) {
             // if any exception while saving - rollback transaction and rethrow exception
             if ($transaction_is_my) {
-                DBWrapper::rollbackTransaction($obj_db_id);
+                DB::rollback($obj_db_id);
             }
 
             throw $e;
@@ -144,7 +142,7 @@ trait ActiveRecordTrait
 
         // комитим только если мы же и стартовали транзакцию (на случай вложенных вызовов)
         if ($transaction_is_my) {
-            DBWrapper::commitTransaction($obj_db_id);
+            DB::commit($obj_db_id);
         }
     }
 
@@ -163,9 +161,9 @@ trait ActiveRecordTrait
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
 
-        $db_table_fields_arr = DBWrapper::readObjects(
+        $db_table_fields_arr = DB::readObjects(
             $db_id,
-            'explain ' . Sanitize::sanitizeSqlColumnName($db_table_name)
+            'explain ' . $db_table_name
         );
 
         $id_field_name = ActiveRecordHelper::getIdFieldName($this);

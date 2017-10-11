@@ -45,4 +45,7 @@ array(
 'alter table tests_loadtestmodel add column extra_field int     /* rand58321 */;',
 'alter table tests_loadtestmodel add column title varchar(255)     /* rand34340 */;',
 'alter table phpmodeldemo_consttest add column test_int int     /* rand269034 */;',
+'create table phpmodeldemo_test2 (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand2267 */;',
+'create table phpmodeldemo_test3 (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand7542 */;',
+'alter table phpmodeldemo_test3 add column title varchar(255)   not null    /* rand498948 */;',
 )

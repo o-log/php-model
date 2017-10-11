@@ -223,7 +223,7 @@ http://www.php-fig.org/psr/psr-4/
 
 Работа с БД не требует явного подключения БД - соединение устанавливается при выполнении первого запроса. Это позволяет в большинстве случаев генерировать страницы вообще не устанавливая соединение с БД (если все данные приходят из кэша).
 
-Для выполнения запросов предназначен класс DBWrapper. Основные методы:
+Для выполнения запросов предназначен класс DB. Основные методы:
 
     static public function readColumn($db_id, $query, $params_arr = array())
     
@@ -317,7 +317,7 @@ http://www.php-fig.org/psr/psr-4/
         new MemcacheServerSettings('localhost', 11211)
     );
     
-Основные методы для работы с кэшом находятся в классе OLOG\Cache\CacheWrapper:
+Основные методы для работы с кэшом находятся в классе OLOG\Cache\Cache:
 
     static public function set($key, $value, $expire = -1)
     static public function get($key)

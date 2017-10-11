@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use OLOG\DB\DBWrapper;
+use OLOG\DB\DB;
 
 class DeleteTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,14 +15,14 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $obj = new \Tests\TestModel();
         $obj->save();
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
         $obj_id = $obj->getId();
         $obj->delete();
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
-        $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $test_model_ids_arr = DB::readColumn(
             \Tests\TestModel::DB_ID,
             'select id from ' . \Tests\TestModel::DB_TABLE_NAME . ' where id = ?',
             array($obj_id)
@@ -39,7 +39,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $obj2->setDisableDelete(true);
         $obj2->save();
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
         $obj2_id = $obj2->getId();
 
@@ -52,14 +52,14 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
             $obj2->delete();
         } catch (\Exception $e){
             $exception_message = $e->getMessage();
-            //DBWrapper::rollBackTransaction(TestModel::DB_ID);
+            //DB::rollBack(TestModel::DB_ID);
         }
 
         $this->assertEquals('Delete disabled', $exception_message);
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
-        $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $test_model_ids_arr = DB::readColumn(
             \Tests\TestModel::DB_ID,
             'select id from ' . \Tests\TestModel::DB_TABLE_NAME . ' where id = ?',
             array($obj2_id)
@@ -79,7 +79,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         $obj->setThrowExceptionAfterDelete(true);
         $obj->save();
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
         $obj_id = $obj->getId();
 
@@ -91,14 +91,14 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
             $obj->delete();
         } catch (\Exception $e){
             $exception_message = $e->getMessage();
-            //DBWrapper::rollBackTransaction(TestModel::DB_ID);
+            //DB::rollBack(TestModel::DB_ID);
         }
 
         $this->assertEquals('After delete', $exception_message);
 
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
-        $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $test_model_ids_arr = DB::readColumn(
             \Tests\TestModel::DB_ID,
             'select id from ' . \Tests\TestModel::DB_TABLE_NAME . ' where id = ?',
             array($obj_id)

@@ -3,17 +3,13 @@ namespace PHPModelDemo;
 
 use OLOG\Model\ActiveRecordTrait;
 use OLOG\Model\FactoryTrait;
-use OLOG\Model\InterfaceDelete;
-use OLOG\Model\InterfaceFactory;
-use OLOG\Model\InterfaceLoad;
-use OLOG\Model\InterfaceSave;
+use OLOG\Model\FactoryInterface;
+use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 
 class SomeModel implements
-    InterfaceFactory,
-    InterfaceLoad,
-    InterfaceSave,
-    InterfaceDelete
+    FactoryInterface,
+    ActiveRecordInterface
 {
     use FactoryTrait;
     use ActiveRecordTrait;
@@ -33,7 +29,7 @@ class SomeModel implements
     }
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );

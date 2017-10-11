@@ -1,5 +1,5 @@
 <?php
-namespace Tests;
+namespace PHPModelDemo;
 
 use OLOG\Model\ActiveRecordTrait;
 use OLOG\Model\FactoryTrait;
@@ -7,7 +7,7 @@ use OLOG\Model\FactoryInterface;
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 
-class LoadTestModel implements
+class Test2 implements
     FactoryInterface,
     ActiveRecordInterface
 {
@@ -16,19 +16,14 @@ class LoadTestModel implements
     use ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
-    const DB_TABLE_NAME = 'tests_loadtestmodel';
+    const DB_TABLE_NAME = 'phpmodeldemo_test2';
 
     const _ID = 'id';
     const _CREATED_AT_TS = 'created_at_ts';
-
-    // поле закомментировано для теста загрузки отсутствующего свойства
-    //const _EXTRA_FIELD = 'extra_field';
-    //protected $extra_field;
-
+    
     const _TITLE = 'title';
     protected $title;
     protected $id;
-    protected $field_not_in_table;
 
     public function getTitle(){
         return $this->title;
@@ -36,16 +31,6 @@ class LoadTestModel implements
 
     public function setTitle($value){
         $this->title = $value;
-    }
-
-
-
-    public function getExtraField(){
-        return $this->extra_field;
-    }
-
-    public function setExtraField($value){
-        $this->extra_field = $value;
     }
 
 
@@ -80,7 +65,7 @@ class LoadTestModel implements
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getCreatedAtTs()
     {
@@ -88,7 +73,7 @@ class LoadTestModel implements
     }
 
     /**
-     * @param string $timestamp
+     * @param int $timestamp
      */
     public function setCreatedAtTs($timestamp)
     {

@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use OLOG\DB\DBWrapper;
+use OLOG\DB\DB;
 
 class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +19,7 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
         $new_model->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
         $test_model_id = $new_model->getId();
         $this->assertNotEmpty($test_model_id); // тестирует генерацию непустого идентификатора модели при первом сохранении
@@ -30,9 +30,9 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
         $loaded_model_obj->delete();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
-        $test_model_ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $test_model_ids_arr = DB::readColumn(
             \Tests\TestModel::DB_ID,
             'select id from ' . \Tests\TestModel::DB_TABLE_NAME . ' where id = ?',
             array($test_model_id)
@@ -41,6 +41,6 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, count($test_model_ids_arr)); // проверяем что записей с таким ИД в таблице нет
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
     }
 }

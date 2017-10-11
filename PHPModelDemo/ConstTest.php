@@ -3,10 +3,8 @@
 namespace PHPModelDemo;
 
 class ConstTest implements
-    \OLOG\Model\InterfaceFactory,
-    \OLOG\Model\InterfaceLoad,
-    \OLOG\Model\InterfaceSave,
-    \OLOG\Model\InterfaceDelete
+    \OLOG\Model\FactoryInterface,
+    \OLOG\Model\ActiveRecordInterface
 {
     use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;
@@ -62,12 +60,12 @@ class ConstTest implements
 
     static public function getIdsArrForTitleByCreatedAtDesc($value, $offset = 0, $page_size = 30){
         if (is_null($value)) {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select id from ' . self::DB_TABLE_NAME . ' where ' . self::_TITLE . ' is null order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
             );
         } else {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select id from ' . self::DB_TABLE_NAME . ' where ' . self::_TITLE . ' = ? order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset),
                 array($value)
@@ -87,9 +85,10 @@ class ConstTest implements
 
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+            [$page_size, $offset]
         );
         return $ids_arr;
     }

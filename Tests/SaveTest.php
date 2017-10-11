@@ -3,7 +3,7 @@
 namespace Tests;
 
 use OLOG\Assert;
-use OLOG\DB\DBWrapper;
+use OLOG\DB\DB;
 use OLOG\Model\ModelConfig;
 
 class SaveTest extends \PHPUnit_Framework_TestCase
@@ -27,10 +27,10 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('Missing property when saving model: ', $exception_message);
 
-        //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
+        //DB::commit(LoadTestModel::DB_ID);
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 
     public function testUpdateWithMissingFieldWithException(){
@@ -38,7 +38,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         //$new_model = new \Tests\LoadTestModel();
         $model_ids_arr = LoadTestModel::getAllIdsArrByCreatedAtDesc();
-        Assert::assert(count($model_ids_arr));
+        if (!count($model_ids_arr)) throw new \Exception();
         $model_id = $model_ids_arr[0];
 
         ModelConfig::setIgnoreMissingPropertiesOnLoad(true);
@@ -59,10 +59,10 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         $this->assertStringStartsWith('Missing property when saving model: ', $exception_message);
 
-        //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
+        //DB::commit(LoadTestModel::DB_ID);
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 
     public function testInsertWithMissingFieldWithoutException(){
@@ -75,12 +75,12 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $new_model->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
 
-        //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
+        //DB::commit(LoadTestModel::DB_ID);
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 
     public function testUpdateWithMissingFieldWithoutException(){
@@ -88,7 +88,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         //$new_model = new \Tests\LoadTestModel();
         $model_ids_arr = LoadTestModel::getAllIdsArrByCreatedAtDesc();
-        Assert::assert(count($model_ids_arr));
+        if (!count($model_ids_arr)) throw new \Exception();
         $model_id = $model_ids_arr[0];
 
         ModelConfig::setIgnoreMissingPropertiesOnLoad(true);
@@ -102,10 +102,10 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         $model_obj->save();
 
-        //DBWrapper::commitTransaction(LoadTestModel::DB_ID);
+        //DB::commit(LoadTestModel::DB_ID);
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 
     /**
@@ -119,7 +119,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $new_node_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         /** @var int $initial_node_created_at */
         $initial_node_created_at = $new_node_obj->getCreatedAtTs();
@@ -129,7 +129,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $new_term_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestTerm::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestTerm::DB_ID));
 
         $new_term_to_node_obj = new \Tests\TestTermToNode();
         $new_term_to_node_obj->setNodeId($node_id);
@@ -137,7 +137,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $new_term_to_node_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestTermToNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestTermToNode::DB_ID));
 
         /**
          * меняем время создания ноды и сохраняем
@@ -149,7 +149,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $loaded_node_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         $term_to_node_ids_arr = \Tests\TestTermToNode::getIdsArrForNodeIdByCreatedAtDesc($node_id);
         $this->assertEquals(1, count($term_to_node_ids_arr), 'wrong number of term to node records');
@@ -160,7 +160,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         }
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestTermToNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestTermToNode::DB_ID));
     }
 
     public function testSingleAfterSaveCall(){
@@ -171,7 +171,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $test_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         $this->assertEquals(1, $test_obj->getAfterSaveCounter());
     }
@@ -192,7 +192,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $new_node_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         $node_id = $new_node_obj->getId();
 
@@ -207,13 +207,13 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $loaded_node_obj->save();
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         $loaded_node_obj_2 = \Tests\TestNode::factory($node_id);
         $this->assertEquals($loaded_node_obj_2->getBody(), $test_title_2 . $test_title_2);
 
         // ensure we have no active transaction
-        $this->assertEquals(false, DBWrapper::inTransaction(TestNode::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
     }
 
 }

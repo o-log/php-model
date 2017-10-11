@@ -2,8 +2,7 @@
 
 namespace OLOG\Model;
 
-
-use OLOG\DB\DBWrapper;
+use OLOG\DB\DB;
 use OLOG\Sanitize;
 
 class ActiveRecordHelper
@@ -32,8 +31,8 @@ class ActiveRecordHelper
         $values_arr = array_values($fields_to_save_arr);
         array_push($values_arr, $model_id_value);
 
-        $query = 'update ' . Sanitize::sanitizeSqlColumnName($db_table_name) . ' set ' . implode(',', $placeholders_arr) . ' where ' . $id_field_name . ' = ?';
-        \OLOG\DB\DBWrapper::query($db_id, $query, $values_arr);
+        $query = 'update ' . $db_table_name . ' set ' . implode(',', $placeholders_arr) . ' where ' . $id_field_name . ' = ?';
+        DB::query($db_id, $query, $values_arr);
     }
 
     public static function insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name){
@@ -41,17 +40,18 @@ class ActiveRecordHelper
 
         $quoted_fields_to_save_arr = array();
         foreach (array_keys($fields_to_save_arr) as $field_name_to_save) {
-            $quoted_fields_to_save_arr[] = Sanitize::sanitizeSqlColumnName($field_name_to_save);
+            //$quoted_fields_to_save_arr[] = Sanitize::sanitizeSqlColumnName($field_name_to_save);
+            $quoted_fields_to_save_arr[] = preg_replace("/[^a-zA-Z0-9_]+/", "", $field_name_to_save);
         }
 
-        \OLOG\DB\DBWrapper::query(
+        DB::query(
             $db_id,
             'insert into ' . $db_table_name . ' (' . implode(',', $quoted_fields_to_save_arr) . ') values (' . implode(',', $placeholders_arr) . ')',
             array_values($fields_to_save_arr)
         );
 
         $db_sequence_name = $db_table_name . '_' . $id_field_name . '_seq';
-        $last_insert_id = \OLOG\DB\DBWrapper::lastInsertId($db_id, $db_sequence_name);
+        $last_insert_id = DB::lastInsertId($db_id, $db_sequence_name);
         return $last_insert_id;
     }
 
@@ -70,7 +70,7 @@ class ActiveRecordHelper
 
         $db_table_fields_arr = DBWrapper::readObjects(
             $db_id,
-            'explain ' . Sanitize::sanitizeSqlColumnName($db_table_name)
+            'explain ' . $db_table_name
         );
 
         $db_id_field_name = self::getIdFieldName($model_obj);
@@ -183,8 +183,8 @@ class ActiveRecordHelper
         $obj_db_id = $obj_class_name::DB_ID;
 
         $transaction_is_my = false;
-        if (!DBWrapper::inTransaction($obj_db_id)) {
-            DBWrapper::beginTransaction($obj_db_id);
+        if (!DB::inTransaction($obj_db_id)) {
+            DB::beginTransaction($obj_db_id);
             $transaction_is_my = true;
         }
 
@@ -192,7 +192,7 @@ class ActiveRecordHelper
         if ($obj instanceof \OLOG\Model\InterfaceDelete) {
             if (!$obj->canDelete($can_delete_message)) {
                 if ($transaction_is_my) {
-                    DBWrapper::rollBackTransaction($obj_db_id);
+                    DB::rollBack($obj_db_id);
                 }
                 throw new \Exception($can_delete_message);
             }
@@ -207,7 +207,7 @@ class ActiveRecordHelper
                 // in the case of any exception - rollback transaction and rethrow exception
                 // thus actual db record will not be deleted
                 if ($transaction_is_my) {
-                    DBWrapper::rollbackTransaction($obj_db_id);
+                    DB::rollback($obj_db_id);
                 }
 
                 throw $e;
@@ -215,7 +215,7 @@ class ActiveRecordHelper
         }
 
         if ($transaction_is_my) {
-            DBWrapper::commitTransaction($obj_db_id);
+            DB::commit($obj_db_id);
         }
     }
 
@@ -242,7 +242,7 @@ class ActiveRecordHelper
             throw new \Exception('Deleting not saved object');
         }
 
-        $result = \OLOG\DB\DBWrapper::query(
+        $result = DB::query(
             $db_id,
             'DELETE FROM ' . $db_table_name . ' where ' . $db_id_field_name . ' = ?',
             array($model_id_value)

@@ -3,10 +3,8 @@
 namespace PHPModelDemo;
 
 class DemoTermToNode implements
-    \OLOG\Model\InterfaceFactory,
-    \OLOG\Model\InterfaceLoad,
-    \OLOG\Model\InterfaceSave,
-    \OLOG\Model\InterfaceDelete
+    \OLOG\Model\FactoryInterface,
+    \OLOG\Model\ActiveRecordInterface
 {
     use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;
@@ -21,7 +19,7 @@ class DemoTermToNode implements
     protected $id;
 
     static public function getIdsArrForNodeIdByCreatedAtDesc($value){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select id from ' . self::DB_TABLE_NAME . ' where node_id = ? order by created_at_ts desc',
             array($value)
@@ -39,7 +37,7 @@ class DemoTermToNode implements
 
 
     static public function getIdsArrForTermIdByCreatedAtDesc($value){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select id from ' . self::DB_TABLE_NAME . ' where term_id = ? order by created_at_ts desc',
             array($value)
@@ -57,7 +55,7 @@ class DemoTermToNode implements
 
 
     static public function getAllIdsArrByCreatedAtDesc(){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc'
         );

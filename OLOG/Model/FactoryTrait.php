@@ -2,6 +2,8 @@
 
 namespace OLOG\Model;
 
+use \OLOG\Model\FactoryHelper;
+
 trait FactoryTrait {
     /**
      * Возвращает имя класса модели.
@@ -19,13 +21,13 @@ trait FactoryTrait {
     static public function factory($id_to_load, $exception_if_not_loaded = true)
     {
         $class_name = self::getMyClassName();
-        return \OLOG\Model\FactoryHelper::factory($class_name, $id_to_load, $exception_if_not_loaded);
+        return FactoryHelper::factory($class_name, $id_to_load, $exception_if_not_loaded);
     }
 
     static public function removeObjFromCacheById($id_to_remove)
     {
         $class_name = self::getMyClassName();
-        \OLOG\Model\FactoryHelper::removeObjFromCacheById($class_name, $id_to_remove);
+        FactoryHelper::removeObjFromCacheById($class_name, $id_to_remove);
     }
 
     /**
@@ -35,6 +37,6 @@ trait FactoryTrait {
     public function removeFromFactoryCache()
     {
         $class_name = self::getMyClassName();
-        \OLOG\Model\FactoryHelper::removeObjectFromFactoryCache($class_name, $this->getId()); // TODO: check interfaceLoad
+        FactoryHelper::removeObjectFromFactoryCache($class_name, $this->getId()); // TODO: check interfaceLoad
     }
 }

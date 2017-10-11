@@ -3,20 +3,17 @@
 namespace OLOG\Model;
 
 /**
- * Базовая фабрика объектов - V2. Используется для объектов, у которых идентификатор не составной.
  * Умеет создавать объекты указанного класса, при необходимости загружая их из кэша.
  */
-class Factory
-{
-    protected static function getObjectCacheId($class_name, $object_id)
-    {
+class Factory {
+
+    protected static function getObjectCacheId($class_name, $object_id) {
         return $class_name . '::' . $object_id;
     }
 
-    public static function removeObjectFromCache($class_name, $object_id)
-    {
+    public static function removeObjectFromCache($class_name, $object_id) {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
-        \OLOG\Cache\CacheWrapper::delete($cache_key);
+        \OLOG\Cache\Cache::delete('', $cache_key);
     }
 
     /**
@@ -26,16 +23,14 @@ class Factory
      * @return null|object Если удалось создать и загрузить объект - возвращается этот объект. Иначе (например, не удалось загрузить) - возвращает null.
      * @throws \Exception
      */
-    public static function createAndLoadObject($class_name, $object_id)
-    {
+    public static function createAndLoadObject($class_name, $object_id) {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
 
-        $cached_obj = \OLOG\Cache\CacheWrapper::get($cache_key);
+        $cached_obj = \OLOG\Cache\Cache::get('', $cache_key);
 
         if ($cached_obj !== false) {
             return $cached_obj;
         }
-
 
         $obj = new $class_name;
 
@@ -53,7 +48,7 @@ class Factory
             $cache_ttl_seconds = $obj->getCacheTtlSeconds();
         }
 
-        \OLOG\Cache\CacheWrapper::set($cache_key, $obj, $cache_ttl_seconds);
+        \OLOG\Cache\Cache::set('', $cache_key, $obj, $cache_ttl_seconds);
 
         return $obj;
     }

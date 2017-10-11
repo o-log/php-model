@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use OLOG\DB\DBWrapper;
+use OLOG\DB\DB;
 use OLOG\Model\ModelConfig;
 
 class LoadTest extends \PHPUnit_Framework_TestCase
@@ -32,7 +32,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Missing "extra_field" property in class "Tests\LoadTestModel" while property is present in DB table "tests_loadtestmodel"', $exception_message);
 
         // ensure we have no active transaction after load
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 
     public function testLoadWithMissingFieldWithoutException()
@@ -52,6 +52,6 @@ class LoadTest extends \PHPUnit_Framework_TestCase
         $loaded_model_obj = \Tests\LoadTestModel::factory($test_model_id);
 
         // ensure we have no active transaction after load
-        $this->assertEquals(false, DBWrapper::inTransaction(LoadTestModel::DB_ID));
+        $this->assertEquals(false, DB::inTransaction(LoadTestModel::DB_ID));
     }
 }

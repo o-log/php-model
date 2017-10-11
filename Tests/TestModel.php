@@ -3,10 +3,8 @@
 namespace Tests;
 
 class TestModel implements
-    \OLOG\Model\InterfaceFactory,
-    \OLOG\Model\InterfaceLoad,
-    \OLOG\Model\InterfaceSave,
-    \OLOG\Model\InterfaceDelete
+    \OLOG\Model\FactoryInterface,
+    \OLOG\Model\ActiveRecordInterface
 {
     use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;
@@ -68,7 +66,7 @@ class TestModel implements
     }
 
     static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select id from ' . self::DB_TABLE_NAME . ' order by created_at_ts desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );

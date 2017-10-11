@@ -28,7 +28,7 @@ class PHPClassFile
 
     public function save(){
         $put_result = file_put_contents($this->class_file_path, $this->class_file_text);
-        Assert::assert($put_result);
+        if (!$put_result) throw new \Exception();
     }
 
     /**
@@ -89,7 +89,7 @@ class PHPClassFile
         $this->class_file_path = $model_file_path;
 
         $this->class_file_text = file_get_contents($this->class_file_path);
-        Assert::assert($this->class_file_text); // TODO: better check?
+        if (!$this->class_file_text) throw new \Exception(); // TODO: better check?
 
         $this->extractClassName();
         $this->extractClassNamespace();

@@ -9,8 +9,9 @@ class ModelConfig {
     static protected $before_save_subscribers_arr = [];
     static protected $ignore_missing_properties_on_load = false;
     static protected $ignore_missing_properties_on_save = false;
-    static protected $cli_menu_classes_arr = [];
+    //static protected $cli_menu_classes_arr = [];
 
+    /*
     public static function addCLIMenuClass($class_name){
         CheckClassInterfaces::exceptionIfClassNotImplementsInterface($class_name, InterfaceCLIMenu::class);
 
@@ -20,6 +21,8 @@ class ModelConfig {
     public static function getCLIMenuClassesArr(){
         return self::$cli_menu_classes_arr;
     }
+     * 
+     */
 
     /**
      * @return bool
@@ -58,7 +61,11 @@ class ModelConfig {
     }
 
     public static function addBeforeSaveSubscriber($model_class_name, $before_save_callback_class_name) {
-        CheckClassInterfaces::exceptionIfClassNotImplementsInterface($before_save_callback_class_name, ModelBeforeSaveCallbackInterface::class);
+        //CheckClassInterfaces::exceptionIfClassNotImplementsInterface($before_save_callback_class_name, ModelBeforeSaveCallbackInterface::class);
+        if (!is_a($before_save_callback_class_name, ModelBeforeSaveCallbackInterface::class, true)){
+            throw new \Exception();            
+        }
+        
         if (!isset(self::$before_save_subscribers_arr[$model_class_name])) {
             self::$before_save_subscribers_arr[$model_class_name] = [];
         }
@@ -67,7 +74,11 @@ class ModelConfig {
     }
 
     public static function addAfterSaveSubscriber($model_class_name, $after_save_callback_class_name) {
-        CheckClassInterfaces::exceptionIfClassNotImplementsInterface($after_save_callback_class_name, ModelAfterSaveCallbackInterface::class);
+        //CheckClassInterfaces::exceptionIfClassNotImplementsInterface($after_save_callback_class_name, ModelAfterSaveCallbackInterface::class);
+        if (!is_a($after_save_callback_class_name, ModelAfterSaveCallbackInterface::class, true)){
+            throw new \Exception();            
+        }
+        
         if (!isset(self::$after_save_subscribers_arr[$model_class_name])) {
             self::$after_save_subscribers_arr[$model_class_name] = [];
         }

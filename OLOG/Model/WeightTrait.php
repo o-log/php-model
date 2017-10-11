@@ -3,6 +3,7 @@
 
 namespace OLOG\Model;
 
+use OLOG\DB\DB;
 
 trait WeightTrait
 {
@@ -34,7 +35,7 @@ trait WeightTrait
             $sql .= ' WHERE ' . implode(' AND ', $where_arr);
         }
 
-        $weight = \OLOG\DB\DBWrapper::readField(self::DB_ID,
+        $weight = DB::readField(self::DB_ID,
             $sql,
             $params_arr
         );
@@ -78,7 +79,7 @@ trait WeightTrait
         }
 
         $sql = 'SELECT id FROM ' . self::DB_TABLE_NAME . ' WHERE ' . implode(' AND ', $where_arr) . ' ORDER BY weight DESC, id DESC LIMIT 1';
-        $object_to_swap_weights_id = \OLOG\DB\DBWrapper::readField(self::DB_ID,
+        $object_to_swap_weights_id = DB::readField(self::DB_ID,
             $sql,
             $params_arr
         );

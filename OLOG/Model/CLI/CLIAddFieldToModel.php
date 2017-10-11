@@ -2,7 +2,6 @@
 
 namespace OLOG\Model\CLI;
 
-use OLOG\Assert;
 use OLOG\CLIUtil;
 use Stringy\Stringy;
 
@@ -160,7 +159,7 @@ class CLIAddFieldToModel
         return '_' . strtoupper($field_name);
     }
 
-    public function addField()
+    public function addFieldScreen()
     {
         echo CLIUtil::delimiter();
         echo "Choose model class file:\n";
@@ -242,7 +241,7 @@ class CLIAddFieldToModel
         $this->db_table_field_name = $this->field_name;
         $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
 
-        CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
 
@@ -251,7 +250,7 @@ class CLIAddFieldToModel
         $command_str = CLIUtil::readStdinAnswer();
 
         if ($command_str == ''){
-            CLIExecuteSql::executeSqlScreen();
+            \OLOG\DB\MigrateCLI::run();
         }
 
         $this->extraFieldFunctionsScreen();
@@ -287,8 +286,8 @@ class CLIAddFieldToModel
             $this->field_name = $this->askFieldName($class_file_obj);
         }
 
-        Assert::assert($this->model_file_path);
-        Assert::assert($this->field_name);
+        if (!$this->model_file_path) throw new \Exception();
+        if (!$this->field_name) throw new \Exception();
 
         while (true) {
             echo CLIUtil::delimiter();
@@ -325,8 +324,8 @@ class CLIAddFieldToModel
 
     public function addSelector()
     {
-        Assert::assert($this->field_name);
-        Assert::assert($this->model_file_path);
+        if (!$this->field_name) throw new \Exception();
+        if (!$this->model_file_path) throw new \Exception();
 
         echo "Enter page size for selector, press ENTER to leave default (30):\n";
         $page_size = trim(fgets(STDIN));
@@ -351,32 +350,32 @@ class CLIAddFieldToModel
 
     public function addUniqueKey()
     {
-        Assert::assert($this->field_name);
-        Assert::assert($this->model_file_path);
+        if (!$this->field_name) throw new \Exception();
+        if (!$this->model_file_path) throw new \Exception();
 
         $model_db_id = $this->getDbIdFromClassFile();
         $model_table_name = $this->getTableNameFromClassFile();
 
-        Assert::assert($model_table_name);
-        Assert::assert($model_db_id);
+        if (!$model_table_name) throw new \Exception();
+        if (!$model_db_id) throw new \Exception();
 
         $sql = 'alter table ' . $model_table_name . ' add unique key UK_' . $this->field_name . '_' . rand(0, 999999) . ' (' . $this->field_name . ')  /* rand' . rand(0, 999999) . ' */;';
 
-        CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
     }
 
     public function addForeignKey()
     {
-        Assert::assert($this->field_name);
-        Assert::assert($this->model_file_path);
+        if (!$this->field_name) throw new \Exception();
+        if (!$this->model_file_path) throw new \Exception();
 
         $model_db_id = $this->getDbIdFromClassFile();
         $model_table_name = $this->getTableNameFromClassFile();
 
-        Assert::assert($model_table_name);
-        Assert::assert($model_db_id);
+        if (!$model_table_name) throw new \Exception();
+        if (!$model_db_id) throw new \Exception();
 
         // TODO: select model instead of table name?
 
@@ -407,7 +406,7 @@ class CLIAddFieldToModel
 
         $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') ' . $on_delete_action . '/* rand' . rand(0, 999999) . ' */;';
 
-        CLIExecuteSql::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
     }
@@ -416,14 +415,14 @@ class CLIAddFieldToModel
     static public function selectorTemplate(){
         return <<<'EOT'
 
-    static public function getIdsArrFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
+    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
         if (is_null($value)) {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
             );
         } else {
-            return \OLOG\DB\DBWrapper::readColumn(
+            return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset),
                 array($value)

@@ -30,7 +30,6 @@ class CLICreateModel
     {
         echo CLIUtil::delimiter();
         echo "Select new model namespace:\n";
-        //echo "Example: \"Test\", \"Deep\\Test\"\n";
 
         // TODO: sanitize
         // TODO: support empty namespaces
@@ -60,14 +59,14 @@ class CLICreateModel
         echo CLIUtil::delimiter();
         echo "Choose model DB index:\n";
         //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
-        $db_arr = DBConfig::getDBSettingsObjArr();
+        $spaces = DBConfig::spaces();
 
-        Assert::assert(count($db_arr) > 0, 'No database settings found in config');
+        if (count($spaces) == 0) throw new \Exception('No spaces in config');
 
         // TODO: select db by index
         $db_id_by_index = [];
         $index = 1;
-        foreach ($db_arr as $db_id => $db_settings_obj) {
+        foreach ($spaces as $db_id => $space) {
             echo "\t" . str_pad($index, 8, '.') . $db_id . "\n";
             $db_id_by_index[$index] = $db_id;
             $index++;
@@ -87,8 +86,6 @@ class CLICreateModel
     }
 
     static public function generateClass(){
-        //
-
         $cwd = getcwd();
 
         // TODO: model_namespace_for_path may have leading '/' - remove it?
@@ -122,7 +119,7 @@ class CLICreateModel
         // TODO: use common variable replacemnt method
         $class_sql = str_replace('TEMPLATECLASS_TABLENAME', $model_tablename, $class_sql);
 
-        CLIExecuteSql::addSqlToRegistry(self::$model_db_id, $class_sql);
+        \OLOG\DB\Migrate::addSqlToRegistry(self::$model_db_id, $class_sql);
 
         echo "\nSQL registry updated\n";
 
@@ -130,7 +127,7 @@ class CLICreateModel
         
         $command_str = CLIUtil::readStdinAnswer();
         if ($command_str == ''){
-            CLIExecuteSql::executeSqlScreen();
+            \OLOG\DB\MigrateCLI::run();
         }
         
         return;
@@ -159,17 +156,13 @@ namespace TEMPLATECLASS_NAMESPACE;
 
 use OLOG\Model\ActiveRecordTrait;
 use OLOG\Model\FactoryTrait;
-use OLOG\Model\InterfaceDelete;
-use OLOG\Model\InterfaceFactory;
-use OLOG\Model\InterfaceLoad;
-use OLOG\Model\InterfaceSave;
+use OLOG\Model\FactoryInterface;
+use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 
 class TEMPLATECLASS_CLASSNAME implements
-    InterfaceFactory,
-    InterfaceLoad,
-    InterfaceSave,
-    InterfaceDelete
+    FactoryInterface,
+    ActiveRecordInterface
 {
     use FactoryTrait;
     use ActiveRecordTrait;
@@ -188,8 +181,8 @@ class TEMPLATECLASS_CLASSNAME implements
         $this->created_at_ts = time();
     }
 
-    static public function getAllIdsArrByCreatedAtDesc($offset = 0, $page_size = 30){
-        $ids_arr = \OLOG\DB\DBWrapper::readColumn(
+    static public function idsByCreatedAtDesc($offset = 0, $page_size = 30){
+        $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
         );
