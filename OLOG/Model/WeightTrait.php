@@ -30,9 +30,9 @@ trait WeightTrait
             }
         }
 
-        $sql = 'SELECT MAX(weight) FROM ' . self::DB_TABLE_NAME;
+        $sql = 'select max(weight) from ' . self::DB_TABLE_NAME;
         if (count($where_arr)){
-            $sql .= ' WHERE ' . implode(' AND ', $where_arr);
+            $sql .= ' where ' . implode(' and ', $where_arr);
         }
 
         $weight = DB::readField(self::DB_ID,
@@ -45,9 +45,7 @@ trait WeightTrait
 
     public function initWeight($context_fields_arr){
         if (is_null($this->getId())){ // TODO: check interface
-            $this->setWeight(
-                self::getMaxWeightForContext($context_fields_arr) + 1
-            );
+            $this->weight = self::getMaxWeightForContext($context_fields_arr) + 1;
         }
     }
 
@@ -58,9 +56,9 @@ trait WeightTrait
      */
     public function swapWeights($extra_fields_arr = array())
     {
-       $current_class_name = self::getMyClassName();
+       $current_class_name = get_class($this);
 
-        $current_item_weight = $this->getWeight();
+        $current_item_weight = $this->weight;
 
         $where_arr = array('weight < ?');
         $params_arr = array($current_item_weight);
@@ -90,28 +88,12 @@ trait WeightTrait
 
         $object_to_swap_weights_obj = $current_class_name::factory($object_to_swap_weights_id);
 
-        $object_to_swap_weights_weight = $object_to_swap_weights_obj->getWeight();
+        $object_to_swap_weights_weight = $object_to_swap_weights_obj->weight;
 
-        $this->setWeight($object_to_swap_weights_weight);
+        $this->weight = $object_to_swap_weights_weight;
         $this->save();
 
-        $object_to_swap_weights_obj->setWeight($current_item_weight);
+        $object_to_swap_weights_obj->weight = $current_item_weight;
         $object_to_swap_weights_obj->save();
-    }
-
-    /**
-     * @param int $weight
-     */
-    public function setWeight($weight)
-    {
-        $this->weight = $weight;
-    }
-
-    /**
-     * @return int
-     */
-    public function getWeight()
-    {
-        return $this->weight;
     }
 }

@@ -33,9 +33,7 @@ class ModelDemoConfig
         CacheConfig::setEngineClassname(CacheRedis::class);
          */
 
-        ModelConfig::addAfterSaveSubscriber(SomeModel::class, DemoAfterSaveSubscriber::class);
-        ModelConfig::addBeforeSaveSubscriber(SomeModel::class, DemoBeforeSaveSubscriber::class);
-
-        //ModelConfig::addCLIMenuClass(DemoCLIMenu::class);
+        ModelConfig::addAfterSaveSubscriber(CallbacksDemoModel::class, DemoAfterSaveSubscriber::class);
+        ModelConfig::addBeforeSaveSubscriber(CallbacksDemoModel::class, DemoBeforeSaveSubscriber::class);
     }
 }

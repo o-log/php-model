@@ -119,7 +119,7 @@ class CLICreateModel
         // TODO: use common variable replacemnt method
         $class_sql = str_replace('TEMPLATECLASS_TABLENAME', $model_tablename, $class_sql);
 
-        \OLOG\DB\Migrate::addSqlToRegistry(self::$model_db_id, $class_sql);
+        \OLOG\DB\Migrate::addMigration(self::$model_db_id, $class_sql);
 
         echo "\nSQL registry updated\n";
 
@@ -154,71 +154,43 @@ class CLICreateModel
 <?php
 namespace TEMPLATECLASS_NAMESPACE;
 
-use OLOG\Model\ActiveRecordTrait;
-use OLOG\Model\FactoryTrait;
-use OLOG\Model\FactoryInterface;
 use OLOG\Model\ActiveRecordInterface;
+use OLOG\Model\ActiveRecordTrait;
+use OLOG\Model\FactoryInterface;
+use OLOG\Model\FactoryTrait;
 use OLOG\Model\ProtectPropertiesTrait;
 
 class TEMPLATECLASS_CLASSNAME implements
-    FactoryInterface,
     ActiveRecordInterface
 {
-    use FactoryTrait;
     use ActiveRecordTrait;
     use ProtectPropertiesTrait;
 
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
-    const _ID = 'id';
+    const _ID = 'id'; // field names constants for CRUD
     const _CREATED_AT_TS = 'created_at_ts';
     
-    protected $id;
-    protected $created_at_ts; // initialized by constructor
+    public $created_at_ts; // initialized by constructor
+    protected $id; // protected because getId() is a part of ActiveRecordInterface
     
     public function __construct(){
         $this->created_at_ts = time();
     }
 
-    static public function idsByCreatedAtDesc($offset = 0, $page_size = 30){
-        $ids_arr = \OLOG\DB\DB::readColumn(
-            self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
-        );
-        return $ids_arr;
-    }
-
-    /**
-     * @return int
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCreatedAtTs()
-    {
-        return $this->created_at_ts;
-    }
-
-    /**
-     * @param int $timestamp
-     */
-    public function setCreatedAtTs($timestamp)
-    {
-        $this->created_at_ts = $timestamp;
+    static public function idsByCreatedAtDesc($offset = 0, $page_size = 30){
+        $ids_arr = \OLOG\DB\DB::readColumn(
+            self::DB_ID,
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+            [$page_size, $offset]
+        );
+        return $ids_arr;
     }
 }
 EOT;

@@ -3,19 +3,17 @@
 namespace Tests;
 
 class TestTermToNode implements
-    \OLOG\Model\FactoryInterface,
     \OLOG\Model\ActiveRecordInterface
 {
-    use \OLOG\Model\FactoryTrait;
     use \OLOG\Model\ActiveRecordTrait;
     use \OLOG\Model\ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'testtermtonode';
 
-    protected $created_at_ts = '';
-    protected $term_id;
-    protected $node_id;
+    public $created_at_ts = '';
+    public $term_id;
+    public $node_id;
     protected $id;
 
     static public function getIdsArrForNodeIdByCreatedAtDesc($value){
@@ -27,15 +25,6 @@ class TestTermToNode implements
         return $ids_arr;
     }
 
-    public function getNodeId(){
-        return $this->getnode_id;
-    }
-
-    public function setNodeId($value){
-        $this->node_id = $value;
-    }
-
-
     static public function getIdsArrForTermIdByCreatedAtDesc($value){
         $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
@@ -44,15 +33,6 @@ class TestTermToNode implements
         );
         return $ids_arr;
     }
-
-    public function getTermId(){
-        return $this->getterm_id;
-    }
-
-    public function setTermId($value){
-        $this->term_id = $value;
-    }
-
 
     static public function getAllIdsArrByCreatedAtDesc(){
         $ids_arr = \OLOG\DB\DB::readColumn(
@@ -72,29 +52,5 @@ class TestTermToNode implements
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCreatedAtTs()
-    {
-        return $this->created_at_ts;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setCreatedAtTs($title)
-    {
-        $this->created_at_ts = $title;
     }
 }

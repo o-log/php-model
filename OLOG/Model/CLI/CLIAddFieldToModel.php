@@ -195,12 +195,16 @@ class CLIAddFieldToModel
         }
 
         $field_string_for_class = '    const ' . self::constantNameForFieldName($this->field_name) . ' = \'' . $this->field_name . '\';' . "\n";
-        $field_string_for_class .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
+
+        // no naive getters and setters, so make field public
+        //$field_string_for_class .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
+        $field_string_for_class .= '    public $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
         $class_file_obj->insertAboveIdField($field_string_for_class);
 
-        $getters_setters_template = self::gettersSettersTemplate();
-        $getters_setters_template = self::replaceFieldNamePlaceholders($getters_setters_template, $this->field_name);
-        $class_file_obj->insertBelowIdField($getters_setters_template);
+        // no naive getters and setters
+        //$getters_setters_template = self::gettersSettersTemplate();
+        //$getters_setters_template = self::replaceFieldNamePlaceholders($getters_setters_template, $this->field_name);
+        //$class_file_obj->insertBelowIdField($getters_setters_template);
 
         $class_file_obj->save();
 
@@ -241,7 +245,7 @@ class CLIAddFieldToModel
         $this->db_table_field_name = $this->field_name;
         $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
 
-        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
 
@@ -361,7 +365,7 @@ class CLIAddFieldToModel
 
         $sql = 'alter table ' . $model_table_name . ' add unique key UK_' . $this->field_name . '_' . rand(0, 999999) . ' (' . $this->field_name . ')  /* rand' . rand(0, 999999) . ' */;';
 
-        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
     }
@@ -406,7 +410,7 @@ class CLIAddFieldToModel
 
         $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') ' . $on_delete_action . '/* rand' . rand(0, 999999) . ' */;';
 
-        \OLOG\DB\Migrate::addSqlToRegistry($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
 
         echo "\nSQL registry updated\n";
     }
@@ -419,13 +423,14 @@ class CLIAddFieldToModel
         if (is_null($value)) {
             return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
-                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset)
+                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+                [$page_size, $offset]
             );
         } else {
             return \OLOG\DB\DB::readColumn(
                 self::DB_ID,
-                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by ' . self::_CREATED_AT_TS . ' desc limit ' . intval($page_size) . ' offset ' . intval($offset),
-                array($value)
+                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+                array($value, $page_size, $offset)
             );
         }
     }

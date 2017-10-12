@@ -36,15 +36,12 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         // удаление модели при котором canDelete возвращает false
 
         $obj2 = new \Tests\TestModel();
-        $obj2->setDisableDelete(true);
+        $obj2->disable_delete = true;
         $obj2->save();
 
         $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));
 
         $obj2_id = $obj2->getId();
-
-        //$this->expectException(\Exception::class);
-        //$this->expectExceptionMessage('Delete disabled');
 
         $exception_message = '';
 
@@ -52,7 +49,6 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
             $obj2->delete();
         } catch (\Exception $e){
             $exception_message = $e->getMessage();
-            //DB::rollBack(TestModel::DB_ID);
         }
 
         $this->assertEquals('Delete disabled', $exception_message);
@@ -66,7 +62,6 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(1, count($test_model_ids_arr)); // проверяем что запись в БД не удалена
-
     }
 
     public function testAfterDeleteAndTransaction()
@@ -76,7 +71,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
         // нормальное удаление модели
 
         $obj = new \Tests\TestModel();
-        $obj->setThrowExceptionAfterDelete(true);
+        $obj->throw_exception_after_delete = true;
         $obj->save();
 
         $this->assertEquals(false, DB::inTransaction(TestModel::DB_ID));

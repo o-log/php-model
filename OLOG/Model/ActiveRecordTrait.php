@@ -9,8 +9,8 @@ use OLOG\DB\DB;
  * 1. создаем таблицу в БД с полем "id" (auto increment) и прочими нужными полями
  * 2. создаем класс для модели:
  *      - для каждого поля в таблице у класса должно быть свое свойство
- *      - значения по-умолчанию должны соответствовать полям таблицы
- *      - указываемм две константы:
+ *      - значения по умолчанию должны соответствовать полям таблицы
+ *      - указываем в классе две константы:
  *          - const DB_ID           - идентификатор БД (news, stats, etc.)
  *          - const DB_TABLE_NAME   - имя таблицы в которой хранятся данные модели
  *      - подключаем трейты:
@@ -34,22 +34,18 @@ trait ActiveRecordTrait
      * версиях load.
      * Сделан в трейте, а не в отдельном вспомогательном классе - чтобы был доступ к защищенным свойствам ообъекта без
      * использования reflection (для производительности).
-     * @param $model_obj
-     * @param $id
-     * @return bool
+     * Возвращает false если объект не найден.
      */
     protected function loadModelObj($id)
     {
-        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($this);
-
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
-        $db_id_field_name = ActiveRecordHelper::getIdFieldName($this);
+        $id_field_name = ActiveRecordHelper::getIdFieldName($this);
 
         $data_obj = DB::readObject(
             $db_id,
-            'select /* LMO */ * from ' . $db_table_name . ' where ' . $db_id_field_name . ' = ?',
+            'select /* LMO */ * from ' . $db_table_name . ' where ' . $id_field_name . ' = ?',
             array($id)
         );
 
@@ -61,9 +57,7 @@ trait ActiveRecordTrait
             if (property_exists($model_class_name, $field_name)){
                 $this->$field_name = $field_value;
             } else {
-                if (ModelConfig::isIgnoreMissingPropertiesOnLoad()){
-                    // ignore missing property
-                } else {
+                if (!ModelConfig::ignoreMissingPropertiesOnLoad()){
                     throw new \Exception('Missing "' . $field_name . '" property in class "' . $model_class_name . '" while property is present in DB table "' . $db_table_name . '"');
                 }
             }
@@ -86,8 +80,6 @@ trait ActiveRecordTrait
      */
     public function save()
     {
-        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($this);
-
         $obj_class_name = get_class($this);
         $obj_db_id = $obj_class_name::DB_ID;
 
@@ -98,13 +90,11 @@ trait ActiveRecordTrait
         }
 
         $this->beforeSave();
-        $before_save_subscribers_arr = ModelConfig::getBeforeSaveSubscribersArr(self::class);
+        $before_save_subscribers_arr = ModelConfig::beforeSaveSubscribers(self::class);
 
+        /** @var ModelBeforeSaveCallbackInterface $before_save_subscriber */
         foreach ($before_save_subscribers_arr as $before_save_subscriber) {
-            /**
-             * реализация интерфейса проверена на этапе добавления подписчиков
-             * @var ModelBeforeSaveCallbackInterface $before_save_subscriber
-             */
+            // реализация интерфейса проверена на этапе добавления подписчиков
             $before_save_subscriber::beforeSave($this);
         }
 
@@ -127,13 +117,11 @@ trait ActiveRecordTrait
 
             $this->afterSave();
 
-            $after_save_subscribers_arr = ModelConfig::getAfterSaveSubscribersArr(self::class);
+            $after_save_subscribers_arr = ModelConfig::afterSaveSubscribers(self::class);
 
+            /** @var ModelAfterSaveCallbackInterface $after_save_subscriber */
             foreach ($after_save_subscribers_arr as $after_save_subscriber) {
-                /**
-                 * реализация интерфейса проверена на этапе добавления подписчиков
-                 * @var ModelAfterSaveCallbackInterface $after_save_subscriber
-                 */
+                // реализация интерфейса проверена на этапе добавления подписчиков
                 $after_save_subscriber::afterSave($this->getId());
             }
             
@@ -151,62 +139,35 @@ trait ActiveRecordTrait
      * версиях load.
      * Сделан в трейте, а не в отдельном вспомогательном классе - чтобы был доступ к защищенным свойствам ообъекта без
      * использования reflection (для производительности).
-     * @param $model_obj
      */
     protected function saveModelObj()
     {
-        ActiveRecordHelper::exceptionIfObjectIsIncompatibleWithActiveRecord($this);
-
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
-
-        $db_table_fields_arr = DB::readObjects(
-            $db_id,
-            'explain ' . $db_table_name
-        );
-
         $id_field_name = ActiveRecordHelper::getIdFieldName($this);
 
-        $fields_to_save_arr = array();
-
-        //$reflect = new \ReflectionClass($model_obj);
+        $field_names = [];
 
         /*
-	    $ignore_properties_names_arr = array();
-	    if ($reflect->hasProperty(self::INGORE_LIST_FIELD_NAME))
-	    {
-		    $ignore_fields_arr_field = $reflect->getProperty(self::INGORE_LIST_FIELD_NAME);
-            $ignore_fields_arr_field->setAccessible(true); // на случай если поле будет protected
-            $ignore_properties_names_arr = $ignore_fields_arr_field->getValue($model_obj);
-	    }
-        */
-
-        /*
-        foreach ($reflect->getProperties() as $property_obj) {
-            // игнорируем статические свойства класса
-            // также игнорируем свойства класса перечисленные в игнор листе $active_record_ignore_fields_arr
-            //if ($property_obj->isStatic() || in_array($property_obj->getName(), $ignore_properties_names_arr)) {
-            //    continue;
-            //}
-            if ($property_obj->isStatic()) {
-                continue;
-            }
-
-            $property_obj->setAccessible(true);
-            $fields_to_save_arr[$property_obj->getName()] = $property_obj->getValue($model_obj);
+         * Сейчас за основу берется структура таблицы БД - это позволяет сначала деплоить код, а затем мигрировать
+         * изменения в БД без ошибок: новые поля в модели не будут писаться в БД, пока они не появятся в таблицах.
+         * Но explain при сохранениях может создавать дополнительную нагрузку и при необходимости можно использовать
+         * другую схему: брать за основу структуру модели, как было раньше: $this->get_object_vars().
+         * Также можно кэшировать результат explain если производительность станет проблемой.
+         */
+        $db_table_fields_arr = DB::readObjects($db_id, 'explain ' . $db_table_name);
+        foreach ($db_table_fields_arr as $field_index => $field_obj) {
+            $field_names[] = $field_obj->Field;
         }
-        */
-        foreach ($db_table_fields_arr as $field_index => $field_obj){
-            $field_name = $field_obj->Field;
 
+        $fields_to_save_arr = array();
+        foreach ($field_names as $field_name){
             if (property_exists($model_class_name, $field_name)) {
                 $property_value = $this->$field_name;
                 $fields_to_save_arr[$field_name] = $property_value;
             } else {
-                if (ModelConfig::isIgnoreMissingPropertiesOnSave()) {
-                    // ignore
-                } else {
+                if (!ModelConfig::ignoreMissingPropertiesOnSave()) {
                     throw new \Exception('Missing property when saving model: field "' . $field_name . '" exists in DB table and not present in model class. You can disable this check using ModelConfig::setIgnoreMissingPropertiesOnSave()');
                 }
             }
@@ -214,23 +175,13 @@ trait ActiveRecordTrait
 
         unset($fields_to_save_arr[$id_field_name]);
 
-        /*
-        $property_obj = $reflect->getProperty($db_id_field_name);
-        $property_obj->setAccessible(true);
-        $model_id_value = $property_obj->getValue($model_obj);
-        */
         $model_id_value = $this->$id_field_name;
 
         if ($model_id_value == '') {
             $last_insert_id = ActiveRecordHelper::insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name);
-            //$property_obj->setValue($model_obj, $last_insert_id);
             $this->$id_field_name = $last_insert_id;
-
-            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'CREATE');
         } else {
             ActiveRecordHelper::updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value);
-
-            //\OLOG\Logger\Logger::logObjectEvent($model_obj, 'UPDATE');
         }
     }
 
@@ -242,9 +193,7 @@ trait ActiveRecordTrait
      */
     public function afterSave()
     {
-        if ($this instanceof InterfaceFactory) {
-            $this->removeFromFactoryCache();
-        }
+        $this->removeFromFactoryCache();
     }
 
     /**
@@ -273,31 +222,55 @@ trait ActiveRecordTrait
      */
     public function afterDelete()
     {
-        /*
-        if ($this instanceof InterfaceFactory) {
-            $class_name = self::getMyClassName();
-            FactoryHelper::removeObjFromCacheById($class_name, $this->getId());
-        }*/
-        if ($this instanceof InterfaceFactory) {
-            $this->removeFromFactoryCache();
-        }
+        $this->removeFromFactoryCache();
     }
+
+    /**
+     * @return $this
+     */
+    static public function factory($id_to_load, $exception_if_not_loaded = true)
+    {
+        $class_name = get_called_class(); // "Gets the name of the class the static method is called in."
+        $obj = Factory::createAndLoadObject($class_name, $id_to_load);
+
+        if ($exception_if_not_loaded) {
+            if (!$obj){
+                throw new \Exception();
+            }
+        }
+
+        return $obj;
+    }
+
+    /**
+     * Сбрасывает кэш объекта, созданный фабрикой при его загрузке.
+     * Нужно вызывать после изменения или удаления объекта.
+     */
+    public function removeFromFactoryCache()
+    {
+        $class_name = get_class($this);
+        Factory::removeObjectFromCache($class_name, $this->getId());
+    }
+
+    /*
+    public function getFieldValueByName($field_name)
+    {
+        return $this->$field_name;
+    }
+    */
 
     /**
      * пока работаем с полями объекта напрямую, без сеттеров/геттеров
      * этот метод позволяет писать в защищенные свойства (используется, например, в CRUD)
      * @param $fields_arr
      */
+    /*
     public function ar_setFields($fields_arr)
     {
         foreach ($fields_arr as $field_name => $field_value) {
             $this->$field_name = $field_value;
         }
     }
-
-    public function getFieldValueByName($field_name)
-    {
-        return $this->$field_name;
-    }
+    */
 
 }

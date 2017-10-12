@@ -7,7 +7,7 @@ use OLOG\Model\FactoryInterface;
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 
-class SomeModel implements
+class CallbacksDemoModel implements
     FactoryInterface,
     ActiveRecordInterface
 {

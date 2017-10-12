@@ -15,7 +15,7 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
 
         $test_title = rand(1, 10000);
         $new_model = new \Tests\TestModel();
-        $new_model->setTitle($test_title);
+        $new_model->title = $test_title;
         $new_model->save();
 
         // ensure we have no active transaction
@@ -25,7 +25,7 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($test_model_id); // тестирует генерацию непустого идентификатора модели при первом сохранении
 
         $loaded_model_obj = \Tests\TestModel::factory($test_model_id);
-        $this->assertEquals($test_title, $loaded_model_obj->getTitle()); // тестируем совпадение заголовков сохраненной и загруженной модели
+        $this->assertEquals($test_title, $loaded_model_obj->title); // тестируем совпадение заголовков сохраненной и загруженной модели
 
         $loaded_model_obj->delete();
 

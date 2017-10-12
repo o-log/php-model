@@ -3,5 +3,5 @@
 namespace OLOG\Model;
 
 interface CacheTTLInterface {
-    public function getCacheTtlSeconds();
+    public function cacheTtlSeconds();
 }

@@ -11,6 +11,7 @@ namespace OLOG\Model;
  * - Метод save(), который сохраняет данные объекта. Если объекта нет в базе - он должен создавать и его id должен заполняться
  * правильным значением.
  * - Метод delete(), который удаляет данные объекта в базе. Поведение метода при наличии зависимых объектов пока не регламентировано.
+ * - класс умеет создавать свои экземпляры, кэшировать их и сбрасывать кэш при изменениях.
 */
 interface ActiveRecordInterface {
     public function load($id);
@@ -21,4 +22,7 @@ interface ActiveRecordInterface {
     public function canDelete(&$message);
     public function delete();
     public function afterDelete();
+    public static function factory($id_to_load, $exception_if_not_loaded = true);
+    //static public function removeObjFromCacheById($id_to_remove);
+    public function removeFromFactoryCache();
 }

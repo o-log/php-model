@@ -43,7 +43,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         ModelConfig::setIgnoreMissingPropertiesOnLoad(true);
         $model_obj = LoadTestModel::factory($model_id);
-        $model_obj->setTitle(rand(0, 999999));
+        $model_obj->title = rand(0, 999999);
 
         ModelConfig::setIgnoreMissingPropertiesOnSave(false);
 
@@ -93,7 +93,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         ModelConfig::setIgnoreMissingPropertiesOnLoad(true);
         $model_obj = LoadTestModel::factory($model_id);
-        $model_obj->setTitle(rand(0, 1000));
+        $model_obj->title = rand(0, 1000);
 
         ModelConfig::setIgnoreMissingPropertiesOnSave(true);
 
@@ -122,7 +122,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         /** @var int $initial_node_created_at */
-        $initial_node_created_at = $new_node_obj->getCreatedAtTs();
+        $initial_node_created_at = $new_node_obj->created_at_ts;
         $node_id = $new_node_obj->getId();
 
         $new_term_obj = new \Tests\TestTerm();
@@ -132,8 +132,8 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(false, DB::inTransaction(TestTerm::DB_ID));
 
         $new_term_to_node_obj = new \Tests\TestTermToNode();
-        $new_term_to_node_obj->setNodeId($node_id);
-        $new_term_to_node_obj->setTermId($new_term_obj->getId());
+        $new_term_to_node_obj->node_id = $node_id;
+        $new_term_to_node_obj->term_id = $new_term_obj->getId();
         $new_term_to_node_obj->save();
 
         // ensure we have no active transaction
@@ -145,7 +145,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
          */
         $loaded_node_obj = \Tests\TestNode::factory($node_id);
         $updated_node_created_at = $initial_node_created_at + 1000;
-        $loaded_node_obj->setCreatedAtTs($updated_node_created_at);
+        $loaded_node_obj->created_at_ts = $updated_node_created_at;
         $loaded_node_obj->save();
 
         // ensure we have no active transaction
@@ -156,7 +156,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
 
         foreach ($term_to_node_ids_arr as $term_to_node_id){
             $term_to_node_obj = \Tests\TestTermToNode::factory($term_to_node_id);
-            $this->assertEquals($updated_node_created_at, $term_to_node_obj->getCreatedAtTs());
+            $this->assertEquals($updated_node_created_at, $term_to_node_obj->created_at_ts);
         }
 
         // ensure we have no active transaction
@@ -167,13 +167,13 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         \PHPModelDemo\ModelDemoConfig::init();
 
         $test_obj = new TestModel();
-        $test_obj->setAfterSaveCounter(0);
+        $test_obj->after_save_counter = 0;
         $test_obj->save();
 
         // ensure we have no active transaction
         $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
-        $this->assertEquals(1, $test_obj->getAfterSaveCounter());
+        $this->assertEquals(1, $test_obj->after_save_counter);
     }
 
     /**
@@ -188,7 +188,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $test_title = rand(1, 1000000);
 
         $new_node_obj = new \Tests\TestNode();
-        $new_node_obj->setTitle($test_title);
+        $new_node_obj->title = $test_title;
         $new_node_obj->save();
 
         // ensure we have no active transaction
@@ -197,20 +197,20 @@ class SaveTest extends \PHPUnit_Framework_TestCase
         $node_id = $new_node_obj->getId();
 
         $loaded_node_obj = \Tests\TestNode::factory($node_id);
-        $this->assertEquals($loaded_node_obj->getBody(), $test_title . $test_title);
+        $this->assertEquals($loaded_node_obj->body, $test_title . $test_title);
 
         // проверим как вызывается при сохранении существующего объекта
 
         $test_title_2 = rand(1, 1000000);
 
-        $loaded_node_obj->setTitle($test_title_2);
+        $loaded_node_obj->title = $test_title_2;
         $loaded_node_obj->save();
 
         // ensure we have no active transaction
         $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
 
         $loaded_node_obj_2 = \Tests\TestNode::factory($node_id);
-        $this->assertEquals($loaded_node_obj_2->getBody(), $test_title_2 . $test_title_2);
+        $this->assertEquals($loaded_node_obj_2->body, $test_title_2 . $test_title_2);
 
         // ensure we have no active transaction
         $this->assertEquals(false, DB::inTransaction(TestNode::DB_ID));
