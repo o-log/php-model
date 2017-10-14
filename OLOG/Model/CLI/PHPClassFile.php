@@ -2,8 +2,6 @@
 
 namespace OLOG\Model\CLI;
 
-use OLOG\Assert;
-
 class PHPClassFile
 {
     public $class_file_path;

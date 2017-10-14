@@ -2,8 +2,6 @@
 
 namespace OLOG\Model;
 
-use OLOG\CheckClassInterfaces;
-
 class ModelConfig {
     static protected $after_save_subscribers = [];
     static protected $before_save_subscribers = [];

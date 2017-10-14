@@ -44,8 +44,8 @@ class Factory {
 
         $cache_ttl_seconds = 60;
 
-        if ($obj instanceof \OLOG\Model\InterfaceCacheTtlSeconds) {
-            $cache_ttl_seconds = $obj->getCacheTtlSeconds();
+        if ($obj instanceof CacheTTLInterface) {
+            $cache_ttl_seconds = $obj->cacheTtlSeconds();
         }
 
         \OLOG\Cache\Cache::set('', $cache_key, $obj, $cache_ttl_seconds);

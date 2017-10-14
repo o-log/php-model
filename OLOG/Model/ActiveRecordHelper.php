@@ -3,7 +3,6 @@
 namespace OLOG\Model;
 
 use OLOG\DB\DB;
-use OLOG\Sanitize;
 
 class ActiveRecordHelper
 {
@@ -57,7 +56,7 @@ class ActiveRecordHelper
     /**
      * все удаление делается внутри транзакции (включая canDelete и afterDelete), если будет исключение - транзакция будет откачена PDO
      */
-    public static function deleteModel($obj){
+    public static function deleteModel(ActiveRecordInterface $obj){
         $obj_class_name = get_class($obj);
         $obj_db_id = $obj_class_name::DB_ID;
 

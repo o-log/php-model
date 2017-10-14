@@ -3,8 +3,6 @@
 namespace Tests;
 
 use OLOG\Model\ActiveRecordTrait;
-use OLOG\Model\FactoryTrait;
-use OLOG\Model\FactoryInterface;
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 

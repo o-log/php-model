@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-use OLOG\Assert;
 use OLOG\DB\DB;
 use OLOG\Model\ModelConfig;
 

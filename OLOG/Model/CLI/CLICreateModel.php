@@ -2,7 +2,6 @@
 
 namespace OLOG\Model\CLI;
 
-use OLOG\Assert;
 use OLOG\CLIUtil;
 use OLOG\DB\DBConfig;
 

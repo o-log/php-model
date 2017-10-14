@@ -2,16 +2,12 @@
 namespace PHPModelDemo;
 
 use OLOG\Model\ActiveRecordTrait;
-use OLOG\Model\FactoryTrait;
-use OLOG\Model\FactoryInterface;
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ProtectPropertiesTrait;
 
 class CallbacksDemoModel implements
-    FactoryInterface,
     ActiveRecordInterface
 {
-    use FactoryTrait;
     use ActiveRecordTrait;
     use ProtectPropertiesTrait;
 
