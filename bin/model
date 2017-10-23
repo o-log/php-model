@@ -1,7 +1,8 @@
+#!/usr/bin/php
 <?php
 
 require_once 'vendor/autoload.php';
 
-\PHPModelDemo\ModelDemoConfig::init();
+\Config\Config::init();
 
 \OLOG\Model\CLI\Menu::run();

@@ -5,7 +5,7 @@ const OPERATION_ADD_MODEL = 'OPERATION_ADD_MODEL';
 
 require_once '../vendor/autoload.php';
 
-\PHPModelDemo\ModelDemoConfig::init();
+\Config\Config::init();
 
 echo '<div><a href="/">reload</a></div>';
 

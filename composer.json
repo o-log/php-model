@@ -5,6 +5,9 @@
     "o-log/php-router": "2.*",
     "phpunit/phpunit": "5.5.*"
   },
+  "bin": [
+    "bin/model"
+  ],
   "repositories": [
     {
       "type": "git",
@@ -16,11 +19,16 @@
     "o-log/php-db": "0.*",
     "o-log/php-cache": "0.*"
   },
-  "autoload": {
+  "autoload-dev": {
     "psr-0": {
-      "OLOG": "",
+      "Config": "",
       "PHPModelDemo": "",
       "Tests": ""
+    }
+  },
+  "autoload": {
+    "psr-0": {
+      "OLOG": ""
     }
   }
 }
