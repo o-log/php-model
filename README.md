@@ -1,54 +1,16 @@
-Библиотека может использоваться как автономно, так и совместно с:
+# Major features
 
-- Роутер: https://github.com/o-log/php-router
+Loads objects from database by id value with multilayer caching.
 
-- Работа с объектами: https://github.com/o-log/php-model
+Stores objects to database and deletes objects by id. Supports pre- and post-update callbacks and automatic cache invalidation. 
 
-- Компоненты админки: https://github.com/o-log/php-crud
+CLI interface for model class creation, which also generates database migration. 
 
-- Адаптер bootstrap: https://github.com/o-log/php-bt
+CLI interface for adding new fields to model, which also generates database migrations, with foreign keys support and selector methods generation.   
 
-- Генератор каркаса приложений: https://github.com/o-log/create_application
+# Installation
 
-# Общие характеристики
-
-В качестве автозагрузчика классов и менеджера зависимостей используется composer.
-
-Библиотека соответствует следующим соглашениям:
-
-http://www.php-fig.org/psr/psr-0/
-
-http://www.php-fig.org/psr/psr-1/
-
-http://www.php-fig.org/psr/psr-2/
-
-http://www.php-fig.org/psr/psr-4/
-
-Педдерживаемые СУБД: MySQL, Postgres (поддержка не протестирована!).
-
-Кэш: memcached.
-
-# Основные возможности
-
-Трейт для загрузки объектов из БД по идентификатору с многоуровневым кэшированием (Factory).
-
-Трейты для загрузки и сохранения объектов в БД и их удаления по идентификатору (ActiveRecordTrait). Содержит инфраструктуру для отслеживания изменения объектов и обновления кэша. 
-
-Библиотека для выполнения sql-запросов.
- 
-Библиотека для работы с memcached.
-
-Утилита для создания php-класса для новых объектов и структуры БД для него, сразу подключает нужные для работы трейты.
- 
-Утилита для добавления новых свойств к объектам и соответствующего изменения структуры БД, включая создание вторичных ключей и методов для выборки списков.
-
-Утилита миграции БД для переноса изменений в структуре БД между инстансами приложения.
-
-# Пример использования
-
-Требуется операционная система linux и установленные php, mysql и composer.
-
-Для запуска демо приложения нужно выполнить следующие команды:
+Example below requires Linux, MacOS or Windows with Linux Subsystem, installed php, mysql and composer.
 
 (в команду выполнения sql-скрипта нужно подставить ваш пароль mysql пользователя root, и этот же пароль надо будет указать в конфиге PHPModelTest/Config.php)
 

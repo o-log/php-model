@@ -2,13 +2,14 @@
 
 namespace Tests;
 
+use Config\Config;
 use OLOG\DB\DB;
 
 class DeleteTest extends \PHPUnit_Framework_TestCase
 {
     public function testCanDeleteTrue()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         // нормальное удаление модели
 
@@ -66,7 +67,7 @@ class DeleteTest extends \PHPUnit_Framework_TestCase
 
     public function testAfterDeleteAndTransaction()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         // нормальное удаление модели
 

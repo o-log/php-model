@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Config\Config;
 use OLOG\DB\DB;
 
 class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
@@ -11,7 +12,7 @@ class SaveLoadDeleteTest extends \PHPUnit_Framework_TestCase
      */
     public function testSaveLoadDelete()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $test_title = rand(1, 10000);
         $new_model = new \Tests\TestModel();

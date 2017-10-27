@@ -2,13 +2,14 @@
 
 namespace Tests;
 
+use Config\Config;
 use OLOG\DB\DB;
 use OLOG\Model\ModelConfig;
 
 class SaveTest extends \PHPUnit_Framework_TestCase
 {
     public function testInsertWithMissingFieldWithException(){
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $new_model_obj = new \Tests\LoadTestModel();
 
@@ -33,7 +34,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testUpdateWithMissingFieldWithException(){
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         //$new_model = new \Tests\LoadTestModel();
         $model_ids_arr = LoadTestModel::getAllIdsArrByCreatedAtDesc();
@@ -65,7 +66,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testInsertWithMissingFieldWithoutException(){
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $new_model = new \Tests\LoadTestModel();
 
@@ -83,7 +84,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testUpdateWithMissingFieldWithoutException(){
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         //$new_model = new \Tests\LoadTestModel();
         $model_ids_arr = LoadTestModel::getAllIdsArrByCreatedAtDesc();
@@ -112,7 +113,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
      */
     public function testAfterSave()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $new_node_obj = new \Tests\TestNode();
         $new_node_obj->save();
@@ -163,7 +164,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testSingleAfterSaveCall(){
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $test_obj = new TestModel();
         $test_obj->after_save_counter = 0;
@@ -180,7 +181,7 @@ class SaveTest extends \PHPUnit_Framework_TestCase
      */
     public function testBeforeSave()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         // проверим как вызывается при сохранении нового объекта
 

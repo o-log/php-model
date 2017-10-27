@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Config\Config;
 use OLOG\DB\DB;
 use OLOG\Model\ModelConfig;
 
@@ -9,7 +10,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
 {
     public function testLoadWithMissingFieldWithException()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $new_model_obj = new \Tests\LoadTestModel();
         ModelConfig::setIgnoreMissingPropertiesOnSave(true);
@@ -37,7 +38,7 @@ class LoadTest extends \PHPUnit_Framework_TestCase
 
     public function testLoadWithMissingFieldWithoutException()
     {
-        \PHPModelDemo\ModelDemoConfig::init();
+        Config::init();
 
         $new_model_obj = new \Tests\LoadTestModel();
         $new_model_obj->save();
