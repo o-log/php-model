@@ -5,6 +5,31 @@ namespace OLOG\Model;
 
 use OLOG\DB\DB;
 
+/**
+Использование WeightTrait
+
+Создать у модели поле weight int not null default 0
+
+В модели:
+
+    implements InterfaceWeight
+    use WeightTrait
+
+В beforeSave() модели вызвать initWeight() с контекстом.
+Вот пример инициализации веса для стадии турнира (внутри каждого турнира у стадий свои веса):
+
+    public function beforeSave(){
+        $this->initWeight(['tournament_id' => $this->getTournamentId()]);
+    }
+
+После этого можно вывести в списке моделей widgetWeight, также передавая ему контекст. При этом таблицу нужно отсортировать по полю weight по возрастанию.
+
+Внимание! Если weightTrait добавляется к существующй модели, то для существующих объектов веса проинициализированы не будут! У них всех веса будут равны 0.
+В этом случае нужно инициализировать их уникальными значениями, например:
+
+    update stage set weight = id;
+
+*/
 trait WeightTrait
 {
     /**

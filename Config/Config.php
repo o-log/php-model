@@ -15,20 +15,13 @@ use PHPModelDemo\DemoBeforeSaveSubscriber;
 
 class Config
 {
-    const DB_NAME_PHPMODELDEMO = 'phpmodel';
-    const DB_CONNECTOR_PHPMODELDEMO = 'phpmodel';
+    const SPACE_PHPMODELDEMO = 'phpmodel';
+    const CONNECTOR_PHPMODELDEMO = 'phpmodel';
 
     public static function init()
     {
-        DBConfig::setConnector(
-            self::DB_CONNECTOR_PHPMODELDEMO,
-            new ConnectorMySQL('127.0.0.1', 'phpmodel', 'root', '1234')
-        );
-
-        DBConfig::setSpace(
-            self::DB_NAME_PHPMODELDEMO,
-            new Space(self::DB_CONNECTOR_PHPMODELDEMO, 'phpmodel.sql')
-        );
+        DBConfig::setConnector(self::CONNECTOR_PHPMODELDEMO, new ConnectorMySQL('127.0.0.1', 'phpmodel', 'root', '1234'));
+        DBConfig::setSpace(self::SPACE_PHPMODELDEMO, new Space(self::CONNECTOR_PHPMODELDEMO, 'phpmodel.sql'));
 
         CacheConfig::setBucket('', new BucketMemcache([new MemcacheServer('localhost', 11211)]));
 
