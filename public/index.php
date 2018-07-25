@@ -24,6 +24,8 @@ echo '<div>Class name: <b>' . \PHPModelDemo\DemoModel::class . '</b></div>';
 
 $models_ids_arr = \PHPModelDemo\DemoModel::idsByCreatedAtDesc();
 
+var_dump($models_ids_arr);
+
 echo '<ul>';
 
 foreach ($models_ids_arr as $model_id) {

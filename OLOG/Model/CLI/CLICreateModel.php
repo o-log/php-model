@@ -155,35 +155,26 @@ namespace TEMPLATECLASS_NAMESPACE;
 
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ActiveRecordTrait;
-use OLOG\Model\FactoryInterface;
-use OLOG\Model\FactoryTrait;
-use OLOG\Model\ProtectPropertiesTrait;
 
 class TEMPLATECLASS_CLASSNAME implements
     ActiveRecordInterface
 {
     use ActiveRecordTrait;
-    use ProtectPropertiesTrait;
 
     const DB_ID = 'TEMPLATECLASS_DBID';
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
-    const _ID = 'id'; // field names constants for CRUD
+    const _ID = 'id';
     const _CREATED_AT_TS = 'created_at_ts';
     
-    public $created_at_ts; // initialized by constructor
-    protected $id; // protected because getId() is a part of ActiveRecordInterface
+    public $created_at_ts;
+    public $id;
     
     public function __construct(){
         $this->created_at_ts = time();
     }
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    static public function idsByCreatedAtDesc($offset = 0, $page_size = 30){
+    static public function ids($offset = 0, $page_size = 30){
         $ids_arr = \OLOG\DB\DB::readColumn(
             self::DB_ID,
             'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',

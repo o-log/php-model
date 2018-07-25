@@ -9,7 +9,8 @@ class PHPClassFile
     public $class_name;
     public $class_namespace = '';
 
-    static public $id_field_pattern = '@[\h]+protected \$id;@';
+    static public $id_field_pattern = '@[\h]+public \$id;@';
+    static public $id_field_str = '    protected $id;' . "\n";
     static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+protected \$id;@';
 
     // TODO
@@ -48,13 +49,13 @@ class PHPClassFile
                 throw new \Exception("ID field not found");
             }
 
-            $str .= '    protected $id;' . "\n";
+            $str .= self::$id_field_str;
 
             $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
         }
 
         $str .= '    const _ID = \'id\';' . "\n";
-        $str .= '    protected $id;' . "\n";
+        $str .= self::$id_field_str;
 
         $this->class_file_text = preg_replace($id_field_with_constant_pattern, $str, $this->class_file_text);
     }
@@ -72,7 +73,7 @@ class PHPClassFile
             throw new \Exception("ID field not found");
         }
 
-        $str = '    protected $id;' . "\n" . $str;
+        $str = self::$id_field_str . $str;
 
         $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
     }
