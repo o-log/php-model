@@ -276,6 +276,12 @@ class CLIAddFieldToModel
         return $str;
     }
 
+    static public function replaceClassNamePlaceholders($str, $class_name){
+        $str = str_replace('#CLASS_NAME#', $class_name, $str);
+
+        return $str;
+    }
+
     public function extraFieldFunctionsScreen()
     {
         if (!$this->model_file_path){
@@ -345,6 +351,7 @@ class CLIAddFieldToModel
         $selector_template = self::selectorTemplate();
         $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
         $selector_template = self::replacePageSizePlaceholders($selector_template, $page_size);
+        $selector_template = self::replaceClassNamePlaceholders($selector_template, $class_file_obj->class_name);
         $class_file_obj->insertBelowIdField($selector_template);
 
         $class_file_obj->save();
@@ -419,38 +426,29 @@ class CLIAddFieldToModel
     static public function selectorTemplate(){
         return <<<'EOT'
 
-    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#ByCreatedAtDesc($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
-        if (is_null($value)) {
-            return \OLOG\DB\DB::readColumn(
-                self::DB_ID,
-                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' is null order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-                [$page_size, $offset]
-            );
-        } else {
-            return \OLOG\DB\DB::readColumn(
-                self::DB_ID,
-                'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' = ? order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-                array($value, $page_size, $offset)
-            );
+    /**
+     * @return #CLASS_NAME#[]
+     */
+    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#(int $value, int $offset = 0, int $page_size = 30): array {
+        return array_map(
+            function ($id){return self::factory($id);},
+            self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $offset, $page_size)
+        );
+    }
+
+    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
+        $args = [$page_size, $offset];
+        if (!is_null($value)){
+            array_unshift($args, $value);
         }
+
+        return \OLOG\DB\DB::readColumn(
+            self::DB_ID,
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' ' . (is_null($value) ? 'is null' : '=?') . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+            $args
+        );
     }
 
 EOT;
     }
-
-    static public function gettersSettersTemplate()
-    {
-        return <<<'EOT'
-
-    public function get#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#(){
-        return $this->#FIELDTEMPLATE_FIELD_NAME#;
-    }
-
-    public function set#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value){
-        $this->#FIELDTEMPLATE_FIELD_NAME# = $value;
-    }
-
-EOT;
-    }
-
 }

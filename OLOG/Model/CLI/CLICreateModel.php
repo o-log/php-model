@@ -151,6 +151,8 @@ class CLICreateModel
         // здесь поле id стоит ниже остальных, потому что добавлялка полей будет вставлять новые поля под него. т.е. поле id как бы разделяет поля и методы
         return <<<'EOT'
 <?php
+declare(strict_types=1);
+
 namespace TEMPLATECLASS_NAMESPACE;
 
 use OLOG\Model\ActiveRecordInterface;
@@ -172,6 +174,11 @@ class TEMPLATECLASS_CLASSNAME implements
     
     public function __construct(){
         $this->created_at_ts = time();
+    }
+    
+    public function getId()
+    {
+        return $this->id;
     }
 
     static public function ids($offset = 0, $page_size = 30){

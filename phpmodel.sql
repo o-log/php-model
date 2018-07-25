@@ -15,4 +15,3 @@ create table testterm (id int not null auto_increment primary key, created_at_ts
 create table testtermtonode (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* sbgrtbgsdfg */;
 alter table testtermtonode add column term_id int not null    /* wefwerg */;
 alter table testtermtonode add column node_id int not null    /* vssfgssd */;
-create table phpmodeldemo_nodbid (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand3466 */;
