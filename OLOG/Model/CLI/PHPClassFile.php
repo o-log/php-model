@@ -10,8 +10,8 @@ class PHPClassFile
     public $class_namespace = '';
 
     static public $id_field_pattern = '@[\h]+public \$id;@';
-    static public $id_field_str = '    protected $id;' . "\n";
-    static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+protected \$id;@';
+    static public $id_field_str = '    public $id;' . "\n";
+    static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+public \$id;@';
 
     // TODO
     // implement on reflections, regexp cant match complex properties (with multi-line default values, etc.)
