@@ -287,4 +287,15 @@ trait ActiveRecordTrait
         );
     }
 
+    static public function first($objs, $exception_if_none = true): ?self {
+        if (empty($objs)){
+            if ($exception_if_none){
+                throw new \Exception('No model');
+            }
+
+            return null;
+        }
+
+        return $objs[0];
+    }
 }
