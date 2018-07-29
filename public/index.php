@@ -16,6 +16,7 @@ echo '<div><a href="/">reload</a></div>';
 if (\OLOG\GET::optional(FIELD_OPERATION) == OPERATION_ADD_MODEL) {
     $new_model = new \PHPModelDemo\DemoModel();
     $new_model->title = rand(1, 1000);
+    $new_model->bool_val = rand(0, 2) ? false : true;
     $new_model->save();
 }
 
@@ -28,7 +29,7 @@ echo '<ul>';
 
 foreach ($models_ids_arr as $model_id) {
     $model_obj = \PHPModelDemo\DemoModel::factory($model_id);
-    echo '<li>' . $model_id . '</li>';
+    echo '<li>' . print_r($model_obj, true) . '</li>';
 }
 
 echo '</ul>';

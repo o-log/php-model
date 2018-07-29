@@ -20,7 +20,10 @@ class DemoModel implements
     public $created_at_ts; // initialized by constructor
     const _TITLE = 'title';
     public $title;
-    protected $id; // protected because getId() is a part of ActiveRecordInterface to use custom fields as identifiers
+    const _BOOL_VAL = 'bool_val';
+    public $bool_val;
+    public $id;
+
     
     public function __construct(){
         $this->created_at_ts = time();

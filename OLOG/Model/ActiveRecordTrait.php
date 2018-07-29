@@ -165,6 +165,9 @@ trait ActiveRecordTrait
         foreach ($field_names as $field_name){
             if (property_exists($model_class_name, $field_name)) {
                 $property_value = $this->$field_name;
+                if (is_bool($property_value)){ // PDO converts boolean value to strings, so false becomes ''
+                    $property_value = (int) $property_value;
+                }
                 $fields_to_save_arr[$field_name] = $property_value;
             } else {
                 if (!ModelConfig::ignoreMissingPropertiesOnSave()) {
