@@ -276,4 +276,15 @@ trait ActiveRecordTrait
     }
     */
 
+    // TODO: typehint returned class somehow
+    static public function idsToObjs(array $ids): array
+    {
+        return array_map(
+            function ($id) {
+                return self::factory($id);
+            },
+            $ids
+        );
+    }
+
 }
