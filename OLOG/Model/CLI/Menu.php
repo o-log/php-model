@@ -6,17 +6,16 @@ use OLOG\CLIUtil;
 
 class Menu
 {
-    const FUNCTION_CREATE_MODEL = 1;
     const FUNCTION_ADD_MODEL_FIELD = 2;
     const FUNCTION_MODEL_FIELD_EXTRAS = 3;
 
     static public function run()
     {
-        $class_path = $_SERVER['argv'][1];
+        $class_path = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
         if (!$class_path){
-            echo('Class file path must be passed as first parameter.' . "\n");
-            echo('If the class file doesnt exist - it will be created.' . "\n");
-            exit(1);
+            CLIUtil::error('Class file path must be passed as first parameter.');
+            CLIUtil::error('If the class file doesn\'t exist - it will be created.');
+            exit;
         }
 
         echo 'Class path: "' . $class_path . '"' . "\n\n";
@@ -46,35 +45,33 @@ class Menu
             CLICreateModel::$model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', $model_namespace_for_path);
 
             CLICreateModel::chooseModelDBIndex();
+            exit;
         }
 
-        while (true) {
-            echo "Choose PHPModel function:\n";
-            //echo "\t" . self::FUNCTION_CREATE_MODEL . ": create model\n";
-            echo "\t" . self::FUNCTION_ADD_MODEL_FIELD . ": add field to existing model\n";
-            echo "\t" . self::FUNCTION_MODEL_FIELD_EXTRAS . ": extra operations on model field\n";
-            echo "\tENTER: exit\n";
-
-            $command_str = CLIUtil::readStdinAnswer();
-
-            switch ($command_str) {
-//                case self::FUNCTION_CREATE_MODEL:
-//                    CLICreateModel::enterClassNameScreen();
-//                    break;
-
-                case self::FUNCTION_ADD_MODEL_FIELD:
-                    $cli_add_field_obj = new CLIAddFieldToModel();
-                    $cli_add_field_obj->addFieldScreen();
-                    break;
-
-                case self::FUNCTION_MODEL_FIELD_EXTRAS:
-                    $cli_add_field_obj = new CLIAddFieldToModel();
-                    $cli_add_field_obj->extraFieldFunctionsScreen();
-                    break;
-
-                default:
-                    exit;
-            }
+        $field_name = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : '';
+        if (!$field_name){
+            CLIUtil::error('Class exists, you have to pass class field name as second parameter.');
+            exit;
         }
+
+        $class_file_obj = new PHPClassFile($class_path);
+        $prop_names = $class_file_obj->getFieldNamesArr();
+
+        if (in_array($field_name, $prop_names)){
+            echo "Field exists\n";
+        } else {
+            echo "New field: " . $field_name . "\n";
+
+            $cli_add_field_obj = new CLIAddFieldToModel();
+            $cli_add_field_obj->model_file_path = $class_path;
+            $cli_add_field_obj->field_name = $field_name;
+            $cli_add_field_obj->addFieldScreen();
+            exit;
+        }
+
+        $cli_add_field_obj = new CLIAddFieldToModel();
+        $cli_add_field_obj->model_file_path = $class_path;
+        $cli_add_field_obj->field_name = $field_name;
+        $cli_add_field_obj->extraFieldFunctionsScreen();
     }
 }

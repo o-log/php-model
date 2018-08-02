@@ -4,6 +4,10 @@ namespace OLOG;
 
 class CliUtil
 {
+    static public function error($str){
+        echo("\033[31m" . $str . "\033[0m\n");
+    }
+
     static public function delimiter()
     {
         return str_pad('', 60, '_') . "\n\n";

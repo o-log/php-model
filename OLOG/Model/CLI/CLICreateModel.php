@@ -12,47 +12,6 @@ class CLICreateModel
     static $model_namespace_for_class = '';
     static $model_db_id = '';
 
-//    static public function enterClassNameScreen()
-//    {
-//        echo CLIUtil::delimiter();
-//        echo "Еnter new model class name. Example:\n\tTestModel\n";
-//
-//        // TODO: sanitize
-//        self::$model_class_name = CLIUtil::readStdinAnswer();
-//
-//        // TODO: check class name format
-//
-//        self::chooseNamespaceScreen();
-//    }
-
-//    static public function chooseNamespaceScreen()
-//    {
-//        echo CLIUtil::delimiter();
-//        echo "Select new model namespace:\n";
-//
-//        // TODO: sanitize
-//        // TODO: support empty namespaces
-//        // TODO: check for leading '\' and correct format
-//        $cwd = getcwd();
-//        self::$model_namespace_for_path = CLIFileSelector::selectFileName($cwd, false);
-//
-//        // убираем из начала текущую папку
-//        if (strpos(self::$model_namespace_for_path, $cwd) === 0) {
-//            self::$model_namespace_for_path = substr(self::$model_namespace_for_path, strlen($cwd));
-//        } else {
-//            throw new \Exception('fail');
-//        }
-//
-//        // отрезаем слэш в начале если есть
-//        if (substr(self::$model_namespace_for_path, 0, 1) == DIRECTORY_SEPARATOR) {
-//            self::$model_namespace_for_path = substr(self::$model_namespace_for_path, strlen(DIRECTORY_SEPARATOR));
-//        }
-//
-//        self::$model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', self::$model_namespace_for_path);
-//
-//        self::chooseModelDBIndex();
-//    }
-
     static public function chooseModelDBIndex()
     {
         echo CLIUtil::delimiter();
@@ -180,6 +139,9 @@ class TEMPLATECLASS_CLASSNAME implements
         return $this->id;
     }
 
+    /**
+     * @return TEMPLATECLASS_CLASSNAME[]
+     */
     static public function all($limit = 30, $offset = 0){
         return self::idsToObjs(self::ids($limit, $offset));
     }

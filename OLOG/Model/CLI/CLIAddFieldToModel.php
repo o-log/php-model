@@ -11,10 +11,11 @@ class CLIAddFieldToModel
     const FUNCTION_ADD_FOREIGN_KEY = 2;
     const FUNCTION_ADD_SELECTOR = 3;
 
-    protected $field_name = '';
+    public $field_name = '';
     protected $db_table_field_name = '';
-    protected $model_file_path = ''; // полный путь к файлу модели
+    public $model_file_path = ''; // полный путь к файлу модели
 
+    // TODO: move to PHPClassFile
     public function getTableNameFromClassFile()
     {
         $file_str = file_get_contents($this->model_file_path);
@@ -33,6 +34,7 @@ class CLIAddFieldToModel
         return $model_table_name;
     }
 
+    // TODO: move to PHPClassFile
     public function getDbIdFromClassFile()
     {
         $file_str = file_get_contents($this->model_file_path);
@@ -57,23 +59,6 @@ class CLIAddFieldToModel
         // TODO: validate model_db_id (presence in config)
 
         return $model_db_id;
-    }
-
-    /**
-     * @param PHPClassFile $class_file_obj
-     * @return string
-     */
-    public function askFieldName($class_file_obj){
-        echo CLIUtil::delimiter();
-        echo "Enter field name. Examples for new field names:\n\tnode_title\n\tmedia_id\n";
-
-        //$class_field_names_arr = $class_file_obj->getFieldNamesArr();
-        //echo "\nFields in class:\n";
-
-        $field_name = CLIUtil::readStdinAnswer();
-
-        // TODO: check field_name format
-        return $field_name;
     }
 
     public function askDataType(){
@@ -161,15 +146,7 @@ class CLIAddFieldToModel
 
     public function addFieldScreen()
     {
-        echo CLIUtil::delimiter();
-        echo "Choose model class file:\n";
-        $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
-        echo "\nClass file: " . $this->model_file_path . "\n";
-
         $class_file_obj = new PHPClassFile($this->model_file_path);
-        echo 'Class to be updated: ' . $class_file_obj->class_namespace . "\\" . $class_file_obj->class_name . "\n";
-
-        $this->field_name = $this->askFieldName($class_file_obj);
 
         /** @var FieldDataType $field_data_type */
         $field_data_type = $this->askDataType();
@@ -284,18 +261,6 @@ class CLIAddFieldToModel
 
     public function extraFieldFunctionsScreen()
     {
-        if (!$this->model_file_path){
-            echo "\nChoose model class file:\n";
-            $this->model_file_path = CLIFileSelector::selectFileName(getcwd());
-            echo "\nClass file: " . $this->model_file_path . "\n";
-        }
-
-        $class_file_obj = new PHPClassFile($this->model_file_path);
-
-        if (!$this->field_name) {
-            $this->field_name = $this->askFieldName($class_file_obj);
-        }
-
         if (!$this->model_file_path) throw new \Exception();
         if (!$this->field_name) throw new \Exception();
 

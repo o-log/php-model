@@ -2,6 +2,8 @@
 
 namespace OLOG\Model\CLI;
 
+use function foo\func;
+
 class PHPClassFile
 {
     public $class_file_path;
@@ -13,16 +15,9 @@ class PHPClassFile
     static public $id_field_str = '    public $id;' . "\n";
     static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+public \$id;@';
 
-    // TODO
-    // implement on reflections, regexp cant match complex properties (with multi-line default values, etc.)
     public function getFieldNamesArr(){
-        /*
-        $field_name_pattern = '@\h+(protected|public|private)\h+\$([\w_]+)(\h*=\h*[]);@';
-
-        $matches_arr = [];
-
-        preg_match_all($field_name_pattern, $this->class_file_text, $matches_arr);
-        */
+        $reflection = new \ReflectionClass($this->class_namespace . '\\' . $this->class_name);
+        return array_map(function(\ReflectionProperty $prop){return $prop->getName();}, $reflection->getProperties());
     }
 
     public function save(){
