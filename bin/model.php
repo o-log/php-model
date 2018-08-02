@@ -1,5 +1,5 @@
-#!/usr/bin/php
 <?php
+// not using shebang - default php path may be not desired
 
 require_once 'vendor/autoload.php';
 

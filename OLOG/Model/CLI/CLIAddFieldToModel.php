@@ -429,15 +429,12 @@ class CLIAddFieldToModel
     /**
      * @return #CLASS_NAME#[]
      */
-    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#(int $value, int $offset = 0, int $page_size = 30): array {
-        return array_map(
-            function ($id){return self::factory($id);},
-            self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $offset, $page_size)
-        );
+    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, int $limit = 30, int $offset = 0): array {
+        return self::idsToObjs(self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $limit, $offset));
     }
 
-    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $offset = 0, $page_size = #SELECTOR_PAGE_SIZE#){
-        $args = [$page_size, $offset];
+    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0){
+        $args = [$limit, $offset];
         if (!is_null($value)){
             array_unshift($args, $value);
         }

@@ -52,12 +52,12 @@ class PHPClassFile
             $str .= self::$id_field_str;
 
             $this->class_file_text = preg_replace($id_field_pattern, $str, $this->class_file_text);
+        } else {
+            $str .= '    const _ID = \'id\';' . "\n";
+            $str .= self::$id_field_str;
+
+            $this->class_file_text = preg_replace($id_field_with_constant_pattern, $str, $this->class_file_text);
         }
-
-        $str .= '    const _ID = \'id\';' . "\n";
-        $str .= self::$id_field_str;
-
-        $this->class_file_text = preg_replace($id_field_with_constant_pattern, $str, $this->class_file_text);
     }
 
     /**
