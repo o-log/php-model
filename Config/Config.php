@@ -22,7 +22,7 @@ class Config
 
     public static function init()
     {
-        DBConfig::setConnector(self::CONNECTOR_PHPMODELDEMO, new ConnectorMySQL('127.0.0.1', 'phpmodel', 'root', '1'));
+        DBConfig::setConnector(self::CONNECTOR_PHPMODELDEMO, new ConnectorMySQL('127.0.0.1', 'phpmodel', 'root', ''));
         DBConfig::setSpace(self::SPACE_PHPMODELDEMO, new Space(self::CONNECTOR_PHPMODELDEMO, 'phpmodel.sql'));
 
         CacheConfig::setBucket('', new BucketRedis([new RedisServer('localhost', 6379)]));
