@@ -57,17 +57,43 @@ class Menu
         $class_file_obj = new PHPClassFile($class_path);
         $prop_names = $class_file_obj->getFieldNamesArr();
 
-        if (in_array($field_name, $prop_names)){
-            echo "Field exists\n";
-        } else {
+        if (!in_array($field_name, $prop_names)){
+            $cli_add_field_obj = new CLIAddFieldToModel();
+
             echo "New field: " . $field_name . "\n";
 
-            $cli_add_field_obj = new CLIAddFieldToModel();
+            $datatype_name = isset($_SERVER['argv'][3]) ? $_SERVER['argv'][3] : '';
+
+            if (!$datatype_name){
+                CLIUtil::error('You have to pass new field data type as third parameter. Available data types:');
+                foreach ($cli_add_field_obj->data_types as $data_type){
+                    CLIUtil::error('- ' . $data_type->render());
+                }
+                exit;
+            }
+
+            $entered_datatype = null;
+            foreach ($cli_add_field_obj->data_types as $datatype){
+                if ($datatype->title == $datatype_name){
+                    $entered_datatype = $datatype;
+                }
+            }
+
+            if (!$datatype){
+                CLIUtil::error('Datatype "' . $datatype_name . '" not found. Available data types:');
+                foreach ($cli_add_field_obj->data_types as $data_type){
+                    CLIUtil::error('- ' . $data_type->render());
+                }
+                exit;
+            }
+
             $cli_add_field_obj->model_file_path = $class_path;
             $cli_add_field_obj->field_name = $field_name;
-            $cli_add_field_obj->addFieldScreen();
+            $cli_add_field_obj->addFieldScreen($entered_datatype);
             exit;
         }
+
+        echo "Field exists\n";
 
         $cli_add_field_obj = new CLIAddFieldToModel();
         $cli_add_field_obj->model_file_path = $class_path;

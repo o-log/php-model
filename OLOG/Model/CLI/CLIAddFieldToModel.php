@@ -15,6 +15,26 @@ class CLIAddFieldToModel
     protected $db_table_field_name = '';
     public $model_file_path = ''; // полный путь к файлу модели
 
+    /**
+     * @var FieldDataType[]
+     */
+    public $data_types;
+
+    public function __construct()
+    {
+        $data_types_arr = [];
+
+        $data_types_arr[] = new FieldDataType('tinyint', 'tinyint', true, true, false);
+        $data_types_arr[] = new FieldDataType('int', 'int', true, true, false);
+        $data_types_arr[] = new FieldDataType('string', 'varchar(255)', true, true, true);
+        $data_types_arr[] = new FieldDataType('text', 'text', false, false, false);
+        $data_types_arr[] = new FieldDataType('date', 'date', true, true, false);
+        $data_types_arr[] = new FieldDataType('datetime', 'datetime', true, true, false);
+        $data_types_arr[] = new FieldDataType('bigint', 'bigint', true, true, false);
+
+        $this->data_types = $data_types_arr;
+    }
+
     // TODO: move to PHPClassFile
     public function getTableNameFromClassFile()
     {
@@ -61,38 +81,38 @@ class CLIAddFieldToModel
         return $model_db_id;
     }
 
-    public function askDataType(){
-        echo CLIUtil::delimiter();
-
-        $data_types_arr = [];
-
-        $data_types_arr[] = new FieldDataType('tinyint', true, true, false);
-        $data_types_arr[] = new FieldDataType('int', true, true, false);
-        $data_types_arr[] = new FieldDataType('varchar(255)', true, true, true);
-        $data_types_arr[] = new FieldDataType('text', false, false, false);
-        $data_types_arr[] = new FieldDataType('date', true, true, false);
-        $data_types_arr[] = new FieldDataType('datetime', true, true, false);
-        $data_types_arr[] = new FieldDataType('bigint', true, true, false);
-
-        echo "Enter db field data type:\n";
-        /**
-         * @var  $index
-         * @var FieldDataType $data_type_obj
-         */
-        foreach ($data_types_arr as $index => $data_type_obj){
-            echo "\t" . $index . '. ' . $data_type_obj->sql_type_name . "\n";
-        }
-
-        $data_type_index = CLIUtil::readStdinAnswer();
-
-        if (!array_key_exists($data_type_index, $data_types_arr)){
-            throw new \Exception('wrong answer');
-        }
-
-        $selected_data_type_obj = $data_types_arr[$data_type_index];
-
-        return $selected_data_type_obj;
-    }
+//    public function askDataType(){
+//        echo CLIUtil::delimiter();
+//
+//        $data_types_arr = [];
+//
+//        $data_types_arr[] = new FieldDataType('tinyint', true, true, false);
+//        $data_types_arr[] = new FieldDataType('int', true, true, false);
+//        $data_types_arr[] = new FieldDataType('varchar(255)', true, true, true);
+//        $data_types_arr[] = new FieldDataType('text', false, false, false);
+//        $data_types_arr[] = new FieldDataType('date', true, true, false);
+//        $data_types_arr[] = new FieldDataType('datetime', true, true, false);
+//        $data_types_arr[] = new FieldDataType('bigint', true, true, false);
+//
+//        echo "Enter db field data type:\n";
+//        /**
+//         * @var  $index
+//         * @var FieldDataType $data_type_obj
+//         */
+//        foreach ($data_types_arr as $index => $data_type_obj){
+//            echo "\t" . $index . '. ' . $data_type_obj->sql_type_name . "\n";
+//        }
+//
+//        $data_type_index = CLIUtil::readStdinAnswer();
+//
+//        if (!array_key_exists($data_type_index, $data_types_arr)){
+//            throw new \Exception('wrong answer');
+//        }
+//
+//        $selected_data_type_obj = $data_types_arr[$data_type_index];
+//
+//        return $selected_data_type_obj;
+//    }
 
     /**
      * @param FieldDataType $field_data_type
@@ -144,12 +164,12 @@ class CLIAddFieldToModel
         return '_' . strtoupper($field_name);
     }
 
-    public function addFieldScreen()
+    public function addFieldScreen($field_data_type)
     {
         $class_file_obj = new PHPClassFile($this->model_file_path);
 
         /** @var FieldDataType $field_data_type */
-        $field_data_type = $this->askDataType();
+        //$field_data_type = $this->askDataType();
 
         $default_value = $this->askDefaultValue($field_data_type);
         $collate = $this->askCollate($field_data_type);
