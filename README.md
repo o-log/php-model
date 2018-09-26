@@ -24,48 +24,52 @@ Loading model from database by id:
     
 Model class looks like:
     
-    class DemoModel implements ActiveRecordInterface
+    class DemoModel2 implements ActiveRecordInterface
     {
         use ActiveRecordTrait;
-        use ProtectPropertiesTrait;
     
         const DB_ID = 'phpmodel';
-        const DB_TABLE_NAME = 'phpmodeldemo_demomodel';
+        const DB_TABLE_NAME = 'phpmodeldemo_demomodel2';
     
         const _CREATED_AT_TS = 'created_at_ts';
-        public $created_at_ts; // initialized by constructor
-        const _TITLE = 'title';
-        public $title;
+        public $created_at_ts;
         const _ID = 'id';
-        protected $id;
+        public $id;
         
         public function __construct(){
             $this->created_at_ts = time();
         }
-    
+        
         public function getId()
         {
             return $this->id;
         }
     
-        static public function idsByCreatedAtDesc($offset = 0, $page_size = 30){
+        /**
+         * @return DemoModel2[]
+         */
+        static public function all($limit = 30, $offset = 0){
+            return self::idsToObjs(self::ids($limit, $offset));
+        }
+    
+        static public function ids($limit = 30, $offset = 0){
             $ids_arr = \OLOG\DB\DB::readColumn(
                 self::DB_ID,
                 'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-                [$page_size, $offset]
+                [$limit, $offset]
             );
             return $ids_arr;
         }
     }
-
-Class above has one selector method idsByCreatedAtDesc(): it returns array of model ids, sorted by creation date.
+    
+Class above selector methods all() and ids(): they return arrays of models and model ids, sorted by creation date.
 
 Selectors concept is important part of the library. Separate selector functions allow to:
 
-- profile and fine-tune every database query separately, which is critically important for heavily loaded applications
+- profile and fine-tune each database query separately, which is crucial for heavily loaded applications
 - have single point of caching the query result and of invalidating the cache
 
-Selectors return only ids, not objects. Thus every model is cached only once in the model cache and the selections cache remains lightweigh. Also, the data exchange with database and within application is reduced to required minimum.   
+When caching lists store to cache only ids arrays, not objects array. Thus every model is cached only once in the model cache and the selections cache remains lightweigh. Also there is a single point of cache invalidation for models.
 
 # Installation for contributors
 
@@ -83,7 +87,7 @@ You have to replace '1234' with your local mysql root user password. Also you ha
 
 Now you are ready to execute migrations and see the demo page:
 
-    vendor/bin/migrate
+    bin vendor/bin/migrate.php
     bin/run
 
 Open localhost:8000 in your browser.
@@ -169,13 +173,26 @@ Save and delete operations are performed within transactions, thus you can safel
 
 # Creating new model class
 
-To create new model class run vendor/bin/model and choose "Create new model" in the menu, then answer a few questions. The tool will create php class file and database migrations. 
+To create new model class run vendor/bin/model and pass a new class file path. The tool will create php class file and database migrations. Example:
+
+    php vendor/bin/model.php PHPModelDemo/Model.php
 
 # Adding new fields to the model
 
-To add new field to existing model run vendor/bin/model and choose "Add model field".
+To add new field to existing model run vendor/bin/model and pass existing model file name and new field name and data type. The following example adds "title" field of string type to the model:
 
-The tool wil ask for required data and alter the model class and generate database migration. 
+    php vendor/bin/model.php PHPModelDemo/Model.php title string
+
+The tool will ask some additional information and then will alter the model class and generate database migration. 
+
+Available data types:
+- tinyint: SQL tinyint
+- int: SQL int
+- string: SQL varchar(255)
+- text: SQL text
+- date: SQL date
+- datetime: SQL datetime
+- bigint: SQL bigint
 
 Also the tool can create the selector method for new field, add unique or foreign key.   
 
@@ -183,14 +200,10 @@ Also the tool can create the selector method for new field, add unique or foreig
 
 The library has appeared while developing several large applications to solve the following problems:
 
-- quick training of new developers 
+- quick learning 
 - speed-up and simplify development and support of the applications
 - maximum performance: reduce overhead and simplify optimization  
 
 # Tests
 
 Run bin/tests to execute tests.
-
-# ProtectPropertiesTrait
-
-Throws exception when trying to access properties, not declared in the class.

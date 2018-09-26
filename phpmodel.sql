@@ -16,3 +16,4 @@ create table testtermtonode (id int not null auto_increment primary key, created
 alter table testtermtonode add column term_id int not null    /* wefwerg */;
 alter table testtermtonode add column node_id int not null    /* vssfgssd */;
 alter table phpmodeldemo_demomodel add column bool_val tinyint   not null    /* rand503190 */;
+create table phpmodeldemo_demomodel2 (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand1002 */;
