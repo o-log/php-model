@@ -39,7 +39,7 @@ class CLIAddFieldToModel
     public function getTableNameFromClassFile()
     {
         $file_str = file_get_contents($this->model_file_path);
- 
+
         // extract model table name from class
         $table_name_pattern = '@const[\h]+DB_TABLE_NAME[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
         $matches = [];
@@ -342,6 +342,18 @@ class CLIAddFieldToModel
         $class_file_obj->save();
 
         echo "\nClass file updated\n";
+
+        $model_db_id = $this->getDbIdFromClassFile();
+        $model_table_name = $this->getTableNameFromClassFile();
+
+        if (!$model_table_name) throw new \Exception();
+        if (!$model_db_id) throw new \Exception();
+
+        $sql = 'alter table ' . $model_table_name . ' add index INDEX_' . $this->field_name . '_' . rand(0, 99999999) . ' (' . $this->field_name . ', created_at_ts)  /* rand' . rand(0, 999999) . ' */;';
+
+        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+
+        echo "\nSQL registry updated\n";
     }
 
     public function addUniqueKey()

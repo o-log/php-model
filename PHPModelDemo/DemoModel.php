@@ -24,6 +24,27 @@ class DemoModel implements
     public $bool_val;
     public $id;
 
+    /**
+     * @return DemoModel[]
+     */
+    static public function forBoolVal($value, int $limit = 30, int $offset = 0): array {
+        return self::idsToObjs(self::idsForBoolVal($value, $limit, $offset));
+    }
+
+    static public function idsForBoolVal($value, $limit = 30, $offset = 0){
+        $args = [$limit, $offset];
+        if (!is_null($value)){
+            array_unshift($args, $value);
+        }
+
+        return \OLOG\DB\DB::readColumn(
+            self::DB_ID,
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::_BOOL_VAL . ' ' . (is_null($value) ? 'is null' : '=?') . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+            $args
+        );
+    }
+
+
     
     public function __construct(){
         $this->created_at_ts = time();
