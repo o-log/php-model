@@ -124,7 +124,7 @@ trait ActiveRecordTrait
                 // реализация интерфейса проверена на этапе добавления подписчиков
                 $after_save_subscriber::afterSave($this->getId());
             }
-            
+
             unset($__inprogress[$inprogress_key]);
         }
 
@@ -290,7 +290,23 @@ trait ActiveRecordTrait
     static public function first($objs, $exception_if_none = true): ?self {
         if (empty($objs)){
             if ($exception_if_none){
-                throw new \Exception('No model');
+                throw new \Exception('Empty array passed to first()');
+            }
+
+            return null;
+        }
+
+        return $objs[0];
+    }
+
+    static public function single($objs, $exception_if_none = true): ?self {
+        if (count($objs) > 1){
+            throw new \Exception('Single object required.');
+        }
+
+        if (empty($objs)){
+            if ($exception_if_none){
+                throw new \Exception('Empty array passed to single()');
             }
 
             return null;

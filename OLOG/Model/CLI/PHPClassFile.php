@@ -10,10 +10,35 @@ class PHPClassFile
     public $class_file_text;
     public $class_name;
     public $class_namespace = '';
+    public $model_table_name = '';
+    public $model_db_id = '';
 
     static public $id_field_pattern = '@[\h]+public \$id;@';
     static public $id_field_str = '    public $id;' . "\n";
     static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+public \$id;@';
+
+    public function extractTableName()
+    {
+        $table_name_pattern = '@const[\h]+DB_TABLE_NAME[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
+        $matches = [];
+        if (!preg_match($table_name_pattern, $this->class_file_text, $matches)) {
+            throw new \Exception("table name not found in class file");
+        }
+
+        $this->model_table_name = $matches[1];
+    }
+
+    public function extractDbId()
+    {
+        $db_id_pattern = '@const[\h]+DB_ID[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
+        $matches = [];
+        if (!preg_match($db_id_pattern, $this->class_file_text, $matches)) {
+            throw new \Exception("DB_ID constant not found in class or is not scalar.");
+        }
+
+        // TODO: validate model_db_id (check presence in config)
+        $this->model_db_id = $matches[1];
+    }
 
     public function getFieldNamesArr(){
         $reflection = new \ReflectionClass($this->class_namespace . '\\' . $this->class_name);
@@ -87,6 +112,8 @@ class PHPClassFile
 
         $this->extractClassName();
         $this->extractClassNamespace();
+        $this->extractDbId();
+        $this->extractTableName();
     }
 
     public function extractClassNamespace(){

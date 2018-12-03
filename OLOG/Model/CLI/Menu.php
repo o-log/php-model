@@ -8,6 +8,7 @@ class Menu
 {
     const FUNCTION_ADD_MODEL_FIELD = 2;
     const FUNCTION_MODEL_FIELD_EXTRAS = 3;
+    const FUNCTION_CREATE_ALL_SELECTOR = 1;
 
     static public function run()
     {
@@ -21,36 +22,27 @@ class Menu
         echo 'Class path: "' . $class_path . '"' . "\n\n";
 
         if (!file_exists($class_path)){
-            echo "Class file not found, create new class?\n";
-            echo "\tENTER Yes\n";
-            CLIUtil::readStdinAnswer();
-
-            $pathinfo = pathinfo($class_path);
-            $cwd = getcwd();
-
-            CLICreateModel::$model_class_name = $pathinfo['filename'];
-
-            $model_namespace_for_path = $pathinfo['dirname'];
-            // убираем из начала текущую папку
-            if (strpos($model_namespace_for_path, $cwd) === 0) {
-                $model_namespace_for_path = substr($model_namespace_for_path, strlen($cwd));
-            }
-
-            // отрезаем слэш в начале если есть
-            if (substr($model_namespace_for_path, 0, 1) == DIRECTORY_SEPARATOR) {
-                $model_namespace_for_path = substr($model_namespace_for_path, strlen(DIRECTORY_SEPARATOR));
-            }
-
-            CLICreateModel::$model_namespace_for_path = $model_namespace_for_path;
-            CLICreateModel::$model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', $model_namespace_for_path);
-
-            CLICreateModel::chooseModelDBIndex();
-            exit;
+            self::createClass($class_path);
         }
 
         $field_name = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : '';
         if (!$field_name){
-            CLIUtil::error('Class exists, you have to pass class field name as second parameter.');
+            echo "Class exists.\n";
+            echo CLIUtil::delimiter();
+
+            echo "Class functions:\n";
+            echo "\t" . self::FUNCTION_CREATE_ALL_SELECTOR . ": create all() selector\n";
+
+            $function_code = CliUtil::readStdinAnswer();
+
+            // TODO: check format
+
+            switch ($function_code) {
+                case self::FUNCTION_CREATE_ALL_SELECTOR:
+                    $add_all_selector = new CLIAddAllSelector($class_path);
+                    $add_all_selector->addSelector();
+                    break;
+            }
             exit;
         }
 
@@ -99,5 +91,33 @@ class Menu
         $cli_add_field_obj->model_file_path = $class_path;
         $cli_add_field_obj->field_name = $field_name;
         $cli_add_field_obj->extraFieldFunctionsScreen();
+    }
+
+    static public function createClass($class_path){
+        echo "Class file not found, create new class?\n";
+        echo "\tENTER Yes\n";
+        CLIUtil::readStdinAnswer();
+
+        $pathinfo = pathinfo($class_path);
+        $cwd = getcwd();
+
+        CLICreateModel::$model_class_name = $pathinfo['filename'];
+
+        $model_namespace_for_path = $pathinfo['dirname'];
+        // убираем из начала текущую папку
+        if (strpos($model_namespace_for_path, $cwd) === 0) {
+            $model_namespace_for_path = substr($model_namespace_for_path, strlen($cwd));
+        }
+
+        // отрезаем слэш в начале если есть
+        if (substr($model_namespace_for_path, 0, 1) == DIRECTORY_SEPARATOR) {
+            $model_namespace_for_path = substr($model_namespace_for_path, strlen(DIRECTORY_SEPARATOR));
+        }
+
+        CLICreateModel::$model_namespace_for_path = $model_namespace_for_path;
+        CLICreateModel::$model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', $model_namespace_for_path);
+
+        CLICreateModel::chooseModelDBIndex();
+        exit;
     }
 }

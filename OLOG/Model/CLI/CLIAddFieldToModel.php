@@ -35,85 +35,6 @@ class CLIAddFieldToModel
         $this->data_types = $data_types_arr;
     }
 
-    // TODO: move to PHPClassFile
-    public function getTableNameFromClassFile()
-    {
-        $file_str = file_get_contents($this->model_file_path);
-
-        // extract model table name from class
-        $table_name_pattern = '@const[\h]+DB_TABLE_NAME[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
-        $matches = [];
-        if (!preg_match($table_name_pattern, $file_str, $matches)) {
-            throw new \Exception("table name not found in class file");
-        }
-
-        $model_table_name = $matches[1];
-
-        // TODO: ask user to confirm model table name?
-
-        return $model_table_name;
-    }
-
-    // TODO: move to PHPClassFile
-    public function getDbIdFromClassFile()
-    {
-        $file_str = file_get_contents($this->model_file_path);
-
-        $model_db_id = '';
-
-        // attempt to extract model table name from class
-
-        $db_id_pattern = '@const[\h]+DB_ID[\h]+=[\h]+[\'\"](\w+)[\'\"]@';
-        $matches = [];
-        if (!preg_match($db_id_pattern, $file_str, $matches)) {
-            echo "\nDB_ID constant not found in class or is not scalar. Enter model db id:\n";
-
-            $model_db_id = trim(fgets(STDIN));
-            // TODO: validate entered model_db_id
-        } else {
-            $model_db_id = $matches[1];
-        }
-
-        // TODO: ask user to confirm model db id?
-
-        // TODO: validate model_db_id (presence in config)
-
-        return $model_db_id;
-    }
-
-//    public function askDataType(){
-//        echo CLIUtil::delimiter();
-//
-//        $data_types_arr = [];
-//
-//        $data_types_arr[] = new FieldDataType('tinyint', true, true, false);
-//        $data_types_arr[] = new FieldDataType('int', true, true, false);
-//        $data_types_arr[] = new FieldDataType('varchar(255)', true, true, true);
-//        $data_types_arr[] = new FieldDataType('text', false, false, false);
-//        $data_types_arr[] = new FieldDataType('date', true, true, false);
-//        $data_types_arr[] = new FieldDataType('datetime', true, true, false);
-//        $data_types_arr[] = new FieldDataType('bigint', true, true, false);
-//
-//        echo "Enter db field data type:\n";
-//        /**
-//         * @var  $index
-//         * @var FieldDataType $data_type_obj
-//         */
-//        foreach ($data_types_arr as $index => $data_type_obj){
-//            echo "\t" . $index . '. ' . $data_type_obj->sql_type_name . "\n";
-//        }
-//
-//        $data_type_index = CLIUtil::readStdinAnswer();
-//
-//        if (!array_key_exists($data_type_index, $data_types_arr)){
-//            throw new \Exception('wrong answer');
-//        }
-//
-//        $selected_data_type_obj = $data_types_arr[$data_type_index];
-//
-//        return $selected_data_type_obj;
-//    }
-
     /**
      * @param FieldDataType $field_data_type
      * @return string
@@ -236,8 +157,8 @@ class CLIAddFieldToModel
         // adding sql
         //
 
-        $model_db_id = $this->getDbIdFromClassFile();
-        $model_table_name = $this->getTableNameFromClassFile();
+        $model_db_id = $class_file_obj->model_db_id;
+        $model_table_name = $class_file_obj->model_table_name;
 
         $this->db_table_field_name = $this->field_name;
         $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
@@ -343,8 +264,8 @@ class CLIAddFieldToModel
 
         echo "\nClass file updated\n";
 
-        $model_db_id = $this->getDbIdFromClassFile();
-        $model_table_name = $this->getTableNameFromClassFile();
+        $model_db_id = $class_file_obj->model_db_id;
+        $model_table_name = $class_file_obj->model_table_name;
 
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
@@ -361,8 +282,9 @@ class CLIAddFieldToModel
         if (!$this->field_name) throw new \Exception();
         if (!$this->model_file_path) throw new \Exception();
 
-        $model_db_id = $this->getDbIdFromClassFile();
-        $model_table_name = $this->getTableNameFromClassFile();
+        $class_file_obj = new PHPClassFile($this->model_file_path);
+        $model_db_id = $class_file_obj->model_db_id;
+        $model_table_name = $class_file_obj->model_table_name;
 
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
@@ -379,8 +301,9 @@ class CLIAddFieldToModel
         if (!$this->field_name) throw new \Exception();
         if (!$this->model_file_path) throw new \Exception();
 
-        $model_db_id = $this->getDbIdFromClassFile();
-        $model_table_name = $this->getTableNameFromClassFile();
+        $class_file_obj = new PHPClassFile($this->model_file_path);
+        $model_db_id = $class_file_obj->model_db_id;
+        $model_table_name = $class_file_obj->model_table_name;
 
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
@@ -419,27 +342,27 @@ class CLIAddFieldToModel
         echo "\nSQL registry updated\n";
     }
 
-    // TODO: replace hrdcoded "id" and "created_at_ts" field names by constants
     static public function selectorTemplate(){
         return <<<'EOT'
 
     /**
      * @return #CLASS_NAME#[]
      */
-    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, int $limit = 30, int $offset = 0): array {
-        return self::idsToObjs(self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $limit, $offset));
+    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, int $limit = #SELECTOR_PAGE_SIZE#, int $offset = 0): array {
+        return self::idsToObjs(self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset));
     }
 
-    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($value, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0){
-        $args = [$limit, $offset];
-        if (!is_null($value)){
-            array_unshift($args, $value);
+    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0): array {
+        if (is_null($#FIELDTEMPLATE_FIELD_NAME#)){
+            throw new \Exception('NULL values not supported in selector.');
         }
 
         return \OLOG\DB\DB::readColumn(
             self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . ' ' . (is_null($value) ? 'is null' : '=?') . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-            $args
+            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME .
+            ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . '=?' .
+            ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
+            [$#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset]
         );
     }
 

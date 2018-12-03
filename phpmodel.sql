@@ -18,3 +18,7 @@ alter table testtermtonode add column node_id int not null    /* vssfgssd */;
 alter table phpmodeldemo_demomodel add column bool_val tinyint   not null    /* rand503190 */;
 create table phpmodeldemo_demomodel2 (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand1002 */;
 alter table phpmodeldemo_demomodel add index INDEX_bool_val_14421302 (bool_val, created_at_ts)  /* rand456489 */;
+create table phpmodeldemo_demomodel3 (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand7719 */;
+alter table phpmodeldemo_demomodel3 add index INDEX_all_54190986 (created_at_ts)  /* rand2441934 */;
+alter table phpmodeldemo_demomodel3 add column randint int   not null    /* rand553115 */;
+alter table phpmodeldemo_demomodel3 add index INDEX_randint_44139782 (randint, created_at_ts)  /* rand922660 */;

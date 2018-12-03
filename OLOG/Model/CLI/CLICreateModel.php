@@ -82,12 +82,12 @@ class CLICreateModel
         echo "\nSQL registry updated\n";
 
         echo "\nType ENTER to execute SQL queries, Ctrl+C to exit.\n";
-        
+
         $command_str = CLIUtil::readStdinAnswer();
         if ($command_str == ''){
             \OLOG\DB\MigrateCLI::run();
         }
-        
+
         return;
     }
 
@@ -106,7 +106,7 @@ class CLICreateModel
 
     static public function getClassTemplate()
     {
-        
+
         // здесь поле id стоит ниже остальных, потому что добавлялка полей будет вставлять новые поля под него. т.е. поле id как бы разделяет поля и методы
         return <<<'EOT'
 <?php
@@ -137,22 +137,6 @@ class TEMPLATECLASS_CLASSNAME implements
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return TEMPLATECLASS_CLASSNAME[]
-     */
-    static public function all($limit = 30, $offset = 0){
-        return self::idsToObjs(self::ids($limit, $offset));
-    }
-
-    static public function ids($limit = 30, $offset = 0){
-        $ids_arr = \OLOG\DB\DB::readColumn(
-            self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME . ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-            [$limit, $offset]
-        );
-        return $ids_arr;
     }
 }
 EOT;
