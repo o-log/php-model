@@ -22,3 +22,5 @@ create table phpmodeldemo_demomodel3 (id int not null auto_increment primary key
 alter table phpmodeldemo_demomodel3 add index INDEX_all_54190986 (created_at_ts)  /* rand2441934 */;
 alter table phpmodeldemo_demomodel3 add column randint int   not null    /* rand553115 */;
 alter table phpmodeldemo_demomodel3 add index INDEX_randint_44139782 (randint, created_at_ts)  /* rand922660 */;
+create table tests_afterloadtestmodel (id int not null auto_increment primary key, created_at_ts int not null default 0) engine InnoDB default charset utf8 /* rand788 */;
+alter table tests_afterloadtestmodel add column randint int   not null    /* rand610762 */;

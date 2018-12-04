@@ -21,10 +21,6 @@ class DemoModel3 implements
     const _ID = 'id';
     public $id;
 
-    public function beforeSave(){
-        $this->randint = rand(0, 10);
-    }
-
     /**
      * @return DemoModel3[]
      */
@@ -67,6 +63,7 @@ class DemoModel3 implements
 
     public function __construct(){
         $this->created_at_ts = time();
+        $this->randint = rand(0, 10);
     }
 
     public function getId()

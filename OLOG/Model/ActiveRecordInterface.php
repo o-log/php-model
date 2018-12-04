@@ -19,6 +19,7 @@ interface ActiveRecordInterface {
     public function beforeSave();
     public function save();
     public function afterSave();
+    public function afterLoad();
     public function canDelete(&$message);
     public function delete();
     public function afterDelete();

@@ -2,17 +2,10 @@
   "name": "o-log/php-model",
   "description": "Fast PHP ORM with caching.",
   "require-dev": {
-    "o-log/php-router": "2.*",
     "phpunit/phpunit": "5.5.*"
   },
   "bin": [
     "bin/model.php"
-  ],
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/o-log/php-cache.git"
-    }
   ],
   "require": {
     "danielstjules/stringy": "~2.3",

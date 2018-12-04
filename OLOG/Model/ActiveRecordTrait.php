@@ -242,7 +242,16 @@ trait ActiveRecordTrait
             }
         }
 
+        if ($obj){
+            $obj->afterLoad();
+        }
+
         return $obj;
+    }
+
+    public function afterLoad()
+    {
+        // may be implemented in model class
     }
 
     /**
