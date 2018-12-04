@@ -22,7 +22,7 @@ class DemoModel3 implements
     public $id;
 
     public function beforeSave(){
-        $this->randint = rand(10, 1000);
+        $this->randint = rand(0, 10);
     }
 
     /**
