@@ -78,7 +78,7 @@ trait ActiveRecordTrait
      * все сохранение делается внутри транзакции (включая beforeSave и afterSave), если будет исключение - транзакция
      * будет откачена PDO
      */
-    public function save()
+    public function save(): self
     {
         $obj_class_name = get_class($this);
         $obj_db_id = $obj_class_name::DB_ID;
@@ -132,6 +132,8 @@ trait ActiveRecordTrait
         if ($transaction_is_my) {
             DB::commit($obj_db_id);
         }
+
+        return $this;
     }
 
     /**
@@ -211,9 +213,10 @@ trait ActiveRecordTrait
         return true;
     }
 
-    public function delete()
+    public function delete(): self
     {
         ActiveRecordHelper::deleteModel($this);
+        return $this;
     }
 
     /**
