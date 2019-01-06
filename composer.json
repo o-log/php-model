@@ -12,7 +12,8 @@
     "danielstjules/stringy": "~2.3",
     "o-log/php-db": "0.*",
     "o-log/php-cache": "0.*",
-    "o-log/php-http": "0.*"
+    "o-log/php-http": "0.*",
+    "ext-pdo": "*"
   },
   "autoload-dev": {
     "psr-0": {

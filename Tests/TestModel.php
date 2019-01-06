@@ -17,13 +17,15 @@ class TestModel implements
     public $after_save_counter = 0;
     protected $id;
 
-    public function afterDelete(){
+    public function afterDelete(): void
+    {
         if ($this->throw_exception_after_delete){
             throw new \Exception('After delete');
         }
     }
 
-    public function afterSave(){
+    public function afterSave(): void
+    {
         $this->removeFromFactoryCache();
 
         $this->after_save_counter = $this->after_save_counter + 1;
@@ -43,7 +45,8 @@ class TestModel implements
         $this->created_at_ts = time();
     }
 
-    public function canDelete(&$message){
+    public function canDelete(&$message): bool
+    {
         if ($this->disable_delete){
             $message = 'Delete disabled';
             return false;

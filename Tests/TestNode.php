@@ -15,15 +15,17 @@ class TestNode implements
     public $created_at_ts = '';
     protected $id;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->created_at_ts = time();
     }
 
-    public function beforeSave(){
+    public function beforeSave(): void
+    {
         $this->body = $this->title . $this->title;
     }
 
-    public function afterSave()
+    public function afterSave(): void
     {
         $term_to_node_ids_arr = TestTermToNode::getIdsArrForNodeIdByCreatedAtDesc($this->getId());
         foreach ($term_to_node_ids_arr as $term_to_node_id){

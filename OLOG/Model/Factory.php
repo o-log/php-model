@@ -11,12 +11,13 @@ namespace OLOG\Model;
  * Умеет создавать объекты указанного класса, при необходимости загружая их из кэша.
  */
 class Factory {
-
-    protected static function getObjectCacheId($class_name, $object_id) {
+    protected static function getObjectCacheId($class_name, $object_id): string
+    {
         return $class_name . '::' . $object_id;
     }
 
-    public static function removeObjectFromCache($class_name, $object_id) {
+    public static function removeObjectFromCache($class_name, $object_id): void
+    {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
         \OLOG\Cache\Cache::delete('', $cache_key);
     }
@@ -28,7 +29,8 @@ class Factory {
      * @return null|object Если удалось создать и загрузить объект - возвращается этот объект. Иначе (например, не удалось загрузить) - возвращает null.
      * @throws \Exception
      */
-    public static function createAndLoadObject($class_name, $object_id) {
+    public static function createAndLoadObject($class_name, $object_id)
+    {
         $cache_key = self::getObjectCacheId($class_name, $object_id);
 
         $cached_obj = \OLOG\Cache\Cache::get('', $cache_key);

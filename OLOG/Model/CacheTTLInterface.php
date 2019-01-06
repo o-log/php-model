@@ -8,5 +8,5 @@ declare(strict_types=1);
 namespace OLOG\Model;
 
 interface CacheTTLInterface {
-    public function cacheTtlSeconds();
+    public function cacheTtlSeconds(): int;
 }

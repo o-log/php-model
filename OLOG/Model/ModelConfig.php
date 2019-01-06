@@ -32,36 +32,4 @@ class ModelConfig {
     {
         self::$ignore_missing_properties_on_load = $ignore_missing_properties_on_load;
     }
-
-    public static function beforeSaveSubscribers($model_class_name) {
-        return array_key_exists($model_class_name, self::$before_save_subscribers) ? self::$before_save_subscribers[$model_class_name] : [];
-    }
-
-    public static function addBeforeSaveSubscriber($model_class_name, $before_save_callback_class_name) {
-        if (!is_a($before_save_callback_class_name, ModelBeforeSaveCallbackInterface::class, true)){
-            throw new \Exception();
-        }
-
-        if (!isset(self::$before_save_subscribers[$model_class_name])) {
-            self::$before_save_subscribers[$model_class_name] = [];
-        }
-
-        self::$before_save_subscribers[$model_class_name][] = $before_save_callback_class_name;
-    }
-
-    public static function addAfterSaveSubscriber($model_class_name, $after_save_callback_class_name) {
-        if (!is_a($after_save_callback_class_name, ModelAfterSaveCallbackInterface::class, true)){
-            throw new \Exception();
-        }
-
-        if (!isset(self::$after_save_subscribers[$model_class_name])) {
-            self::$after_save_subscribers[$model_class_name] = [];
-        }
-
-        self::$after_save_subscribers[$model_class_name][] = $after_save_callback_class_name;
-    }
-
-    public static function afterSaveSubscribers($model_class_name) {
-        return array_key_exists($model_class_name, self::$after_save_subscribers) ? self::$after_save_subscribers[$model_class_name] : [];
-    }
 }

@@ -19,16 +19,16 @@ namespace OLOG\Model;
  * - класс умеет создавать свои экземпляры, кэшировать их и сбрасывать кэш при изменениях.
 */
 interface ActiveRecordInterface {
-    public function load($id);
+    public function load($id): bool;
     public function getId();
-    public function beforeSave();
-    public function save();
-    public function afterSave();
-    public function afterLoad();
-    public function canDelete(&$message);
-    public function delete();
-    public function afterDelete();
-    public static function factory($id_to_load, $exception_if_not_loaded = true);
+    public function beforeSave(): void;
+    public function save(); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
+    public function afterSave(): void;
+    public function afterLoad(): void;
+    public function canDelete(&$message): bool;
+    public function delete(); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
+    public function afterDelete(): void;
+    public static function factory($id_to_load, $exception_if_not_loaded = true); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
     //static public function removeObjFromCacheById($id_to_remove);
-    public function removeFromFactoryCache();
+    public function removeFromFactoryCache(): void;
 }

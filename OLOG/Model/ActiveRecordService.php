@@ -79,7 +79,7 @@ class ActiveRecordService
             throw new \Exception($can_delete_message);
         }
 
-        \OLOG\Model\ActiveRecordService::deleteModelObj($obj);
+        ActiveRecordService::deleteModelObj($obj);
 
         try {
             $obj->afterDelete();

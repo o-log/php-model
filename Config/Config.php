@@ -10,10 +10,6 @@ use OLOG\Cache\RedisServer;
 use OLOG\DB\ConnectorMySQL;
 use OLOG\DB\DBConfig;
 use OLOG\DB\Space;
-use OLOG\Model\ModelConfig;
-use PHPModelDemo\CallbacksDemoModel;
-use PHPModelDemo\DemoAfterSaveSubscriber;
-use PHPModelDemo\DemoBeforeSaveSubscriber;
 
 class Config
 {
@@ -26,8 +22,5 @@ class Config
         DBConfig::setSpace(self::SPACE_PHPMODELDEMO, new Space(self::CONNECTOR_PHPMODELDEMO, 'phpmodel.sql'));
 
         CacheConfig::setBucket('', new BucketRedis([new RedisServer('localhost', 6379)]));
-
-        ModelConfig::addAfterSaveSubscriber(CallbacksDemoModel::class, DemoAfterSaveSubscriber::class);
-        ModelConfig::addBeforeSaveSubscriber(CallbacksDemoModel::class, DemoBeforeSaveSubscriber::class);
     }
 }

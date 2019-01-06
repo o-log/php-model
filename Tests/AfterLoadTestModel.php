@@ -32,7 +32,7 @@ class AfterLoadTestModel implements
         return $this->id;
     }
 
-    public function beforeSave()
+    public function beforeSave(): void
     {
 
 
@@ -41,7 +41,7 @@ class AfterLoadTestModel implements
         }
     }
 
-    public function afterLoad()
+    public function afterLoad(): void
     {
         $this->__original = $this;
     }

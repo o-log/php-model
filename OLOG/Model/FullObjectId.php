@@ -9,7 +9,7 @@ namespace OLOG\Model;
 
 class FullObjectId
 {
-    static public function getFullObjectId($obj)
+    static public function getFullObjectId($obj): ?string
     {
         if (is_null($obj)){
             return null;

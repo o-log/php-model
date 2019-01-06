@@ -4,7 +4,6 @@ namespace Tests;
 
 use Config\Config;
 use OLOG\DB\DB;
-use OLOG\Model\ModelConfig;
 
 class AfterLoadTest extends \PHPUnit_Framework_TestCase
 {

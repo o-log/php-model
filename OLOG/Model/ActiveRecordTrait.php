@@ -28,7 +28,7 @@ use OLOG\DB\DB;
  */
 trait ActiveRecordTrait
 {
-    public function load($id)
+    public function load($id): bool
     {
         return $this->loadModelObj($id);
     }
@@ -40,7 +40,7 @@ trait ActiveRecordTrait
      * использования reflection (для производительности).
      * Возвращает false если объект не найден.
      */
-    protected function loadModelObj($id)
+    protected function loadModelObj($id): bool
     {
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
@@ -75,7 +75,9 @@ trait ActiveRecordTrait
      * При необходимости можно переопределить этот метод и сделать в нем дополнительную обработку или проверки перед
      * сохранением.
      */
-    public function beforeSave(){
+    public function beforeSave(): void
+    {
+        // may be implemented in model class
     }
 
     /**
@@ -94,13 +96,6 @@ trait ActiveRecordTrait
         }
 
         $this->beforeSave();
-        $before_save_subscribers_arr = ModelConfig::beforeSaveSubscribers(self::class);
-
-        /** @var ModelBeforeSaveCallbackInterface $before_save_subscriber */
-        foreach ($before_save_subscribers_arr as $before_save_subscriber) {
-            // реализация интерфейса проверена на этапе добавления подписчиков
-            $before_save_subscriber::beforeSave($this);
-        }
 
         try {
             $this->saveModelObj();
@@ -121,14 +116,6 @@ trait ActiveRecordTrait
 
             $this->afterSave();
 
-            $after_save_subscribers_arr = ModelConfig::afterSaveSubscribers(self::class);
-
-            /** @var ModelAfterSaveCallbackInterface $after_save_subscriber */
-            foreach ($after_save_subscribers_arr as $after_save_subscriber) {
-                // реализация интерфейса проверена на этапе добавления подписчиков
-                $after_save_subscriber::afterSave($this->getId());
-            }
-
             unset($__inprogress[$inprogress_key]);
         }
 
@@ -146,7 +133,7 @@ trait ActiveRecordTrait
      * Сделан в трейте, а не в отдельном вспомогательном классе - чтобы был доступ к защищенным свойствам ообъекта без
      * использования reflection (для производительности).
      */
-    protected function saveModelObj()
+    protected function saveModelObj(): void
     {
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
@@ -200,7 +187,7 @@ trait ActiveRecordTrait
      * остальных подписчиков.
      * Не забыть в переопределенном методе сбросить кэш фабрики!
      */
-    public function afterSave()
+    public function afterSave(): void
     {
         $this->removeFromFactoryCache();
     }
@@ -212,7 +199,7 @@ trait ActiveRecordTrait
      * @param $message
      * @return bool
      */
-    public function canDelete(&$message)
+    public function canDelete(&$message): bool
     {
         return true;
     }
@@ -230,12 +217,12 @@ trait ActiveRecordTrait
      * - не использовать геттеры (они могут обращаться к базе)
      * - не быть статическим: работает в контексте конкретного объекта
      */
-    public function afterDelete()
+    public function afterDelete(): void
     {
         $this->removeFromFactoryCache();
     }
 
-    static public function factory($id_to_load, $exception_if_not_loaded = true): self
+    static public function factory($id_to_load, $exception_if_not_loaded = true): ?self
     {
         $class_name = get_called_class(); // "Gets the name of the class the static method is called in."
         $obj = Factory::createAndLoadObject($class_name, $id_to_load);
@@ -253,7 +240,7 @@ trait ActiveRecordTrait
         return $obj;
     }
 
-    public function afterLoad()
+    public function afterLoad(): void
     {
         // may be implemented in model class
     }
@@ -262,7 +249,7 @@ trait ActiveRecordTrait
      * Сбрасывает кэш объекта, созданный фабрикой при его загрузке.
      * Нужно вызывать после изменения или удаления объекта.
      */
-    public function removeFromFactoryCache()
+    public function removeFromFactoryCache(): void
     {
         $class_name = get_class($this);
         Factory::removeObjectFromCache($class_name, $this->getId());
@@ -289,6 +276,10 @@ trait ActiveRecordTrait
     }
     */
 
+    /**
+     * @param array $ids
+     * @return self[]
+     */
     static public function idsToObjs(array $ids): array
     {
         return array_map(
