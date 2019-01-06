@@ -1,22 +1,26 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * @author Oleg Loginov <olognv@gmail.com>
+ */
+
 namespace PHPModelDemo;
 
 use OLOG\Model\ActiveRecordInterface;
 use OLOG\Model\ActiveRecordTrait;
-use OLOG\Model\ProtectPropertiesTrait;
 
 class DemoModel implements
     ActiveRecordInterface
 {
     use ActiveRecordTrait;
-    use ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'phpmodeldemo_demomodel';
 
     const _ID = 'id'; // field names constants for CRUD
     const _CREATED_AT_TS = 'created_at_ts';
-    
+
     public $created_at_ts; // initialized by constructor
     const _TITLE = 'title';
     public $title;
@@ -45,7 +49,7 @@ class DemoModel implements
     }
 
 
-    
+
     public function __construct(){
         $this->created_at_ts = time();
     }

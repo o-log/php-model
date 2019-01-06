@@ -8,6 +8,7 @@
     "bin/model.php"
   ],
   "require": {
+    "php": ">=7.2",
     "danielstjules/stringy": "~2.3",
     "o-log/php-db": "0.*",
     "o-log/php-cache": "0.*",

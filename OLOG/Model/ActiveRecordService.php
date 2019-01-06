@@ -1,10 +1,15 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * @author Oleg Loginov <olognv@gmail.com>
+ */
 
 namespace OLOG\Model;
 
 use OLOG\DB\DB;
 
-class ActiveRecordHelper
+class ActiveRecordService
 {
     const INGORE_LIST_FIELD_NAME = 'active_record_ignore_fields_arr';
 
@@ -74,7 +79,7 @@ class ActiveRecordHelper
             throw new \Exception($can_delete_message);
         }
 
-        \OLOG\Model\ActiveRecordHelper::deleteModelObj($obj);
+        \OLOG\Model\ActiveRecordService::deleteModelObj($obj);
 
         try {
             $obj->afterDelete();

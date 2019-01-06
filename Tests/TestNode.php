@@ -6,7 +6,6 @@ class TestNode implements
     \OLOG\Model\ActiveRecordInterface
 {
     use \OLOG\Model\ActiveRecordTrait;
-    use \OLOG\Model\ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'modeltestnode';

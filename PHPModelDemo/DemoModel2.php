@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * @author Oleg Loginov <olognv@gmail.com>
+ */
+
 namespace PHPModelDemo;
 
 use OLOG\Model\ActiveRecordInterface;
@@ -18,11 +22,11 @@ class DemoModel2 implements
     public $created_at_ts;
     const _ID = 'id';
     public $id;
-    
+
     public function __construct(){
         $this->created_at_ts = time();
     }
-    
+
     public function getId()
     {
         return $this->id;

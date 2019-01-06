@@ -4,13 +4,11 @@ namespace Tests;
 
 use OLOG\Model\ActiveRecordTrait;
 use OLOG\Model\ActiveRecordInterface;
-use OLOG\Model\ProtectPropertiesTrait;
 
 class LoadTestModel implements
     ActiveRecordInterface
 {
     use ActiveRecordTrait;
-    use ProtectPropertiesTrait;
 
     const DB_ID = 'phpmodel';
     const DB_TABLE_NAME = 'tests_loadtestmodel';
@@ -28,7 +26,7 @@ class LoadTestModel implements
     public $field_not_in_table;
 
     protected $created_at_ts; // initialized by constructor
-    
+
     public function __construct(){
         $this->created_at_ts = time();
     }

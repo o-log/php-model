@@ -1,4 +1,9 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * @author Oleg Loginov <olognv@gmail.com>
+ */
 
 namespace OLOG\Model;
 
@@ -34,9 +39,9 @@ class ModelConfig {
 
     public static function addBeforeSaveSubscriber($model_class_name, $before_save_callback_class_name) {
         if (!is_a($before_save_callback_class_name, ModelBeforeSaveCallbackInterface::class, true)){
-            throw new \Exception();            
+            throw new \Exception();
         }
-        
+
         if (!isset(self::$before_save_subscribers[$model_class_name])) {
             self::$before_save_subscribers[$model_class_name] = [];
         }
@@ -46,9 +51,9 @@ class ModelConfig {
 
     public static function addAfterSaveSubscriber($model_class_name, $after_save_callback_class_name) {
         if (!is_a($after_save_callback_class_name, ModelAfterSaveCallbackInterface::class, true)){
-            throw new \Exception();            
+            throw new \Exception();
         }
-        
+
         if (!isset(self::$after_save_subscribers[$model_class_name])) {
             self::$after_save_subscribers[$model_class_name] = [];
         }

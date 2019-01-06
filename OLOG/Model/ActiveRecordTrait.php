@@ -1,4 +1,9 @@
 <?php
+declare(strict_types=1);
+
+/**
+ * @author Oleg Loginov <olognv@gmail.com>
+ */
 
 namespace OLOG\Model;
 use OLOG\DB\DB;
@@ -14,7 +19,6 @@ use OLOG\DB\DB;
  *          - const DB_ID           - идентификатор БД (news, stats, etc.)
  *          - const DB_TABLE_NAME   - имя таблицы в которой хранятся данные модели
  *      - подключаем трейты:
- *          - ProtectPropertiesTrait
  *          - ActiveRecordTrait
  *      - пишем необходимые геттеры и сеттеры
  *
@@ -41,7 +45,7 @@ trait ActiveRecordTrait
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
-        $id_field_name = ActiveRecordHelper::getIdFieldName($this);
+        $id_field_name = ActiveRecordService::getIdFieldName($this);
 
         $data_obj = DB::readObject(
             $db_id,
@@ -147,7 +151,7 @@ trait ActiveRecordTrait
         $model_class_name = get_class($this);
         $db_id = $model_class_name::DB_ID;
         $db_table_name = $model_class_name::DB_TABLE_NAME;
-        $id_field_name = ActiveRecordHelper::getIdFieldName($this);
+        $id_field_name = ActiveRecordService::getIdFieldName($this);
 
         $field_names = [];
 
@@ -183,10 +187,10 @@ trait ActiveRecordTrait
         $model_id_value = $this->$id_field_name;
 
         if ($model_id_value == '') {
-            $last_insert_id = ActiveRecordHelper::insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name);
+            $last_insert_id = ActiveRecordService::insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name);
             $this->$id_field_name = $last_insert_id;
         } else {
-            ActiveRecordHelper::updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value);
+            ActiveRecordService::updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value);
         }
     }
 
@@ -215,7 +219,7 @@ trait ActiveRecordTrait
 
     public function delete(): self
     {
-        ActiveRecordHelper::deleteModel($this);
+        ActiveRecordService::deleteModel($this);
         return $this;
     }
 
@@ -231,10 +235,7 @@ trait ActiveRecordTrait
         $this->removeFromFactoryCache();
     }
 
-    /**
-     * @return $this
-     */
-    static public function factory($id_to_load, $exception_if_not_loaded = true)
+    static public function factory($id_to_load, $exception_if_not_loaded = true): self
     {
         $class_name = get_called_class(); // "Gets the name of the class the static method is called in."
         $obj = Factory::createAndLoadObject($class_name, $id_to_load);
@@ -288,7 +289,6 @@ trait ActiveRecordTrait
     }
     */
 
-    // TODO: typehint returned class somehow
     static public function idsToObjs(array $ids): array
     {
         return array_map(
