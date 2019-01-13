@@ -30,7 +30,7 @@ class CLICreateModel
         $db_id_by_index = [];
         $index = 1;
         foreach ($spaces as $db_id => $space) {
-            echo "\t" . str_pad($index, 8, '.') . $db_id . "\n";
+            echo "\t" . $index . "\t" . $db_id . "\n";
             $db_id_by_index[$index] = $db_id;
             $index++;
         }
