@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OLOG\Model\CLI;
 
 use OLOG\CLIUtil;
+use OLOG\Model\UniqifySQL;
 use Stringy\Stringy;
 
 class CLIAddFieldToModel
@@ -36,6 +37,7 @@ class CLIAddFieldToModel
         $data_types_arr[] = new FieldDataType('date', 'date', true, true, false);
         $data_types_arr[] = new FieldDataType('datetime', 'datetime', true, true, false);
         $data_types_arr[] = new FieldDataType('bigint', 'bigint', true, true, false);
+        $data_types_arr[] = new FieldDataType('double', 'double', true, true, false);
 
         $this->data_types = $data_types_arr;
     }
@@ -166,9 +168,12 @@ class CLIAddFieldToModel
         $model_table_name = $class_file_obj->model_table_name;
 
         $this->db_table_field_name = $this->field_name;
-        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . '  /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add column ' . $this->db_table_field_name . ' ' . $field_data_type->sql_type_name . ' ' . $sql_collate_str . ' ' . $sql_field_is_nullable_str . ' ' . $sql_default_value_str . ';';
 
-        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
 
         echo "\nSQL registry updated\n";
 
@@ -275,9 +280,12 @@ class CLIAddFieldToModel
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
 
-        $sql = 'alter table ' . $model_table_name . ' add index INDEX_' . $this->field_name . '_' . rand(0, 99999999) . ' (' . $this->field_name . ', created_at_ts)  /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add index INDEX_' . $this->field_name . '_' . rand(0, 99999999) . ' (' . $this->field_name . ', created_at_ts);';
 
-        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
 
         echo "\nSQL registry updated\n";
     }
@@ -294,9 +302,12 @@ class CLIAddFieldToModel
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
 
-        $sql = 'alter table ' . $model_table_name . ' add unique key UK_' . $this->field_name . '_' . rand(0, 999999) . ' (' . $this->field_name . ')  /* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add unique key UK_' . $this->field_name . '_' . rand(0, 999999) . ' (' . $this->field_name . ');';
 
-        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
 
         echo "\nSQL registry updated\n";
     }
@@ -340,9 +351,12 @@ class CLIAddFieldToModel
             $on_delete_action = ' on delete cascade ';
         }
 
-        $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') ' . $on_delete_action . '/* rand' . rand(0, 999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add constraint FK_' . $this->field_name . '_' . rand(0, 999999) . ' foreign key (' . $this->field_name . ')  references ' . $target_table_name . ' (' . $target_field_name . ') ' . $on_delete_action . ';';
 
-        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
 
         echo "\nSQL registry updated\n";
     }

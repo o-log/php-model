@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OLOG\Model\CLI;
 
 use OLOG\CLIUtil;
+use OLOG\Model\UniqifySQL;
 use Stringy\Stringy;
 
 class CLIAddAllSelector
@@ -61,9 +62,12 @@ class CLIAddAllSelector
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
 
-        $sql = 'alter table ' . $model_table_name . ' add index INDEX_all_' . rand(0, 99999999) . ' (created_at_ts)  /* rand' . rand(0, 99999999) . ' */;';
+        $sql = 'alter table ' . $model_table_name . ' add index INDEX_all_' . rand(0, 99999999) . ' (created_at_ts);';
 
-        \OLOG\DB\Migrate::addMigration($model_db_id, $sql);
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
 
         echo "\nSQL registry updated\n";
     }
