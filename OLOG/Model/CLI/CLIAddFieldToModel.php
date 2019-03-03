@@ -16,6 +16,7 @@ class CLIAddFieldToModel
     const FUNCTION_CODE_ADD_UNIQUE_KEY = 1;
     const FUNCTION_ADD_FOREIGN_KEY = 2;
     const FUNCTION_ADD_SELECTOR = 3;
+    const FUNCTION_ADD_COUNTER = 4;
 
     public $field_name = '';
     protected $db_table_field_name = '';
@@ -222,6 +223,7 @@ class CLIAddFieldToModel
             echo "\t" . self::FUNCTION_CODE_ADD_UNIQUE_KEY . ": create unique key for field\n";
             echo "\t" . self::FUNCTION_ADD_FOREIGN_KEY . ": create foreign key for field\n";
             echo "\t" . self::FUNCTION_ADD_SELECTOR . ": create selector method for field\n";
+            echo "\t" . self::FUNCTION_ADD_COUNTER . ": create counter method for field\n";
 
             echo "\t" . "ENTER: exit to menu\n"; // TODO: use constants
 
@@ -240,6 +242,10 @@ class CLIAddFieldToModel
 
                 case self::FUNCTION_ADD_SELECTOR:
                     $this->addSelector();
+                    break;
+
+                case self::FUNCTION_ADD_COUNTER:
+                    $this->addCounter();
                     break;
 
                 case '':
@@ -280,6 +286,40 @@ class CLIAddFieldToModel
         if (!$model_table_name) throw new \Exception();
         if (!$model_db_id) throw new \Exception();
 
+        // TODO: index may already exist!
+        $sql = 'alter table ' . $model_table_name . ' add index INDEX_' . $this->field_name . '_' . rand(0, 99999999) . ' (' . $this->field_name . ', created_at_ts);';
+
+        \OLOG\DB\Migrate::addMigration(
+            $model_db_id,
+            UniqifySQL::addDatetimeComment($sql)
+        );
+
+        echo "\nSQL registry updated\n";
+    }
+
+    public function addCounter()
+    {
+        if (!$this->field_name) throw new \Exception();
+        if (!$this->model_file_path) throw new \Exception();
+
+        $class_file_obj = new PHPClassFile($this->model_file_path);
+
+        $selector_template = self::counterTemplate();
+        $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
+        $selector_template = self::replaceClassNamePlaceholders($selector_template, $class_file_obj->class_name);
+
+        $class_file_obj->insertBelowIdField($selector_template);
+        $class_file_obj->save();
+
+        echo "\nClass file updated\n";
+
+        $model_db_id = $class_file_obj->model_db_id;
+        $model_table_name = $class_file_obj->model_table_name;
+
+        if (!$model_table_name) throw new \Exception();
+        if (!$model_db_id) throw new \Exception();
+
+        // TODO: index may already exist!
         $sql = 'alter table ' . $model_table_name . ' add index INDEX_' . $this->field_name . '_' . rand(0, 99999999) . ' (' . $this->field_name . ', created_at_ts);';
 
         \OLOG\DB\Migrate::addMigration(
@@ -367,11 +407,13 @@ class CLIAddFieldToModel
     /**
      * @return #CLASS_NAME#[]
      */
-    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, int $limit = #SELECTOR_PAGE_SIZE#, int $offset = 0): array {
+    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, int $limit = #SELECTOR_PAGE_SIZE#, int $offset = 0): array
+    {
         return self::idsToObjs(self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset));
     }
 
-    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0): array {
+    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0): array
+    {
         if (is_null($#FIELDTEMPLATE_FIELD_NAME#)){
             throw new \Exception('NULL values not supported in selector.');
         }
@@ -382,6 +424,26 @@ class CLIAddFieldToModel
             ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . '=?' .
             ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
             [$#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset]
+        );
+    }
+
+EOT;
+    }
+
+    static public function counterTemplate(){
+        return <<<'EOT'
+
+    static public function countFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#): int
+    {
+        if (is_null($#FIELDTEMPLATE_FIELD_NAME#)){
+            throw new \Exception('NULL values not supported in counter.');
+        }
+
+        return \OLOG\DB\DB::readField(
+            self::DB_ID,
+            'select count(*) from ' . self::DB_TABLE_NAME .
+            ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . '=?',
+            [$#FIELDTEMPLATE_FIELD_NAME#]
         );
     }
 
