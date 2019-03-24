@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace OLOG\Model\CLI;
 
 use OLOG\CLIUtil;
+use OLOG\Model\CLI\Templates\AllSelectorTemplate;
 use OLOG\Model\UniqifySQL;
 use Stringy\Stringy;
 
@@ -47,7 +48,7 @@ class CLIAddAllSelector
 
         $class_file_obj = new PHPClassFile($this->model_file_path);
 
-        $selector_template = self::selectorTemplate();
+        $selector_template = AllSelectorTemplate::selectorTemplate();
         $selector_template = self::replacePageSizePlaceholders($selector_template, $page_size);
         $selector_template = self::replaceClassNamePlaceholders($selector_template, $class_file_obj->class_name);
         $class_file_obj->insertBelowIdField($selector_template);
@@ -70,27 +71,5 @@ class CLIAddAllSelector
         );
 
         echo "\nSQL registry updated\n";
-    }
-
-    static public function selectorTemplate(){
-        return <<<'EOT'
-
-    /**
-     * @return #CLASS_NAME#[]
-     */
-    static public function all(int $limit = #SELECTOR_PAGE_SIZE#, int $offset = 0): array {
-        return self::idsToObjs(self::ids($limit, $offset));
-    }
-
-    static public function ids($limit = #SELECTOR_PAGE_SIZE#, $offset = 0): array {
-        return \OLOG\DB\DB::readColumn(
-            self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME .
-            ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-            [$limit, $offset]
-        );
-    }
-
-EOT;
     }
 }

@@ -28,7 +28,7 @@ interface ActiveRecordInterface {
     public function canDelete(&$message): bool;
     public function delete(); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
     public function afterDelete(): void;
-    public static function factory($id_to_load, $exception_if_not_loaded = true); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
+    public static function factory($id_to_load, bool $exception_if_not_loaded = true); // не указываю возвращаемый тип в интерфейсе - непонятно как указать здесь вызывающий класс при реализации метода в trait
     //static public function removeObjFromCacheById($id_to_remove);
     public function removeFromFactoryCache(): void;
 }

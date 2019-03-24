@@ -13,7 +13,7 @@ class ActiveRecordService
 {
     const INGORE_LIST_FIELD_NAME = 'active_record_ignore_fields_arr';
 
-    public static function getIdFieldName($model_obj)
+    public static function getIdFieldName($model_obj): string
     {
         $obj_class_name = get_class($model_obj);
 
@@ -24,7 +24,8 @@ class ActiveRecordService
         return 'id';
     }
 
-    public static function updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value){
+    public static function updateRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name, $model_id_value): void
+    {
         $placeholders_arr = array();
 
         foreach ($fields_to_save_arr as $field_name => $field_value) {
@@ -39,7 +40,8 @@ class ActiveRecordService
         DB::query($db_id, $query, $values_arr);
     }
 
-    public static function insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name){
+    public static function insertRecord($db_id, $db_table_name, $fields_to_save_arr, $id_field_name): int
+    {
         $placeholders_arr = array_fill(0, count($fields_to_save_arr), '?');
 
         $quoted_fields_to_save_arr = array();
@@ -61,7 +63,8 @@ class ActiveRecordService
     /**
      * все удаление делается внутри транзакции (включая canDelete и afterDelete), если будет исключение - транзакция будет откачена PDO
      */
-    public static function deleteModel(ActiveRecordInterface $obj){
+    public static function deleteModel(ActiveRecordInterface $obj): void
+    {
         $obj_class_name = get_class($obj);
         $obj_db_id = $obj_class_name::DB_ID;
 

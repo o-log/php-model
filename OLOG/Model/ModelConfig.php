@@ -8,8 +8,6 @@ declare(strict_types=1);
 namespace OLOG\Model;
 
 class ModelConfig {
-    static protected $after_save_subscribers = [];
-    static protected $before_save_subscribers = [];
     static protected $ignore_missing_properties_on_load = false;
     static protected $ignore_missing_properties_on_save = false;
 

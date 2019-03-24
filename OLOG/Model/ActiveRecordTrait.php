@@ -222,7 +222,7 @@ trait ActiveRecordTrait
         $this->removeFromFactoryCache();
     }
 
-    static public function factory($id_to_load, $exception_if_not_loaded = true): ?self
+    static public function factory($id_to_load, bool $exception_if_not_loaded = true): ?self
     {
         $class_name = get_called_class(); // "Gets the name of the class the static method is called in."
         $obj = Factory::createAndLoadObject($class_name, $id_to_load);
@@ -255,28 +255,25 @@ trait ActiveRecordTrait
         Factory::removeObjectFromCache($class_name, $this->getId());
     }
 
-    /*
-    public function getFieldValueByName($field_name)
+    public function _getFieldValueByName($field_name)
     {
         return $this->$field_name;
     }
-    */
 
     /**
      * пока работаем с полями объекта напрямую, без сеттеров/геттеров
      * этот метод позволяет писать в защищенные свойства (используется, например, в CRUD)
      * @param $fields_arr
      */
-    /*
-    public function ar_setFields($fields_arr)
+    public function _setFields($fields_arr)
     {
         foreach ($fields_arr as $field_name => $field_value) {
             $this->$field_name = $field_value;
         }
     }
-    */
 
     /**
+     * Converts ids array to objects of self class array.
      * @param array $ids
      * @return self[]
      */
@@ -290,7 +287,16 @@ trait ActiveRecordTrait
         );
     }
 
-    static public function first($objs, $exception_if_none = true): ?self {
+    /**
+     * Returns first object from array.
+     *
+     * @param $objs
+     * @param bool $exception_if_none
+     * @return ActiveRecordTrait|null
+     * @throws \Exception
+     */
+    static public function first(array $objs, bool $exception_if_none = true): ?self
+    {
         if (empty($objs)){
             if ($exception_if_none){
                 throw new \Exception('Empty array passed to first()');
@@ -302,7 +308,17 @@ trait ActiveRecordTrait
         return $objs[0];
     }
 
-    static public function single($objs, $exception_if_none = true): ?self {
+    /**
+     * If array contains more then one object - throws exception.
+     * Otherwise returns first object from array.
+     *
+     * @param array $objs
+     * @param bool $exception_if_none
+     * @return ActiveRecordTrait|null
+     * @throws \Exception
+     */
+    static public function single(array $objs, bool $exception_if_none = true): ?self
+    {
         if (count($objs) > 1){
             throw new \Exception('Single object required.');
         }

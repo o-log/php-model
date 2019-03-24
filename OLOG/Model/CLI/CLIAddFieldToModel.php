@@ -8,6 +8,9 @@ declare(strict_types=1);
 namespace OLOG\Model\CLI;
 
 use OLOG\CLIUtil;
+use OLOG\Model\CLI\Templates\CounterTemplate;
+use OLOG\Model\CLI\Templates\FieldSelectorTemplate;
+use OLOG\Model\CLI\Templates\GetterSetterTemplate;
 use OLOG\Model\UniqifySQL;
 use Stringy\Stringy;
 
@@ -31,14 +34,14 @@ class CLIAddFieldToModel
     {
         $data_types_arr = [];
 
-        $data_types_arr[] = new FieldDataType('tinyint', 'tinyint', true, true, false);
-        $data_types_arr[] = new FieldDataType('int', 'int', true, true, false);
-        $data_types_arr[] = new FieldDataType('string', 'varchar(255)', true, true, true);
-        $data_types_arr[] = new FieldDataType('text', 'text', false, false, false);
-        $data_types_arr[] = new FieldDataType('date', 'date', true, true, false);
-        $data_types_arr[] = new FieldDataType('datetime', 'datetime', true, true, false);
-        $data_types_arr[] = new FieldDataType('bigint', 'bigint', true, true, false);
-        $data_types_arr[] = new FieldDataType('double', 'double', true, true, false);
+        $data_types_arr[] = new FieldDataType('tinyint', 'int', 'tinyint',  true, false);
+        $data_types_arr[] = new FieldDataType('int', 'int', 'int', true, false);
+        $data_types_arr[] = new FieldDataType('string', 'string', 'varchar(255)', true, true);
+        $data_types_arr[] = new FieldDataType('text', 'string', 'text', false, false);
+        $data_types_arr[] = new FieldDataType('date', 'string', 'date', true, false);
+        $data_types_arr[] = new FieldDataType('datetime', 'string', 'datetime', true, false);
+        $data_types_arr[] = new FieldDataType('bigint', 'int', 'bigint', true, false);
+        $data_types_arr[] = new FieldDataType('double', 'float', 'double', true, false);
 
         $this->data_types = $data_types_arr;
     }
@@ -120,46 +123,49 @@ class CLIAddFieldToModel
             $sql_collate_str = ' collate ' . $collate;
         }
 
-        $field_string_for_class = '    const ' . self::constantNameForFieldName($this->field_name) . ' = \'' . $this->field_name . '\';' . "\n";
+        //
+        //
+        //
 
-        // no naive getters and setters, so make field public
-        //$field_string_for_class .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
-        $field_string_for_class .= '    public $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
+        $sql_field_is_nullable_str = ' null ';
+        $property_is_nullable = true;
+
+//        if ($field_data_type->can_be_not_null) {
+        echo CLIUtil::delimiter();
+        echo "Choose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
+        $is_nullable_reply = trim(fgets(STDIN));
+
+        switch ($is_nullable_reply) {
+            case 'n': // TODO: use constant
+                $sql_field_is_nullable_str = ' null ';
+                $property_is_nullable = true;
+                break;
+
+            case '': // TODO: use constant
+                $sql_field_is_nullable_str = ' not null ';
+                $property_is_nullable = false;
+                break;
+
+            default:
+                throw new \Exception('Unsupported answer');
+        }
+//        }
+
+        $field_string_for_class = '    const ' . self::constantNameForFieldName($this->field_name) . ' = \'' . $this->field_name . '\';' . "\n";
+        $field_string_for_class .= '    protected $' . $this->field_name . $class_field_default_value_str . ';' . "\n";
         $class_file_obj->insertAboveIdField($field_string_for_class);
 
-        // no naive getters and setters
-        //$getters_setters_template = self::gettersSettersTemplate();
-        //$getters_setters_template = self::replaceFieldNamePlaceholders($getters_setters_template, $this->field_name);
-        //$class_file_obj->insertBelowIdField($getters_setters_template);
+        $getters_setters_template = GetterSetterTemplate::getterSetterTemplate(
+            $this->field_name,
+            $field_data_type->php_type_name,
+            $property_is_nullable,
+            $class_file_obj->class_name
+        );
+        $class_file_obj->insertBelowIdField($getters_setters_template);
 
         $class_file_obj->save();
 
         echo "\nModel class file updated\n";
-
-        //
-        //
-        //
-
-        $sql_field_is_nullable_str = '';
-
-        if ($field_data_type->can_be_null) {
-            echo CLIUtil::delimiter();
-            echo "Choose whether database field is nullable:\n\tn: null\n\tENTER: not null\n"; // TODO: use constants
-            $is_nullable_reply = trim(fgets(STDIN));
-
-            switch ($is_nullable_reply) {
-                case 'n': // TODO: use constant
-                    $sql_field_is_nullable_str = '';
-                    break;
-
-                case '': // TODO: use constant
-                    $sql_field_is_nullable_str = ' not null ';
-                    break;
-
-                default:
-                    throw new \Exception('Unsupported answer');
-            }
-        }
 
         //
         // adding sql
@@ -270,7 +276,7 @@ class CLIAddFieldToModel
 
         $class_file_obj = new PHPClassFile($this->model_file_path);
 
-        $selector_template = self::selectorTemplate();
+        $selector_template = FieldSelectorTemplate::selectorTemplate();
         $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
         $selector_template = self::replacePageSizePlaceholders($selector_template, $page_size);
         $selector_template = self::replaceClassNamePlaceholders($selector_template, $class_file_obj->class_name);
@@ -304,7 +310,7 @@ class CLIAddFieldToModel
 
         $class_file_obj = new PHPClassFile($this->model_file_path);
 
-        $selector_template = self::counterTemplate();
+        $selector_template = CounterTemplate::counterTemplate();
         $selector_template = self::replaceFieldNamePlaceholders($selector_template, $this->field_name);
         $selector_template = self::replaceClassNamePlaceholders($selector_template, $class_file_obj->class_name);
 
@@ -399,54 +405,5 @@ class CLIAddFieldToModel
         );
 
         echo "\nSQL registry updated\n";
-    }
-
-    static public function selectorTemplate(){
-        return <<<'EOT'
-
-    /**
-     * @return #CLASS_NAME#[]
-     */
-    static public function for#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, int $limit = #SELECTOR_PAGE_SIZE#, int $offset = 0): array
-    {
-        return self::idsToObjs(self::idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset));
-    }
-
-    static public function idsFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#, $limit = #SELECTOR_PAGE_SIZE#, $offset = 0): array
-    {
-        if (is_null($#FIELDTEMPLATE_FIELD_NAME#)){
-            throw new \Exception('NULL values not supported in selector.');
-        }
-
-        return \OLOG\DB\DB::readColumn(
-            self::DB_ID,
-            'select ' . self::_ID . ' from ' . self::DB_TABLE_NAME .
-            ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . '=?' .
-            ' order by ' . self::_CREATED_AT_TS . ' desc limit ? offset ?',
-            [$#FIELDTEMPLATE_FIELD_NAME#, $limit, $offset]
-        );
-    }
-
-EOT;
-    }
-
-    static public function counterTemplate(){
-        return <<<'EOT'
-
-    static public function countFor#FIELDTEMPLATE_CAMELIZED_FIELD_NAME#($#FIELDTEMPLATE_FIELD_NAME#): int
-    {
-        if (is_null($#FIELDTEMPLATE_FIELD_NAME#)){
-            throw new \Exception('NULL values not supported in counter.');
-        }
-
-        return \OLOG\DB\DB::readField(
-            self::DB_ID,
-            'select count(*) from ' . self::DB_TABLE_NAME .
-            ' where ' . self::#FIELDTEMPLATE_FIELD_CONSTANT# . '=?',
-            [$#FIELDTEMPLATE_FIELD_NAME#]
-        );
-    }
-
-EOT;
     }
 }

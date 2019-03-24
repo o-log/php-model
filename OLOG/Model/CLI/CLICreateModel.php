@@ -22,7 +22,6 @@ class CLICreateModel
     {
         echo CLIUtil::delimiter();
         echo "Choose model DB index:\n";
-        //$db_arr = \OLOG\ConfWrapper::value(\OLOG\Model\ModelConstants::MODULE_CONFIG_ROOT_KEY . '.db'); // TODO: check not empty
         $spaces = DBConfig::spaces();
 
         if (count($spaces) == 0) throw new \Exception('No spaces in config');
@@ -135,17 +134,22 @@ class TEMPLATECLASS_CLASSNAME implements
     const DB_TABLE_NAME = 'TEMPLATECLASS_TABLENAME';
 
     const _CREATED_AT_TS = 'created_at_ts';
-    public $created_at_ts;
+    protected $created_at_ts;
     const _ID = 'id';
-    public $id;
+    protected $id;
     
     public function __construct(){
         $this->created_at_ts = time();
     }
     
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getCreatedAtTs(): int
+    {
+        return $this->created_at_ts;
     }
 }
 EOT;

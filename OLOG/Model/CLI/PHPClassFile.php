@@ -18,9 +18,9 @@ class PHPClassFile
     public $model_table_name = '';
     public $model_db_id = '';
 
-    static public $id_field_pattern = '@[\h]+public \$id;@';
-    static public $id_field_str = '    public $id;' . "\n";
-    static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+public \$id;@';
+    static public $id_field_pattern = '@[\h]+(public|protected) \$id;@';
+    static public $id_field_str = '    protected $id;' . "\n";
+    static public $id_field_with_constant_pattern = '@[\h]+const _ID = \'id\';[\v]+[\h]+protected \$id;@';
 
     public function extractTableName()
     {
@@ -45,14 +45,24 @@ class PHPClassFile
         $this->model_db_id = $matches[1];
     }
 
-    public function getFieldNamesArr(){
+    public function getFieldNamesArr(): array
+    {
         $reflection = new \ReflectionClass($this->class_namespace . '\\' . $this->class_name);
-        return array_map(function(\ReflectionProperty $prop){return $prop->getName();}, $reflection->getProperties());
+        return array_map(
+            function(\ReflectionProperty $prop)
+            {
+                return $prop->getName();
+            },
+            $reflection->getProperties()
+        );
     }
 
-    public function save(){
+    public function save(): void
+    {
         $put_result = file_put_contents($this->class_file_path, $this->class_file_text);
-        if (!$put_result) throw new \Exception();
+        if (!$put_result){
+            throw new \Exception();
+        }
     }
 
     /**
@@ -64,7 +74,8 @@ class PHPClassFile
      * @param $str
      * @throws \Exception
      */
-    public function insertAboveIdField($str){
+    public function insertAboveIdField($str): void
+    {
         $id_field_with_constant_pattern = self::$id_field_with_constant_pattern;
 
         if (!preg_match($id_field_with_constant_pattern, $this->class_file_text)) {
@@ -91,7 +102,8 @@ class PHPClassFile
      * @param $str
      * @throws \Exception
      */
-    public function insertBelowIdField($str){
+    public function insertBelowIdField($str): void
+    {
         $id_field_pattern = self::$id_field_pattern;
 
         if (!preg_match($id_field_pattern, $this->class_file_text)) {
@@ -121,7 +133,8 @@ class PHPClassFile
         $this->extractTableName();
     }
 
-    public function extractClassNamespace(){
+    public function extractClassNamespace(): void
+    {
         $namespace_matches = [];
         $namespace_pattern = '@\Rnamespace\s+(\w+);@';
         if (preg_match($namespace_pattern, $this->class_file_text, $namespace_matches)) {
@@ -129,8 +142,8 @@ class PHPClassFile
         }
     }
 
-    public function extractClassName(){
-
+    public function extractClassName(): void
+    {
         $class_name_matches = [];
         $class_name_pattern = '@\Rclass\s+(\w+)@';
 
@@ -139,37 +152,5 @@ class PHPClassFile
         } else {
             throw new \Exception("class name not found in class file");
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getClassFilePath()
-    {
-        return $this->class_file_path;
-    }
-
-    /**
-     * @param mixed $class_file_path
-     */
-    public function setClassFilePath($class_file_path)
-    {
-        $this->class_file_path = $class_file_path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClassFileText()
-    {
-        return $this->class_file_text;
-    }
-
-    /**
-     * @param string $class_file_text
-     */
-    public function setClassFileText($class_file_text)
-    {
-        $this->class_file_text = $class_file_text;
     }
 }

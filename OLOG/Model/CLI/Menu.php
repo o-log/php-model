@@ -17,7 +17,7 @@ class Menu
 
     static public function run()
     {
-        $class_path = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : '';
+        $class_path = CLIUtil::ARGVOptional(1);
         if (!$class_path){
             CLIUtil::error('Class file path must be passed as first parameter.');
             CLIUtil::error('If the class file doesn\'t exist - it will be created.');
@@ -28,9 +28,10 @@ class Menu
 
         if (!file_exists($class_path)){
             self::createClass($class_path);
+            exit;
         }
 
-        $field_name = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : '';
+        $field_name = CLIUtil::ARGVOptional(2);
         if (!$field_name){
             echo "Class exists.\n";
             echo CLIUtil::delimiter();
@@ -59,7 +60,7 @@ class Menu
 
             echo "New field: " . $field_name . "\n";
 
-            $datatype_name = isset($_SERVER['argv'][3]) ? $_SERVER['argv'][3] : '';
+            $datatype_name = CLIUtil::ARGVOptional(3);
 
             if (!$datatype_name){
                 CLIUtil::error('You have to pass new field data type as third parameter. Available data types:');
@@ -69,14 +70,14 @@ class Menu
                 exit;
             }
 
-            $entered_datatype = null;
-            foreach ($cli_add_field_obj->data_types as $datatype){
-                if ($datatype->title == $datatype_name){
-                    $entered_datatype = $datatype;
+            $selected_datatype_obj = null;
+            foreach ($cli_add_field_obj->data_types as $datatype_obj){
+                if ($datatype_obj->title == $datatype_name){
+                    $selected_datatype_obj = $datatype_obj;
                 }
             }
 
-            if (!$datatype){
+            if (!$selected_datatype_obj){
                 CLIUtil::error('Datatype "' . $datatype_name . '" not found. Available data types:');
                 foreach ($cli_add_field_obj->data_types as $data_type){
                     CLIUtil::error('- ' . $data_type->render());
@@ -86,7 +87,7 @@ class Menu
 
             $cli_add_field_obj->model_file_path = $class_path;
             $cli_add_field_obj->field_name = $field_name;
-            $cli_add_field_obj->addFieldScreen($entered_datatype);
+            $cli_add_field_obj->addFieldScreen($selected_datatype_obj);
             exit;
         }
 
@@ -123,6 +124,5 @@ class Menu
         CLICreateModel::$model_namespace_for_class = str_replace(DIRECTORY_SEPARATOR, '\\', $model_namespace_for_path);
 
         CLICreateModel::chooseModelDBIndex();
-        exit;
     }
 }

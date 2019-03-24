@@ -26,4 +26,8 @@ class CliUtil
 
         return $answer;
     }
+
+    static public function ARGVOptional($index, $default = ''){
+        return isset($_SERVER['argv'][$index]) ? $_SERVER['argv'][$index] : $default;
+    }
 }
