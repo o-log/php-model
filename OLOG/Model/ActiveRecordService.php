@@ -57,7 +57,7 @@ class ActiveRecordService
 
         $db_sequence_name = $db_table_name . '_' . $id_field_name . '_seq';
         $last_insert_id = DB::lastInsertId($db_id, $db_sequence_name);
-        return $last_insert_id;
+        return (int) $last_insert_id;
     }
 
     /**
