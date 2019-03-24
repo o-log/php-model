@@ -20,8 +20,23 @@ class Test5 implements
     protected $comment_text;
     const _RANDINT = 'randint';
     protected $randint;
+    const _TITLE = 'title';
+    protected $title = "";
     const _ID = 'id';
     protected $id;
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $value): Test5
+    {
+        $this->title = $value;
+        return $this;
+    }
+
+
 
     /**
      * @return Test5[]

@@ -17,14 +17,18 @@ class GetterSetterTemplate
         }
 
         ob_start();
+
+        // code below contains some extra empty lines because php eats new line after closing php tag
         ?>
 
     public function get<?= $camelized_field_name ?>(): <?= $type_str ?>
+
     {
         return $this-><?= $field_name ?>;
     }
 
     public function set<?= $camelized_field_name ?>(<?= $type_str ?> $value): <?= $class_name_no_namespace ?>
+
     {
         $this-><?= $field_name ?> = $value;
         return $this;
