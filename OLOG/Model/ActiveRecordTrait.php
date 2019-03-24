@@ -255,23 +255,6 @@ trait ActiveRecordTrait
         Factory::removeObjectFromCache($class_name, $this->getId());
     }
 
-    public function _getFieldValueByName($field_name)
-    {
-        return $this->$field_name;
-    }
-
-    /**
-     * пока работаем с полями объекта напрямую, без сеттеров/геттеров
-     * этот метод позволяет писать в защищенные свойства (используется, например, в CRUD)
-     * @param $fields_arr
-     */
-    public function _setFields($fields_arr)
-    {
-        foreach ($fields_arr as $field_name => $field_value) {
-            $this->$field_name = $field_value;
-        }
-    }
-
     /**
      * Converts ids array to objects of self class array.
      * @param array $ids
