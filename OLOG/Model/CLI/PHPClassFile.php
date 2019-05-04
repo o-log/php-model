@@ -136,7 +136,11 @@ class PHPClassFile
     public function extractClassNamespace(): void
     {
         $namespace_matches = [];
-        $namespace_pattern = '@\Rnamespace\s+(\w+);@';
+
+        // \x5c здесь матчит символ \ - это чтобы не писать его вот так: \\\\
+        // https://stackoverflow.com/questions/11044136/right-way-to-escape-backslash-in-php-regex
+        // сам \ нужен для того чтобы извлекать вложенные неймспейсы
+        $namespace_pattern = '@\Rnamespace\s+([\w\x5c]+);@';
         if (preg_match($namespace_pattern, $this->class_file_text, $namespace_matches)) {
             $this->class_namespace = $namespace_matches[1];
         }
