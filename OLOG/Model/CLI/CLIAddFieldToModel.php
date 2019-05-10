@@ -38,6 +38,7 @@ class CLIAddFieldToModel
         $data_types_arr[] = new FieldDataType('int', 'int', 'int', true, false);
         $data_types_arr[] = new FieldDataType('string', 'string', 'varchar(255)', true, true);
         $data_types_arr[] = new FieldDataType('text', 'string', 'text', false, false);
+        $data_types_arr[] = new FieldDataType('blob', 'string', 'blob', false, false);
         $data_types_arr[] = new FieldDataType('date', 'string', 'date', true, false);
         $data_types_arr[] = new FieldDataType('datetime', 'string', 'datetime', true, false);
         $data_types_arr[] = new FieldDataType('bigint', 'int', 'bigint', true, false);
